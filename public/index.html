@@ -5482,7 +5482,7 @@ const oc=V.ctx;V.ctx=function(){let h=oc.apply(this,arguments);
  h=h.replace('<button class="plf" onclick="ctOpen()">+ New transaction</button>','<span style="display:flex;gap:8px;flex-wrap:wrap"><button class="plf" onclick="sdOpen()">+ Currency sale deal</button><button class="plo" onclick="ctOpen()">+ Multi-currency entry</button></span>');
  return h};
 /*UPDCHK*/
-(function(){const B='2026-10-18-c';window.PB_BUILD=B;if(location.protocol=='file:')return;let nb=null,tm=0;
+(function(){const B='2026-10-18-d';window.PB_BUILD=B;if(location.protocol=='file:')return;let nb=null,tm=0;
 const busy=()=>{const a=document.activeElement;return !!(document.querySelector('.ov')||(a&&/^(INPUT|TEXTAREA)$/.test(a.tagName)&&String(a.value||'').length>0))};
 function go2(){try{const k='pb_upd_'+nb,n=+(sessionStorage.getItem(k)||0);sessionStorage.setItem(k,n+1)}catch(e){}location.replace(location.pathname+'?v='+encodeURIComponent(nb))}
 function bar(){let d=document.getElementById('pbupd');if(!d){d=document.createElement('div');d.id='pbupd';d.setAttribute('role','button');d.style.cssText='position:fixed;left:50%;transform:translateX(-50%);top:10px;z-index:100000;background:#0b3d33;color:#fff;padding:11px 18px;border-radius:12px;font:700 13px Manrope,system-ui,sans-serif;box-shadow:0 6px 20px rgba(0,0,0,.3);cursor:pointer;text-align:center;max-width:92vw';d.onclick=()=>{d.textContent='Updating…';go2()};document.body.appendChild(d)}d.textContent='A new version of PrimeBook is ready. Tap here to update.'}
@@ -6325,6 +6325,7 @@ html,body,button,input,select,textarea,table,th,td,h1,h2,h3,h4,h5,h6,label,p,spa
 code,pre,.mono{font-family:ui-monospace,SFMono-Regular,Menlo,monospace!important}
 body{background:#f3f7f5}
 nav,aside{background:linear-gradient(180deg,#0B4A39 0,#0A3D30 58%,#082F25 100%)!important}
+nav,aside{background:linear-gradient(180deg,#1e4fbf 0,#173f9c 55%,#10306f 100%)!important}nav .brand,nav h1,nav .brand.pbx{background:#1e4fbf!important;border-bottom:1px solid #ffffff2a!important}nav button.on,nav button.on2,nav .gh.on0{background:linear-gradient(90deg,#4f86ff,#2b5fd9aa)!important;box-shadow:inset 4px 0 0 #ffd166!important;color:#fff!important}nav button.sub.on,nav button.sst.on{background:#ffffff26!important;box-shadow:inset 3px 0 0 #ffd166!important}nav .sub.usr0 .uda{background:#4f86ff}nav>button[data-v].on,nav>button[data-v].on.trx,nav>button[data-v=cbd].on,nav>button[data-v=cmd].on,nav>button[data-v=smd].on{background:linear-gradient(90deg,#4f86ff,#2b5fd9cc)!important;box-shadow:inset 4px 0 0 #ffd166,0 4px 14px #1e4fbf66!important}nav>button[data-v=cbd]:not(.on):hover{background:#ffffff1f}
 .top h2,.top h1{font-weight:800!important;letter-spacing:-.02em;color:#0A4A39}
 button.plf,.plf{background:#0E7C5A!important;border-color:#0E7C5A!important}.plf:hover{background:#0A6347!important}
 a{color:#0E7C5A}
