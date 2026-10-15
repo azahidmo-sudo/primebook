@@ -6269,6 +6269,23 @@ if(prev&&prev.s&&Date.now()-prev.t<6e5){setTimeout(()=>{try{const b=document.cre
 
 /*NOHAS*/
 (function(){const IDS=['bs','es','lg','us'],BIDS=['csw'];const g2=go;go=function(){const r=g2.apply(this,arguments);try{IDS.forEach(i=>{const e=document.getElementById(i),l=e&&e.closest('label');if(l)l.classList.add('pb-has-'+i)});BIDS.forEach(i=>document.body.classList.toggle('pb-b-'+i,!!document.getElementById(i)));document.querySelectorAll('.fg label').forEach(l=>{if(l.querySelector('.ca-cb'))l.classList.add('pb-cacb')});if(view=='cadd'){const f=document.querySelector('form[data-f=cadd]');if(f)f.querySelectorAll('.ca-grid .fg>label').forEach(l=>{if(l.querySelector('[name=email],[name=address],[name=status],[name=obd],[name=dccy]'))l.classList.add('pbw')})}}catch(e){}return r};})();
+/*SAFELITE*/
+(function(){
+const ua=navigator.userAgent||'';
+const safari=(/Safari/.test(ua)&&!/Chrome|Chromium|Edg|OPR|Android|Firefox/.test(ua))||/iPhone|iPad|iPod/.test(ua);
+window.PB_LITE=safari||/[?&]lite=1/.test(location.search);
+if(!window.PB_LITE)return;
+V.cadd=function(){
+const c=ce?S.cust.find(x=>x.id==ce):null,v=k=>c?c[k]:undefined,code=c?c.code:'CUS-'+String(CUS().length+1).padStart(4,'0');
+const secs=[['Customer identity',[['name','Customer name','t',null,v('name'),'Full name or company'],['ctype','Customer type','s',[['Company','Company'],['Individual','Individual']],v('ctype')],['contact','Contact person','x',null,v('contact')]]],
+['Contact details',[['phone','Phone number (required)','t',null,v('phone'),'e.g. 9715XXXXXXXX'],['wa','WhatsApp number','x',null,v('wa'),'With country code'],['email','Email','x',null,v('email'),'name@company.com'],['address','Address','x',null,v('address')],['city','City','x',null,v('city')],['country','Country','x',null,v('country')]]],
+['Account settings',[['terms','Payment terms','s',['Due on receipt','Net 7','Net 15','Net 30','Net 60'].map(t=>[t,t]),v('terms')],['credit','Credit limit ('+S.base+')','o',null,v('credit'),'0 = no limit'],['status','Status','s',[['Active','Active'],['Inactive','Inactive']],v('status')],['dccy','Default currency','s',ccO(),v('dccy')]]]];
+if(!c)secs.push(['Opening balance',[['ob','Amount already owed','o',null,null,'0.00'],['obc','Currency','s',ccO(),S.base],['obd','As of date','d',null,today()]]]);
+secs.push(['Notes',[['notes','Internal notes','x',null,v('notes')]]]);
+return tpl('caddl',c?'Edit customer':'Add customer','Customer code '+code+'. Phone and WhatsApp numbers are used for search and for sharing statements.',secs,c?'Save changes':'Save customer','Name and phone number are required. An opening balance posts against Accounts Receivable and Capital.')+(c?`<p><button class="b s" onclick="ce='';go()">Cancel edit</button></p>`:'')};
+H.caddl=function(o){o['ck_'+(o.dccy||S.base)]='on';o['ck_'+S.base]='on';if(!o.obd)o.obd=today();return H.cadd(o)};
+})();
+
 window.heroFirst=html=>{const t=html.match(/<div class="ctabs noprint">.*?<\/div>/s),s=html.indexOf('<div class="cx-h');if(!t||s<0)return html;let i=s,d=0,re=/<div\b|<\/div>/g,x;re.lastIndex=s;while((x=re.exec(html))){d+=x[0]=='</div>'?-1:1;if(!d){i=re.lastIndex;break}}if(!d&&i>s){const hero=html.slice(s,i),rest=html.slice(0,s)+html.slice(i);const ti=rest.indexOf(t[0]);if(ti<0)return html;return hero+t[0]+rest.slice(0,ti)+rest.slice(ti+t[0].length)}return html};
 Object.keys(V).forEach(k=>{if(!['acd','sld','pud','cmd','pyd','cbd','bkd','std','stk','sd'].includes(k))return;const o=V[k];if(typeof o=='function'&&!o.hf)V[k]=Object.assign(function(){return window.heroFirst(o.apply(this,arguments))},{hf:1})});
 Object.assign(FIc,{back:'<path d="M15 5l-7 7 7 7"/>',plus:'<path d="M12 5v14M5 12h14"/>',bag:'<path d="M5 8h14l-1.1 12.2H6.1z"/><path d="M9 8V6.6a3 3 0 016 0V8"/>',user:'<circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-6.5 8-6.5s8 2.5 8 6.5"/>',chev:'<path d="M6 9l6 6 6-6"/>',logout:'<path d="M9 4H5a1 1 0 00-1 1v14a1 1 0 001 1h4M16 8l4 4-4 4M20 12H9"/>',moon:'<path d="M20 14.5A8 8 0 019.5 4a8 8 0 1010.5 10.5z"/>'});
