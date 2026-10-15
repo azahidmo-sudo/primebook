@@ -5451,7 +5451,7 @@ const oc=V.ctx;V.ctx=function(){let h=oc.apply(this,arguments);
  h=h.replace('<button class="plf" onclick="ctOpen()">+ New transaction</button>','<span style="display:flex;gap:8px;flex-wrap:wrap"><button class="plf" onclick="sdOpen()">+ Currency sale deal</button><button class="plo" onclick="ctOpen()">+ Multi-currency entry</button></span>');
  return h};
 /*UPDCHK*/
-(function(){const B='2026-10-16-s';window.PB_BUILD=B;if(location.protocol=='file:')return;let nb=null,tm=0;
+(function(){const B='2026-10-16-t';window.PB_BUILD=B;if(location.protocol=='file:')return;let nb=null,tm=0;
 const busy=()=>{const a=document.activeElement;return !!(document.querySelector('.ov')||(a&&/^(INPUT|TEXTAREA)$/.test(a.tagName)&&String(a.value||'').length>0))};
 function go2(){try{const k='pb_upd_'+nb,n=+(sessionStorage.getItem(k)||0);sessionStorage.setItem(k,n+1)}catch(e){}location.replace(location.pathname+'?v='+encodeURIComponent(nb))}
 function bar(){let d=document.getElementById('pbupd');if(!d){d=document.createElement('div');d.id='pbupd';d.setAttribute('role','button');d.style.cssText='position:fixed;left:50%;transform:translateX(-50%);top:10px;z-index:100000;background:#0b3d33;color:#fff;padding:11px 18px;border-radius:12px;font:700 13px Manrope,system-ui,sans-serif;box-shadow:0 6px 20px rgba(0,0,0,.3);cursor:pointer;text-align:center;max-width:92vw';d.onclick=()=>{d.textContent='Updating…';go2()};document.body.appendChild(d)}d.textContent='A new version of PrimeBook is ready. Tap here to update.'}
@@ -6651,6 +6651,8 @@ const CI={USD:['US','US Dollar','United States'],EUR:['EU','Euro','Eurozone'],GB
 const cFlag=c=>{const i=CI[c];if(!i)return c=='USDT'||c=='USDC'?'\u{1F7E2}':'\u{1F3F3}️';return String.fromCodePoint(...[...i[0]].map(ch=>127397+ch.charCodeAt(0)))};
 window.cLab=c=>{const i=CI[c];return cFlag(c)+' '+c+(i?' – '+i[1]+' ('+i[2]+')':c=='USDT'?' – Tether (stablecoin)':'')};
 window.cMore=()=>{const have=new Set(rcodes()),m=Object.keys(CI).filter(c=>!have.has(c));return m.length?`<optgroup label="More currencies (add a board rate in Settings to use)">${m.map(c=>`<option value="" disabled>${cLab(c)}</option>`).join('')}</optgroup>`:''};
+const flagify=h=>typeof h!='string'?h:h.replace(/<(th|td)([^>]*)>(<b>)?([A-Z]{3,4})(<\/b>)?<\/\1>/g,(m,t,at,b1,c,b2)=>(CI[c]||c=='USDT'||c=='USDC')?`<${t}${at}>${b1||''}${cFlag(c)} ${c}${b2||''}</${t}>`:m);
+['rpt','coa'].forEach(k=>{const o=V[k];if(o)V[k]=function(){return flagify(o.apply(this,arguments))}});
 const _rh=window.rgHead;window.rgHead=function(k){if(k)return _rh.apply(this,arguments);OP.rpt=!OP.rpt;go()};
 const ti=RC.findIndex(x=>x[0]=='Trial Balance');if(ti>=0)RC[ti]=['Trial Balance','Accountant','Debits and credits by group, with currency and foreign amounts held. Checks that the books balance.'];
 })();
