@@ -6253,6 +6253,19 @@ addEventListener('unhandledrejection',e=>{const r=e&&e.reason;if(r&&r.status&&r.
 const g0=go;go=function(){try{return g0.apply(this,arguments)}catch(e){bar(e&&e.message||e);throw e}};
 })();
 
+/*CRUMB*/
+(function(){
+const K='pb_crumb';let prev=null;try{prev=JSON.parse(localStorage.getItem(K));localStorage.removeItem(K)}catch(e){}
+function mark(s){try{localStorage.setItem(K,JSON.stringify({s:s,v:String(typeof view!='undefined'?view:''),t:Date.now()}))}catch(e){}}
+function clear(){try{localStorage.removeItem(K)}catch(e){}}
+window.pbCrumb=mark;
+const g1=go;go=function(){const isC=(typeof view!='undefined'&&view=='cadd');if(isC)mark('opening Add customer page');try{return g1.apply(this,arguments)}finally{if(isC){mark('Add customer page drawn')}}};
+document.addEventListener('focusin',e=>{if(typeof view!='undefined'&&view=='cadd'){const n=e.target&&(e.target.name||e.target.id||e.target.tagName);mark('typing in field: '+n)}},true);
+document.addEventListener('click',e=>{if(typeof view!='undefined'&&view=='cadd'){const b=e.target&&e.target.closest&&e.target.closest('button');if(b)mark('clicked: '+String(b.textContent).trim().slice(0,30))}},true);
+addEventListener('pagehide',clear);
+if(prev&&prev.s&&Date.now()-prev.t<6e5){setTimeout(()=>{try{const b=document.createElement('div');b.style.cssText='position:fixed;left:50%;bottom:50px;transform:translateX(-50%);z-index:99999;background:#FFF7E0;color:#5A4300;border:1px solid #F0DFA0;border-radius:10px;padding:10px 14px;font:13px/1.4 system-ui,sans-serif;max-width:92vw;box-shadow:0 6px 24px rgba(0,0,0,.2)';b.innerHTML='<b>The page closed unexpectedly last time.</b><div style="font-family:monospace;font-size:12px;margin:4px 0">Last step: '+String(prev.s).replace(/[<>&]/g,'')+' (page: '+String(prev.v).replace(/[<>&]/g,'')+')</div><button type="button" id="pbcr">Dismiss</button>';document.body.appendChild(b);document.getElementById('pbcr').onclick=()=>b.remove()}catch(e){}},1500)}
+})();
+
 window.heroFirst=html=>{const t=html.match(/<div class="ctabs noprint">.*?<\/div>/s),s=html.indexOf('<div class="cx-h');if(!t||s<0)return html;let i=s,d=0,re=/<div\b|<\/div>/g,x;re.lastIndex=s;while((x=re.exec(html))){d+=x[0]=='</div>'?-1:1;if(!d){i=re.lastIndex;break}}if(!d&&i>s){const hero=html.slice(s,i),rest=html.slice(0,s)+html.slice(i);const ti=rest.indexOf(t[0]);if(ti<0)return html;return hero+t[0]+rest.slice(0,ti)+rest.slice(ti+t[0].length)}return html};
 Object.keys(V).forEach(k=>{if(!['acd','sld','pud','cmd','pyd','cbd','bkd','std','stk','sd'].includes(k))return;const o=V[k];if(typeof o=='function'&&!o.hf)V[k]=Object.assign(function(){return window.heroFirst(o.apply(this,arguments))},{hf:1})});
 Object.assign(FIc,{back:'<path d="M15 5l-7 7 7 7"/>',plus:'<path d="M12 5v14M5 12h14"/>',bag:'<path d="M5 8h14l-1.1 12.2H6.1z"/><path d="M9 8V6.6a3 3 0 016 0V8"/>',user:'<circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-6.5 8-6.5s8 2.5 8 6.5"/>',chev:'<path d="M6 9l6 6 6-6"/>',logout:'<path d="M9 4H5a1 1 0 00-1 1v14a1 1 0 001 1h4M16 8l4 4-4 4M20 12H9"/>',moon:'<path d="M20 14.5A8 8 0 019.5 4a8 8 0 1010.5 10.5z"/>'});
