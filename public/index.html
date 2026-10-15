@@ -2654,7 +2654,7 @@ document.addEventListener('click',e=>{const t=e.target.closest('[data-pyt]');if(
 
 /* ---------- Clear data (typed confirmation) ---------- */
 H.clr=function(o){if(!/^clear$/i.test((o.confirm||'').trim()))return alert('Type the word CLEAR to confirm. Nothing was deleted.'),false;
-const tx=()=>{S.j=[];S.fx=[];S.inv=[];S.docs=[];S.pos={};S.ist={};S.lots=[];S.imv=[];S.closings=[];S.bst=[];S.bclose={};S.pbq=[];S.tme=[];S.pay=[];S.leave=[]};
+const tx=()=>{S.j=[];S.fx=[];S.inv=[];S.docs=[];S.pos={};S.ist={};S.lots=[];S.imv=[];S.closings=[];S.bst=[];S.bclose={};S.pbq=[];S.tme=[];S.pay=[];S.leave=[];S.dord=[];S.mdeals=[]};
 tx();if(o.what=='all'){S.cust=S.cust.filter(c=>c.id=='c1');S.items=[];S.banks=[];S.prj=[];S.ctr=[];S.emp=[];S.tax=[];S.coa={};S.br=[{id:'b1',name:S.br[0]?S.br[0].name:'Main Branch'}];S.users.forEach(u=>{u.br='All'});br='all'}
 view='clr';bmsg2=o.what=='all'?'All business data was cleared. Your company profile, branches, users and currencies were kept.':'All transactions were cleared. Customers, items, bank accounts and settings were kept.'};
 let bmsg2='';
@@ -3983,7 +3983,7 @@ return seg('bk')+b+kp([['Ledger entries',S.j.length,'journal'],['Total records',
 (p&&p.data?`<div class="cd-card" style="margin-top:14px;border-color:#c7d6f8"><h4>Safety copy available</h4><p>Saved ${esc(fdt(p.at))} by ${esc(p.by)} (${esc(p.why)}): ${p.data.j?p.data.j.length:0} entries.</p><button class="b s cd-btn" onclick="bkUndo()">Undo and go back to this copy</button></div>`:'')+
 `<div class="p" style="margin-top:14px"><h3>Backup history</h3>${L.length?tb(['When','By','Type','Entries','Size','Label'],L.slice(-10).reverse().map(x=>[fdt(x.at),esc(x.by),x.how,String(x.n),kb(x.size),esc(x.note||'')])):'<p class="mu">No backups recorded yet.</p>'}<p class="mu" style="margin-top:10px;font-size:12px">Good practice: keep 3 copies, on 2 kinds of storage, with 1 away from this computer. Back up before closing a year, restoring or resetting data.</p></div>`};
 /* ======== 3. DATA RESET ======== */
-const RS=[['tx','Transactions','Ledger entries, invoices, forex deals, documents, cash closings, bank statements, payroll runs',()=>S.j.length+(S.inv||[]).length+(S.fx||[]).length+(S.docs||[]).length],
+const RS=[['tx','Transactions','Ledger entries, invoices, forex deals, documents, cash closings, bank statements, payroll runs',()=>S.j.length+(S.inv||[]).length+(S.fx||[]).length+(S.docs||[]).length+(S.dord||[]).length+(S.mdeals||[]).length],
 ['stock','Stock & inventory items','Item list (stock levels go with transactions)',()=>(S.items||[]).length],
 ['cust','Customers & suppliers','Everyone except the walk-in customer',()=>S.cust.filter(c=>c.id!='c1').length],
 ['bank','Bank accounts','Registered bank accounts',()=>(S.banks||[]).length],
@@ -5451,7 +5451,7 @@ const oc=V.ctx;V.ctx=function(){let h=oc.apply(this,arguments);
  h=h.replace('<button class="plf" onclick="ctOpen()">+ New transaction</button>','<span style="display:flex;gap:8px;flex-wrap:wrap"><button class="plf" onclick="sdOpen()">+ Currency sale deal</button><button class="plo" onclick="ctOpen()">+ Multi-currency entry</button></span>');
  return h};
 /*UPDCHK*/
-(function(){const B='2026-10-16-j';window.PB_BUILD=B;if(location.protocol=='file:')return;let nb=null,tm=0;
+(function(){const B='2026-10-16-k';window.PB_BUILD=B;if(location.protocol=='file:')return;let nb=null,tm=0;
 const busy=()=>{const a=document.activeElement;return !!(document.querySelector('.ov')||(a&&/^(INPUT|TEXTAREA)$/.test(a.tagName)&&String(a.value||'').length>0))};
 function go2(){try{const k='pb_upd_'+nb,n=+(sessionStorage.getItem(k)||0);sessionStorage.setItem(k,n+1)}catch(e){}location.replace(location.pathname+'?v='+encodeURIComponent(nb))}
 function bar(){let d=document.getElementById('pbupd');if(!d){d=document.createElement('div');d.id='pbupd';d.setAttribute('role','button');d.style.cssText='position:fixed;left:50%;transform:translateX(-50%);top:10px;z-index:100000;background:#0b3d33;color:#fff;padding:11px 18px;border-radius:12px;font:700 13px Manrope,system-ui,sans-serif;box-shadow:0 6px 20px rgba(0,0,0,.3);cursor:pointer;text-align:center;max-width:92vw';d.onclick=()=>{d.textContent='Updating…';go2()};document.body.appendChild(d)}d.textContent='A new version of PrimeBook is ready. Tap here to update.'}
