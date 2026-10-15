@@ -5451,7 +5451,7 @@ const oc=V.ctx;V.ctx=function(){let h=oc.apply(this,arguments);
  h=h.replace('<button class="plf" onclick="ctOpen()">+ New transaction</button>','<span style="display:flex;gap:8px;flex-wrap:wrap"><button class="plf" onclick="sdOpen()">+ Currency sale deal</button><button class="plo" onclick="ctOpen()">+ Multi-currency entry</button></span>');
  return h};
 /*UPDCHK*/
-(function(){const B='2026-10-16-l';window.PB_BUILD=B;if(location.protocol=='file:')return;let nb=null,tm=0;
+(function(){const B='2026-10-16-m';window.PB_BUILD=B;if(location.protocol=='file:')return;let nb=null,tm=0;
 const busy=()=>{const a=document.activeElement;return !!(document.querySelector('.ov')||(a&&/^(INPUT|TEXTAREA)$/.test(a.tagName)&&String(a.value||'').length>0))};
 function go2(){try{const k='pb_upd_'+nb,n=+(sessionStorage.getItem(k)||0);sessionStorage.setItem(k,n+1)}catch(e){}location.replace(location.pathname+'?v='+encodeURIComponent(nb))}
 function bar(){let d=document.getElementById('pbupd');if(!d){d=document.createElement('div');d.id='pbupd';d.setAttribute('role','button');d.style.cssText='position:fixed;left:50%;transform:translateX(-50%);top:10px;z-index:100000;background:#0b3d33;color:#fff;padding:11px 18px;border-radius:12px;font:700 13px Manrope,system-ui,sans-serif;box-shadow:0 6px 20px rgba(0,0,0,.3);cursor:pointer;text-align:center;max-width:92vw';d.onclick=()=>{d.textContent='Updating…';go2()};document.body.appendChild(d)}d.textContent='A new version of PrimeBook is ready. Tap here to update.'}
@@ -6579,6 +6579,40 @@ if(!rows.length)return '<p class="mu" style="padding:14px">No foreign-currency b
 h+=R([`<td><b>TOTAL</b></td>`,E,E,Nz(tb),E,Nz(tr),Nz(tr-tb)],'rp-tr');
 return `<p class="mu" style="margin:0 0 10px">Each foreign balance is revalued at today's board mid-rate and compared with its recorded base value. The difference is unrealised and is not posted to the books.</p>`+TBL(['Account','Currency','Held in currency','Book value','Board rate','Revalued','Unrealised gain / (loss)'],h)};
 [['Classified Balance Sheet','Financial Statements','Assets, liabilities and equity grouped by account group, with % of assets.'],['Classified Profit and Loss','Financial Statements','Income, cost of sales, gross and net profit with margins.'],['Chart of Accounts Listing','Accountant','Every account with type, group, currency and balance.'],['Foreign Currency Revaluation','Currency and FX','Foreign balances revalued at today\'s board rate, with unrealised gain or loss.']].forEach(x=>{if(!RC.some(y=>y[0]==x[0]))RC.push(x)});
+/* ---------- per-currency columns: balance sheet, P&L, trial balance ---------- */
+const ucols=()=>rcodes();
+const unitsOf=(c,l)=>{const u={};ucols().forEach(k=>u[k]=0);let fb=0;
+if(String(c)=='1100'){Object.entries(S.pos||{}).forEach(([key,p])=>{const[b,k]=key.split('|');if(window.br&&br!='all'&&b!=br)return;if(!k||k==S.base)return;u[k]=(u[k]||0)+(+p.q||0);fb+=(+p.q||0)*(+p.c||0)})}
+else l.forEach(x=>{if(!x.ccy||x.ccy==S.base)return;const r=+x.rate||0;if(!r)return;x.lines.forEach(y=>{if(String(y[0])!=String(c))return;u[x.ccy]=(u[x.ccy]||0)+(y[1]-y[2])/r;fb+=y[1]-y[2]})});
+u[S.base]=bal(c,l)-fb;return u};
+const rt=k=>S.rates[k]?rmid(k):1;
+const MC=l=>{const R0=(typeof rcur!='undefined'&&rcur)||S.base,den=rt(R0),cols=[...ucols()];
+const keep=new Set(cols);const U={};Object.keys(CH).forEach(c=>{U[c]=unitsOf(c,l);Object.keys(U[c]).forEach(k=>{if(!keep.has(k)){keep.add(k);cols.push(k)}})});
+const X=v=>Math.abs(v)<.005?'<td class="n"></td>':cell(v),tot=u=>cols.reduce((s,k)=>s+(u[k]||0)*rt(k)/den,0);
+const row=(label,u,cls,sign,ind)=>{const v=cols.map(k=>(u[k]||0)*(sign||1));return R([`<td${ind?` style="padding-left:${ind}px"`:''}>${label}</td>`,...v.map(X),X(tot(u)*(sign||1))].map(x=>x),cls)};
+const zero=()=>{const u={};cols.forEach(k=>u[k]=0);return u},add=(a,b,s)=>{cols.forEach(k=>a[k]=(a[k]||0)+(b[k]||0)*(s||1))};
+const head=()=>TBLH(['Account',...cols.map(k=>k),'Total '+R0]);
+const rateRow=R([`<td><i>Rate: 1 unit =</i></td>`,...cols.map(k=>`<td class="n mu">${(rt(k)/den).toLocaleString(undefined,{maximumFractionDigits:6})} ${A(R0)}</td>`),'<td></td>'],'');
+const section=(types,sign,only,title)=>{const T=zero();let h='';const cs=Object.keys(CH).sort().filter(c=>types.includes(acType(c))&&(!only||only(c))&&(Math.abs(bal(c,l))>.004||cols.some(k=>Math.abs(U[c][k])>.004)));
+[...new Set(cs.map(grp))].forEach(g=>{const G=zero();h+=R([`<td><b>${A(g)}</b></td>`,...cols.map(()=>E),E],'rp-gh');cs.filter(c=>grp(c)==g).forEach(c=>{add(G,U[c],sign);h+=row(`${c} &ndash; ${A(CH[c])}`,U[c],'',sign,24)});add(T,G);h+=row(`<i>Total ${A(g)}</i>`,G,'',1,12)});return{h,T}};
+const wrapT=(inner,note)=>`<p class="mu" style="margin:0 0 10px">${note}</p><div class="w"><table style="min-width:${220+cols.length*118}px">${head()}${rateRow}${inner}</table></div>`;
+return{cols,R0,row,section,zero,add,tot,wrapT,U,X}};
+const TBLH=h=>`<tr>${h.map((x,i)=>`<th${i?' class="n"':''}>${x}</th>`).join('')}</tr>`;
+RX['Multi-currency Balance Sheet']=l=>{const M=MC(l);const Aa=M.section(['Assets'],1),Li=M.section(['Liabilities'],-1),Eq=M.section(['Equity'],-1);
+const P=M.zero();Object.keys(CH).filter(c=>/^(Income|Expenses)$/.test(acType(c))).forEach(c=>M.add(P,M.U[c],-1));
+const EQ=M.zero();M.add(EQ,Eq.T);M.add(EQ,P);const LE=M.zero();M.add(LE,Li.T);M.add(LE,EQ);
+const diff=M.tot(Aa.T)-M.tot(LE);
+const h=R([`<td><b>ASSETS</b></td>`,...M.cols.map(()=>E),E],'rp-gh')+Aa.h+M.row('<b>TOTAL ASSETS</b>',Aa.T,'rp-tr')+R([`<td><b>LIABILITIES</b></td>`,...M.cols.map(()=>E),E],'rp-gh')+Li.h+M.row('<b>Total liabilities</b>',Li.T,'rp-tr')+R([`<td><b>EQUITY</b></td>`,...M.cols.map(()=>E),E],'rp-gh')+Eq.h+M.row('Profit for the period',P,'',1,24)+M.row('<b>Total equity</b>',EQ,'rp-tr')+M.row('<b>TOTAL LIABILITIES + EQUITY</b>',LE,'rp-tr')+(Math.abs(diff)>.005?R([`<td><i>Unrealised revaluation (foreign balances at today's board rate vs recorded cost)</i></td>`,...M.cols.map(()=>E),cell(diff)],''):'');
+return M.wrapT(h,`Each currency column shows the units actually held; the last column converts every column to ${A(M.R0)} at the board mid-rate. Change <b>Report currency</b> above to total in another currency.`)};
+RX['Multi-currency Profit and Loss']=l=>{const M=MC(l);const I=M.section(['Income'],-1),C=M.section(['Expenses'],1,c=>grp(c)=='Cost of Sales'),O=M.section(['Expenses'],1,c=>grp(c)!='Cost of Sales');
+const GP=M.zero();M.add(GP,I.T);M.add(GP,C.T,-1);const NP=M.zero();M.add(NP,GP);M.add(NP,O.T,-1);const hd=t=>R([`<td><b>${t}</b></td>`,...M.cols.map(()=>E),E],'rp-gh');
+const h=hd('INCOME')+I.h+M.row('<b>Total income</b>',I.T,'rp-tr')+(C.h?hd('COST OF SALES')+C.h+M.row('<b>Total cost of sales</b>',C.T,'rp-tr'):'')+M.row('<b>GROSS PROFIT</b>',GP,'rp-tr')+hd('OPERATING EXPENSES')+O.h+M.row('<b>Total operating expenses</b>',O.T,'rp-tr')+M.row('<b>NET PROFIT</b>',NP,'rp-tr');
+return M.wrapT(h,`Income and expenses by the currency they were recorded in, with the total in ${A(M.R0)}.`)};
+RX['Multi-currency Trial Balance']=l=>{const M=MC(l);let h='';const T=M.zero();
+['Assets','Liabilities','Equity','Income','Expenses'].forEach(t=>{const S1=M.section([t],1);if(!S1.h)return;h+=R([`<td><b>${t}</b></td>`,...M.cols.map(()=>E),E],'rp-gh')+S1.h;M.add(T,S1.T)});
+h+=M.row('<b>NET (should be zero)</b>',T,'rp-tr');
+return M.wrapT(h,`Net balance per currency (Dr positive, Cr negative). Every currency column is shown in units; the last column converts to ${A(M.R0)}. The base currency column nets to zero when the books balance.`)};
+[['Multi-currency Balance Sheet','Financial Statements','Assets, liabilities and equity with one column per currency and a total in the report currency.'],['Multi-currency Profit and Loss','Financial Statements','Income and expenses in each currency, with a total in the report currency.'],['Multi-currency Trial Balance','Accountant','Net balance of every account in each currency, with a total in the report currency.']].forEach(x=>{if(!RC.some(y=>y[0]==x[0]))RC.push(x)});
 const ti=RC.findIndex(x=>x[0]=='Trial Balance');if(ti>=0)RC[ti]=['Trial Balance','Accountant','Debits and credits by group, with currency and foreign amounts held. Checks that the books balance.'];
 })();
 
