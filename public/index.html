@@ -5484,7 +5484,7 @@ const oc=V.ctx;V.ctx=function(){let h=oc.apply(this,arguments);
  h=h.replace('<button class="plf" onclick="ctOpen()">+ New transaction</button>','<span style="display:flex;gap:8px;flex-wrap:wrap"><button class="plf" onclick="sdOpen()">+ Currency sale deal</button><button class="plo" onclick="ctOpen()">+ Multi-currency entry</button></span>');
  return h};
 /*UPDCHK*/
-(function(){const B='2026-10-19-j';window.PB_BUILD=B;if(location.protocol=='file:')return;let nb=null,tm=0;
+(function(){const B='2026-10-19-k';window.PB_BUILD=B;if(location.protocol=='file:')return;let nb=null,tm=0;
 const busy=()=>{const a=document.activeElement;return !!(document.querySelector('.ov')||(a&&/^(INPUT|TEXTAREA)$/.test(a.tagName)&&String(a.value||'').length>0))};
 function go2(){try{const k='pb_upd_'+nb,n=+(sessionStorage.getItem(k)||0);sessionStorage.setItem(k,n+1)}catch(e){}location.replace(location.pathname+'?v='+encodeURIComponent(nb))}
 function bar(){let d=document.getElementById('pbupd');if(!d){d=document.createElement('div');d.id='pbupd';d.setAttribute('role','button');d.style.cssText='position:fixed;left:50%;transform:translateX(-50%);top:10px;z-index:100000;background:#0b3d33;color:#fff;padding:11px 18px;border-radius:12px;font:700 13px Inter,system-ui,sans-serif;box-shadow:0 6px 20px rgba(0,0,0,.3);cursor:pointer;text-align:center;max-width:92vw';d.onclick=()=>{d.textContent='Updating…';go2()};document.body.appendChild(d)}d.textContent='A new version of PrimeBook is ready. Tap here to update.'}
@@ -7484,6 +7484,30 @@ html body.vdash #m tr.fp-net td,html body.vdash #m tr.fp-net td *{background-col
 html body nav#nav>button.on .ni svg,html body nav#nav .gh.on0 .ni svg{stroke:#0f766e!important;opacity:1!important}
 html body #m .rts-h{background:linear-gradient(120deg,#e7f3ef,#f4f8f3)!important;color:var(--dl-emd)!important;border-right:1px solid #d7e6df}
 html body #m .rts-h *{color:var(--dl-emd)!important}html body #m .rts-h small{color:var(--dl-gd)!important}
+`;document.head.appendChild(st)})();
+/*SUB2*/
+(function(){
+const st=document.createElement('style');st.textContent=`
+html body #m .fi-qa.qg,html body #m .fi-qa.qw{--c:#15803d;--ct:#e9f6ee;--cb:#b7dfc4;--ch:#f3faf6;gap:6px;padding:10px;border-radius:18px;scroll-snap-type:x proximity;scrollbar-width:none}
+html body #m .fi-qa.qw{--c:#8b1e3f;--ct:#f9e9ee;--cb:#e3b6c3;--ch:#fcf3f6}
+html body #m .fi-qa.qg::-webkit-scrollbar,html body #m .fi-qa.qw::-webkit-scrollbar{display:none}
+html body #m .fi-qa.qg button,html body #m .fi-qa.qw button{flex:1 0 108px;gap:9px;padding:12px 8px 11px;border:1px solid transparent!important;border-radius:14px!important;scroll-snap-align:start;font:600 12.5px/1.2 Inter,sans-serif;letter-spacing:.01em;transition:background .18s,border-color .18s,transform .18s,box-shadow .18s}
+html body #m .fi-qa.qg button:not(.bk):not(.on),html body #m .fi-qa.qw button:not(.bk):not(.on){color:var(--c)!important;background:transparent!important}
+html body #m .fi-qa.qg button:not(.bk):not(.on) .fiic,html body #m .fi-qa.qw button:not(.bk):not(.on) .fiic{width:44px;height:44px;border-radius:14px;background:var(--ct)!important;box-shadow:inset 0 0 0 1px var(--cb)!important}
+html body #m .fi-qa.qg button:not(.bk):not(.on):hover,html body #m .fi-qa.qw button:not(.bk):not(.on):hover{background:var(--ch)!important;border-color:var(--cb)!important;transform:translateY(-2px);box-shadow:0 8px 18px -12px var(--c)!important}
+html body #m .fi-qa.qg button:not(.bk):not(.on):hover .fiic,html body #m .fi-qa.qw button:not(.bk):not(.on):hover .fiic{background:#fff!important}
+html body #m .fi-qa.qg button:not(.bk):not(.on):hover .fiic svg{stroke:#15803d!important}html body #m .fi-qa.qw button:not(.bk):not(.on):hover .fiic svg{stroke:#8b1e3f!important}
+html body #m .fi-qa.qg button.on:not(.add):not(.bk),html body #m .fi-qa.qw button.on:not(.add):not(.bk),html body #m .fi-qa.qg button.on,html body #m .fi-qa.qw button.on{background:var(--ct)!important;color:var(--c)!important;border:1px solid var(--cb)!important;box-shadow:0 8px 20px -14px var(--c)!important;transform:none}
+html body #m .fi-qa.qg button.on span,html body #m .fi-qa.qw button.on span{color:var(--c)!important;font-weight:700}
+html body #m .fi-qa.qg button.on .fiic,html body #m .fi-qa.qw button.on .fiic{width:44px;height:44px;border-radius:14px;background:var(--c)!important;box-shadow:0 6px 14px -6px var(--c)!important}
+html body #m .fi-qa.qg button.on .fiic svg,html body #m .fi-qa.qw button.on .fiic svg{stroke:#fff!important}
+html body #m .fi-qa.qg button.on:after,html body #m .fi-qa.qw button.on:after{content:"";width:18px;height:3px;border-radius:3px;background:var(--c);margin-top:-2px}
+html body #m .fi-qa.qg button .fiic svg,html body #m .fi-qa.qw button .fiic svg{width:22px;height:22px;stroke-width:1.9}
+html body #m .fi-qa.qg button.bk,html body #m .fi-qa.qw button.bk{flex:0 0 78px;color:#6b7488}
+html body #m .fi-qa.qg button.bk .fiic,html body #m .fi-qa.qw button.bk .fiic{width:44px;height:44px;border-radius:14px;background:#f1efe8!important;box-shadow:inset 0 0 0 1px #e3dfd2}
+html body #m .fi-qa.qg button.bk .fiic svg,html body #m .fi-qa.qw button.bk .fiic svg{stroke:#6b7488!important}
+html body #m .fi-qa.qg button:focus-visible,html body #m .fi-qa.qw button:focus-visible{outline:2px solid var(--c);outline-offset:2px}
+@media(max-width:720px){html body #m .fi-qa.qg button,html body #m .fi-qa.qw button{flex:0 0 108px;font-size:12px}html body #m .fi-qa.qg button .fiic,html body #m .fi-qa.qw button .fiic{width:40px!important;height:40px!important}}
 `;document.head.appendChild(st)})();
 if(window.PB_CLOUD){pbBoot()}else if(!SESS){let pv=0;try{pv=sessionStorage.getItem('pb_preview');if(pv)sessionStorage.removeItem('pb_preview')}catch(e){}if(pv)location.reload();else auShow('login')}else{const A0=auAcc();if(!A0){try{localStorage.removeItem(AS)}catch(e){}auShow('login')}else if(!A0.pd)auShow('welcome');else{autoRecur();go()}}
 </script></body></html>
