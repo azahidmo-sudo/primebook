@@ -5484,7 +5484,7 @@ const oc=V.ctx;V.ctx=function(){let h=oc.apply(this,arguments);
  h=h.replace('<button class="plf" onclick="ctOpen()">+ New transaction</button>','<span style="display:flex;gap:8px;flex-wrap:wrap"><button class="plf" onclick="sdOpen()">+ Currency sale deal</button><button class="plo" onclick="ctOpen()">+ Multi-currency entry</button></span>');
  return h};
 /*UPDCHK*/
-(function(){const B='2026-10-18-j';window.PB_BUILD=B;if(location.protocol=='file:')return;let nb=null,tm=0;
+(function(){const B='2026-10-18-k';window.PB_BUILD=B;if(location.protocol=='file:')return;let nb=null,tm=0;
 const busy=()=>{const a=document.activeElement;return !!(document.querySelector('.ov')||(a&&/^(INPUT|TEXTAREA)$/.test(a.tagName)&&String(a.value||'').length>0))};
 function go2(){try{const k='pb_upd_'+nb,n=+(sessionStorage.getItem(k)||0);sessionStorage.setItem(k,n+1)}catch(e){}location.replace(location.pathname+'?v='+encodeURIComponent(nb))}
 function bar(){let d=document.getElementById('pbupd');if(!d){d=document.createElement('div');d.id='pbupd';d.setAttribute('role','button');d.style.cssText='position:fixed;left:50%;transform:translateX(-50%);top:10px;z-index:100000;background:#0b3d33;color:#fff;padding:11px 18px;border-radius:12px;font:700 13px Manrope,system-ui,sans-serif;box-shadow:0 6px 20px rgba(0,0,0,.3);cursor:pointer;text-align:center;max-width:92vw';d.onclick=()=>{d.textContent='Updating…';go2()};document.body.appendChild(d)}d.textContent='A new version of PrimeBook is ready. Tap here to update.'}
@@ -6841,6 +6841,22 @@ body.vk .fi-qa button{border-radius:14px!important}body.vk .fi-qa button:hover{c
 body.vk .pbm{background:#fbf3dc!important;border-color:#e6cf8c!important;color:#6b5210!important}
 body.vk .cb2-al{background:linear-gradient(90deg,#fbf3dc,#fff)!important;border:1px solid #e6cf8c!important;border-radius:14px!important;color:#6b5210!important}
 body.vk .bcv{font-family:'Cormorant Garamond',serif!important;font-size:28px!important;font-weight:700!important;color:#12224a}
+body.vk{--ac:#1d3f8f;--ac2:#eaf0fb;--gd:#c8a45a;--up:#1d4ed8;--rd:#9b1c3a;--ln:#ece5d3}
+body.vk .up,body.vk .pos,body.vk .gn,body.vk td.n.up,body.vk b.up{color:#1d4ed8!important}body.vk .dn,body.vk .neg{color:#9b1c3a!important}
+body.vk .cb2-st,body.vk .cb2-pl.o,body.vk .tg.t-fx,body.vk .bdg{background:#eaf0fb!important;color:#1d3f8f!important;border-color:#c9d8f5!important}
+body.vk .tg.t-low{background:#fbf1d6!important;color:#8a6a12!important}
+body.vk .ccb,body.vk .cc{background:#12224a!important;color:#e6c77d!important}
+body.vk i.lg[style*="12a36f"],body.vk .bcb i,body.vk .cur u i{background:linear-gradient(90deg,#c8a45a,#e6c77d)!important}
+body.vk svg rect[fill="#12a36f"]{fill:#1f4fb3}body.vk svg rect[fill="#d93636"]{fill:#9b1c3a}
+body.vk .cb2-lk,body.vk .lnk,body.vk a{color:#1d3f8f!important}body.vk .lnk:hover{color:#9a7b32!important}
+body.vk .p h3 svg,body.vk .card-h h3 svg,body.vk .fiic svg,body.vk .fi-qa svg,body.vk .cb2-ic svg{stroke:#9a7b32}body.vk .fiic{background:#f6ecd2!important;color:#9a7b32!important}
+body.vk .p:before,body.vk .card-h h3:before,body.vk .p>h3:before,body.vk .card-h:before{background:linear-gradient(#c8a45a,#9a7b32)!important}
+body.vk .cb2-qr .qi,body.vk .cb2-qr .qi.a,body.vk .cb2-qr .qi.b,body.vk .cb2-qr .qi.p,body.vk .cb2-qr .qi.r{background:#f6ecd2!important;color:#8a6a12!important}
+body.vk .cb2-ic.a,body.vk .cb2-ic.b,body.vk .cb2-ic.c,body.vk .cb2-ic.d{background:linear-gradient(135deg,#f6ecd2,#ecd9a4)!important;color:#7a5c14!important}
+body.vk .top .plf,body.vk .top .plf.fdd-b{border-color:#12224a!important}
+body.vk button.b.s,body.vk .plo{color:#1d3f8f!important;border-color:#cdd9f2!important}body.vk .plf{background:linear-gradient(135deg,#12224a,#22408a)!important}
+body.vk .kh-t{color:#12224a}
+body.vk .seg button.on,body.vk .cb2-seg .on{background:#12224a!important;color:#fff!important}
 body.vk .top .plf.fdd-b,body.vk .top .tbd .plf{background:linear-gradient(135deg,#12224a,#22408a)!important;box-shadow:0 10px 22px -10px #12224acc!important}
 `;document.head.appendChild(st);
 const _g=go;go=function(){_g.apply(this,arguments);try{if(view!='cbd')return;const t=document.querySelector('.tsw');if(!t||document.querySelector('.cx-h.prm'))return;const al=S.j.filter(x=>br=='all'||x.br==br),CB=x=>x.lines.filter(y=>y[0]==1000),cm={};al.forEach(x=>CB(x).forEach(y=>{const k=x.ccy||S.base,r=x.ccy?(+x.rate||1):1;cm[k]=(cm[k]||0)+(y[1]-y[2])/r}));const cash=bal(1000,al),cr=Object.entries(cm).filter(([k,v])=>Math.abs(v)>.004),d=document.createElement('div');d.className='cx-h prm blue';d.style.marginBottom='16px';
