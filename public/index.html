@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en"><head><meta charset="utf-8">
+<html translate="no" lang="en"><head><meta name="google" content="notranslate"><meta http-equiv="Content-Language" content="en"><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>PrimeBook</title>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"><link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -2509,7 +2509,7 @@ catch(x){n.textContent=x&&x.code=='not_granted'?'Reading was not allowed. You ca
 capBusy=false;if(capD){const g=S.cust.find(c=>c.type=='Supplier'&&c.name.toLowerCase()==String(capD.supplier).toLowerCase());pbNew({sup:g?g.id:'new',supn:g?'':capD.supplier,date:capD.date||today(),due:capD.date||today(),ref:capD.ref,br:S.br[0].id,cat:capD.cat,ccy:(S.rates[capD.ccy]||capD.ccy==S.base)?capD.ccy:S.base,acct:capD.cat=='1300'?'1300':'6000',desc:capD.desc||'Supplier bill',amount:capD.total||0,rate:1,src:'Smart capture',file:f.name});capD=null;view='pbr';save();go()}else{e.target.disabled=false;e.target.textContent='Read bill'}});
 /* ---------- Languages: English, French, Spanish, Arabic ---------- */
 const LGS=[['en','English'],['fr','Français'],['es','Español'],['ar','العربية']];
-let LG='en';try{LG=localStorage.getItem('fd_lang')||'en'}catch(e){}
+let LG='en';try{localStorage.setItem('fd_lang','en')}catch(e){}/* English only */
 const LD={};[
 ['Dashboard','Tableau de bord','Panel','لوحة التحكم'],['Cash and bank','Caisse et banque','Caja y bancos','النقد والبنك'],['Cashbook','Livre de caisse','Libro de caja','دفتر النقد'],['DASHBOARD','TABLEAU DE BORD','PANEL','لوحة التحكم'],['CUSTOMER MANAGEMENT','GESTION DES CLIENTS','GESTIÓN DE CLIENTES','إدارة العملاء'],['Customer Management','Gestion des clients','Gestión de clientes','إدارة العملاء'],['Transfer','Transfert','Transferencia','تحويل'],['BANKS','BANQUES','BANCOS','البنوك'],['SALES AND RECEIPT','VENTES ET REÇUS','VENTAS Y RECIBOS','المبيعات والإيصالات'],['Sales Analysis','Analyse des ventes','Análisis de ventas','تحليل المبيعات'],['PURCHASE AND PAYMENTS','ACHATS ET PAIEMENTS','COMPRAS Y PAGOS','المشتريات والمدفوعات'],['Purchase Analysis','Analyse des achats','Análisis de compras','تحليل المشتريات'],['STOCK','STOCK','EXISTENCIAS','المخزون'],['ACCOUNTING','COMPTABILITÉ','CONTABILIDAD','المحاسبة'],['PAYROLL','PAIE','NÓMINA','الرواتب'],['REPORT CENTER','CENTRE DE RAPPORTS','CENTRO DE INFORMES','مركز التقارير'],['CASH MANAGEMENT','GESTION DE CAISSE','GESTIÓN DE CAJA','إدارة النقد'],['Cash Management','Gestion de caisse','Gestión de caja','إدارة النقد'],['Cash Transactions','Opérations de caisse','Transacciones de efectivo','المعاملات النقدية'],['Inter Cash Transfer','Transfert de caisse','Transferencia de efectivo','تحويل نقدي بين الفروع'],['Banks','Banques','Bancos','البنوك'],['Banks Dashboard','Tableau de bord bancaire','Panel de bancos','لوحة البنوك'],['Cashbook Dashboard','Tableau de bord de caisse','Panel de caja','لوحة دفتر النقد'],['Cash Transfers','Transferts de caisse','Transferencias de caja','تحويلات النقد'],['Sales','Ventes','Ventas','المبيعات'],['Customers','Clients','Clientes','العملاء'],['Purchase','Achats','Compras','المشتريات'],['Stock','Stock','Existencias','المخزون'],['Accounting','Comptabilité','Contabilidad','المحاسبة'],['Report Center','Centre de rapports','Centro de informes','مركز التقارير'],['Settings','Paramètres','Configuración','الإعدادات'],
 ['+ Add transaction','+ Ajouter une opération','+ Añadir transacción','+ إضافة معاملة'],['Add transaction','Ajouter une opération','Añadir transacción','إضافة معاملة'],['View as','Afficher en tant que','Ver como','عرض كـ'],['Light / dark','Clair / sombre','Claro / oscuro','فاتح / داكن'],['Sign out','Se déconnecter','Cerrar sesión','تسجيل الخروج'],['Branch','Agence','Sucursal','الفرع'],['All branches','Toutes les agences','Todas las sucursales','كل الفروع'],['Language','Langue','Idioma','اللغة'],['Company','Société','Empresa','الشركة'],
@@ -2532,7 +2532,7 @@ const LD={};[
 ].forEach(r=>{LD[r[0]]={fr:r[1],es:r[2],ar:r[3]}});
 function trDom(){const html=document.documentElement;html.lang=LG;html.dir=LG=='ar'?'rtl':'ltr';if(LG=='en'||!document.body)return;const L=LG;[document.getElementById('nav'),document.getElementById('m')].forEach(root=>{if(!root)return;const w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT);let n;const hits=[];while(n=w.nextNode()){const p=n.parentElement;if(!p||/^(SCRIPT|STYLE|TEXTAREA)$/.test(p.tagName))continue;const t=n.nodeValue.trim();if(t&&LD[t]&&LD[t][L])hits.push([n,t])}hits.forEach(([n,t])=>{n.nodeValue=n.nodeValue.replace(t,LD[t][L])});root.querySelectorAll('[placeholder]').forEach(e=>{const t=e.getAttribute('placeholder');if(LD[t]&&LD[t][L])e.setAttribute('placeholder',LD[t][L])})})}
 const _go0=go;go=function(){_go0();try{trDom()}catch(e){}};
-document.addEventListener('change',e=>{if(e.target.id=='lg'){LG=e.target.value;try{localStorage.setItem('fd_lang',LG)}catch(x){}go()}});
+document.addEventListener('change',e=>{if(e.target.id=='lg'){LG='en';try{localStorage.setItem('fd_lang',LG)}catch(x){}go()}});
 
 /* ---------- Invoice Studio: line items, tax, preview, status tracker ---------- */
 let ivt='new',ivo='',ivm='';
@@ -5484,7 +5484,7 @@ const oc=V.ctx;V.ctx=function(){let h=oc.apply(this,arguments);
  h=h.replace('<button class="plf" onclick="ctOpen()">+ New transaction</button>','<span style="display:flex;gap:8px;flex-wrap:wrap"><button class="plf" onclick="sdOpen()">+ Currency sale deal</button><button class="plo" onclick="ctOpen()">+ Multi-currency entry</button></span>');
  return h};
 /*UPDCHK*/
-(function(){const B='2026-10-18-m';window.PB_BUILD=B;if(location.protocol=='file:')return;let nb=null,tm=0;
+(function(){const B='2026-10-18-n';window.PB_BUILD=B;if(location.protocol=='file:')return;let nb=null,tm=0;
 const busy=()=>{const a=document.activeElement;return !!(document.querySelector('.ov')||(a&&/^(INPUT|TEXTAREA)$/.test(a.tagName)&&String(a.value||'').length>0))};
 function go2(){try{const k='pb_upd_'+nb,n=+(sessionStorage.getItem(k)||0);sessionStorage.setItem(k,n+1)}catch(e){}location.replace(location.pathname+'?v='+encodeURIComponent(nb))}
 function bar(){let d=document.getElementById('pbupd');if(!d){d=document.createElement('div');d.id='pbupd';d.setAttribute('role','button');d.style.cssText='position:fixed;left:50%;transform:translateX(-50%);top:10px;z-index:100000;background:#0b3d33;color:#fff;padding:11px 18px;border-radius:12px;font:700 13px Manrope,system-ui,sans-serif;box-shadow:0 6px 20px rgba(0,0,0,.3);cursor:pointer;text-align:center;max-width:92vw';d.onclick=()=>{d.textContent='Updating…';go2()};document.body.appendChild(d)}d.textContent='A new version of PrimeBook is ready. Tap here to update.'}
@@ -6921,5 +6921,6 @@ body.vdash .plf,body.vdash .fdd-b{background:linear-gradient(135deg,#12224a,#224
 body.vdash .p.fdc table .up,body.vdash .fdn .up{color:#1d4ed8!important}
 body.vdash .fdn-ic.up,body.vdash .fiic.ok{background:#e4ecfb!important;color:#1d3f8f!important}
 `;document.head.appendChild(st)})();
+/*ENO*/(()=>{const st=document.createElement('style');st.textContent='.tp-chip:has(#lg),#lg,label:has(>#lg){display:none!important}';document.head.appendChild(st)})();
 if(window.PB_CLOUD){pbBoot()}else if(!SESS){let pv=0;try{pv=sessionStorage.getItem('pb_preview');if(pv)sessionStorage.removeItem('pb_preview')}catch(e){}if(pv)location.reload();else auShow('login')}else{const A0=auAcc();if(!A0){try{localStorage.removeItem(AS)}catch(e){}auShow('login')}else if(!A0.pd)auShow('welcome');else{autoRecur();go()}}
 </script></body></html>
