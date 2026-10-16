@@ -5484,7 +5484,7 @@ const oc=V.ctx;V.ctx=function(){let h=oc.apply(this,arguments);
  h=h.replace('<button class="plf" onclick="ctOpen()">+ New transaction</button>','<span style="display:flex;gap:8px;flex-wrap:wrap"><button class="plf" onclick="sdOpen()">+ Currency sale deal</button><button class="plo" onclick="ctOpen()">+ Multi-currency entry</button></span>');
  return h};
 /*UPDCHK*/
-(function(){const B='2026-10-19-p';window.PB_BUILD=B;if(location.protocol=='file:')return;let nb=null,tm=0;
+(function(){const B='2026-10-19-r';window.PB_BUILD=B;if(location.protocol=='file:')return;let nb=null,tm=0;
 const busy=()=>{const a=document.activeElement;return !!(document.querySelector('.ov')||(a&&/^(INPUT|TEXTAREA)$/.test(a.tagName)&&String(a.value||'').length>0))};
 function go2(){try{const k='pb_upd_'+nb,n=+(sessionStorage.getItem(k)||0);sessionStorage.setItem(k,n+1)}catch(e){}location.replace(location.pathname+'?v='+encodeURIComponent(nb))}
 function bar(){let d=document.getElementById('pbupd');if(!d){d=document.createElement('div');d.id='pbupd';d.setAttribute('role','button');d.style.cssText='position:fixed;left:50%;transform:translateX(-50%);top:10px;z-index:100000;background:#0b3d33;color:#fff;padding:11px 18px;border-radius:12px;font:700 13px Inter,system-ui,sans-serif;box-shadow:0 6px 20px rgba(0,0,0,.3);cursor:pointer;text-align:center;max-width:92vw';d.onclick=()=>{d.textContent='Updating…';go2()};document.body.appendChild(d)}d.textContent='A new version of PrimeBook is ready. Tap here to update.'}
@@ -7519,5 +7519,32 @@ html body.vdash #m .na-g.t span,html body.vdash #m .na-g.t{font-size:12px!import
 html body.vdash #m .fdn-sn span{font-size:12.5px!important}html body.vdash #m .fdn-sn b{font-size:20px!important}
 html body.vdash #m .rts-c span i{font-size:11px!important}html body.vdash .top kbd{font-size:11px!important}
 `;document.head.appendChild(st)})();
+/*UXC*/
+(function(){
+const st=document.createElement('style');st.textContent=`
+/* ---- unified page header ---- */
+html body #m .top>h2,html body #m .top>h2.kh-t{font-size:28px!important;font-weight:700!important;color:#232c40!important;letter-spacing:-.01em}
+html body:not(.pb-dash) #m .top>h2{flex:1 1 520px;min-width:520px}
+html body #m .fi-qa:not(.qg):not(.qw) button{flex:1 0 98px;min-width:98px}html body #m .fi-qa:not(.qg):not(.qw) button span:last-child{white-space:normal;text-align:center;line-height:1.2;max-width:92px}
+
+html body #m .top>h2.kh-t b{font-size:28px!important;color:#232c40!important;font-weight:700}
+html body #m .top>h2.kh-t small{font-size:13px!important;font-weight:500;color:#6b7488!important;letter-spacing:0}
+/* ---- unified type scale (all modules) ---- */
+html body #m .p>h3,html body #m .card-h h3,html body #m .cb2-h h3,html body #m .cc-h h3,html body #m .p .ph h3{font-size:18px!important;line-height:1.25}
+html body #m table th{font-size:11.5px!important}
+html body #m table td{font-size:14px!important}
+html body #m .cb2-k b{font-size:24px!important;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+html body #m .cb2-k small{font-size:11.5px!important}
+/* ---- one active colour for icon bars outside customer/supplier ---- */
+html body #m .fi-qa:not(.qg):not(.qw) button.on:not(.add):not(.bk){background:linear-gradient(135deg,#232c40,#34425f)!important;color:#fff!important;box-shadow:0 8px 18px -10px #232c40cc!important}
+html body #m .fi-qa:not(.qg):not(.qw) button.on:not(.add):not(.bk) span{color:#fff!important}
+html body #m .fi-qa:not(.qg):not(.qw) button.on:not(.add):not(.bk) .fiic{background:#ffffff26!important}
+html body #m .fi-qa:not(.qg):not(.qw) button.on:not(.add):not(.bk) .fiic svg{stroke:#e6c77d!important}
+html body #m .fi-qa:not(.qg):not(.qw) button:not(.on):not(.bk):hover{background:#f4f1e8!important}
+html body #m .st-tabs .st-t.on{background:linear-gradient(135deg,#232c40,#34425f)!important;color:#fff!important;border-color:#232c40!important;box-shadow:0 8px 18px -10px #232c40cc!important}
+html body #m .st-tabs .st-t.on *{color:#fff!important}
+html body #m .st-tabs .st-t:not(.on) *{color:#3a4658}
+`;document.head.appendChild(st)})();
+(function(){const _g=go;go=function(){_g.apply(this,arguments);try{document.body.classList.toggle('pb-dash',view=='dash');const h=document.querySelector('#m .top>h2');if(h){h.style.setProperty('color','#232c40','important');const t=h.textContent;if(!h.querySelector('b')&&t.length>3&&t==t.toUpperCase()&&/[A-Z]/.test(t)){h.textContent=t.toLowerCase().replace(/(^|[\s&\/-])([a-z])/g,(m,x,y)=>x+y.toUpperCase()).replace(/\b(And|Of|The|For|In|To)\b/g,w=>w.toLowerCase()).replace(/^./,c=>c.toUpperCase())}}}catch(e){}};})();
 if(window.PB_CLOUD){pbBoot()}else if(!SESS){let pv=0;try{pv=sessionStorage.getItem('pb_preview');if(pv)sessionStorage.removeItem('pb_preview')}catch(e){}if(pv)location.reload();else auShow('login')}else{const A0=auAcc();if(!A0){try{localStorage.removeItem(AS)}catch(e){}auShow('login')}else if(!A0.pd)auShow('welcome');else{autoRecur();go()}}
 </script></body></html>
