@@ -3502,7 +3502,7 @@ const row=r=>`<div class="fdn-na2 ${sev(r)}" data-go="${r[4]}"><span class="na-i
 const grp=k=>{const L=act.filter(r=>sev(r)==k);return L.length?`<div class="na-g ${k}"><span>${lab[k]}</span><small>${L.length} item${L.length>1?'s':''}</small></div>${L.map(row).join('')}`:''};
 return `<div class="p fdc na2"><div class="card-h"><div><h3>${fiI('alert')}Action Center</h3><p class="mu fdn-sub">${naN?(nu?nu+' urgent · ':'')+act.length+' item'+(act.length==1?'':'s')+' waiting on you':'You are all caught up'}</p></div>${naN?`<span class="fdn-cnt ${nu?'':'am'}">${naN}</span>`:`<span class="fdn-cnt ok">${fiI('check')}</span>`}</div>${act.length?grp('u')+grp('t')+grp('m'):`<div class="na-ok">${fiI('check')}<div><b>All clear</b><span>No overdue invoices, bills, bank lines, low stock or open days.</span></div></div>`}${act.length&&clr.length?`<div class="na-cl"><b>${fiI('check')} All clear</b> ${clr.map(r=>r[2]).join(' &middot; ')}</div>`:''}</div>`})();
 const fpH=(()=>{const mx=Math.max(1,...accF.map(r=>Math.abs(r.a))),sp=(a,c,id)=>a&&a.length>1?fdSpark(a,c,id):'',chg=(v,inv)=>v===null?'<em class="mu">—</em>':`<em class="${(v>=0)!=!!inv?'up':'dn'}">${v>=0?'▲':'▼'} ${Math.abs(v).toFixed(1)}%</em>`;
-const sec=(t,ic,tot,go)=>`<tr class="fp-s"><td colspan="3"><div class="fp-w"><span class="fp-si">${fiI(ic).replace(/<\/?span[^>]*>/g,'')}</span><b>${t}</b></div></td><td class="n">${tot===''?'':`<b>${S.base} ${tot}</b>`}</td><td colspan="2" class="n"><span class="lnk" data-go="${go}">Open →</span></td></tr>`;
+const sec=(t,ic,tot,go,tn)=>`<tr class="fp-s ${tn||''}"><td colspan="3"><div class="fp-w"><span class="fp-si">${fiI(ic).replace(/<\/?span[^>]*>/g,'')}</span><b>${t}</b></div></td><td class="n">${tot===''?'':`<b>${S.base} ${tot}</b>`}</td><td colspan="2" class="n"><span class="lnk" data-go="${go}">Open →</span></td></tr>`;
 const CN={USD:'US Dollar',EUR:'Euro',GBP:'British Pound',AED:'UAE Dirham',CAD:'Canadian Dollar',AUD:'Australian Dollar',ETB:'Ethiopian Birr',KES:'Kenyan Shilling',SAR:'Saudi Riyal',QAR:'Qatari Riyal',KWD:'Kuwaiti Dinar',OMR:'Omani Rial',BHD:'Bahraini Dinar',INR:'Indian Rupee',PKR:'Pakistani Rupee',CNY:'Chinese Yuan',JPY:'Japanese Yen',CHF:'Swiss Franc',TRY:'Turkish Lira',EGP:'Egyptian Pound',ZAR:'South African Rand',SOS:'Somali Shilling',UGX:'Ugandan Shilling',TZS:'Tanzanian Shilling',SEK:'Swedish Krona',NOK:'Norwegian Krone',DKK:'Danish Krone',SGD:'Singapore Dollar',MYR:'Malaysian Ringgit'},FG={};accF.forEach(r=>{const g=FG[r.cc]||(FG[r.cc]={cc:r.cc,o:0,ho:0,a:0,n:[]});g.o+=r.o;g.ho+=r.ho;g.a+=r.a;g.n.push(r.nm)});
 const FL=Object.values(FG).filter(g=>Math.abs(g.o)>.004||Math.abs(g.ho)>.004).sort((x,y)=>y.a-x.a),fmx=Math.max(1,...FL.map(g=>Math.abs(g.a))),fsum=FL.reduce((q,g)=>q+Math.max(0,g.a),0)||1;
 const accR=FL.map(g=>{const sh=Math.max(3,Math.abs(g.a)/fmx*100),pc_=Math.max(0,g.a)/fsum*100,ac=[...new Set(g.n)];return`<tr><td class="fp-n"><span class="fdcc">${fdFlag(g.cc)}<span><b>${g.cc} <span class="fp-cn">${CN[g.cc]||'Currency'}</span></b><small class="mu">${aesc(ac.slice(0,2).join(' · '))}${ac.length>2?' +'+(ac.length-2)+' more':''}</small></span></span></td><td class="n">${n2(g.o-g.ho)}</td><td class="n">${Math.abs(g.ho)>.004?`<span class="fp-hd">${n2(g.ho)}</span>`:'<span class="mu">—</span>'}</td><td class="n"><b>${n2(g.o)}</b>${g.cc==S.base?'':`<small class="mu">≈ ${S.base} ${fmt(g.a)}</small>`}</td><td colspan="2"><div class="fp-sh"><div class="cbo-bar"><i style="width:${sh.toFixed(1)}%"></i></div><small>${pc_.toFixed(1)}%</small></div></td></tr>`}).join('')||'<tr><td colspan="6" class="mu">No cash or bank balances yet.</td></tr>';
@@ -3510,8 +3510,8 @@ const li=(ic,cls,lab,sub,val,c,sparkA,col,neg,go)=>`<tr class="fp-l" data-go="${
 const net=aT;
 return `<div class="p fdc fp"><div class="card-h"><div><h3>${fiI('scale')}Account Balances &amp; Performance</h3><p class="mu fdn-sub">Cash, bank, receivables, payables and profit at a glance</p></div><span class="cbo-act noprint"><select class="fdsel" onchange="fdAcc=this.value;go()"><option value="all" ${fdAcc=='all'?'selected':''}>All Accounts</option><option value="cash" ${fdAcc=='cash'?'selected':''}>Cash</option><option value="bank" ${fdAcc=='bank'?'selected':''}>Bank</option></select></span></div>
 <div class="w"><table class="fit fp-t"><tr><th>Accounts</th><th class="n">Current Balance</th><th class="n">Pending / In Transit</th><th class="n">Total Balance</th><th class="n">Share · vs Last Month</th><th class="n">Trend</th></tr>
-${sec('Cash &amp; Bank · '+FL.length+' currenc'+(FL.length==1?'y':'ies'),'bank',n2(aT),'cbd')}${accR}
-${sec('Profit &amp; Loss · This Month','trend','','pl')}${li('trend','b4','Net Profit','Income less expenses',fmt(M.np),chg(npPct),npS,'#7c3aed',M.np<0,'pl')}${li('swap','b5','FX Gain / Loss','From currency exchange',fmt(dxN(fxM)),chg(fxPct),fxS,'#e0a020',fxM<0,'pl')}
+${sec('Cash &amp; Bank · '+FL.length+' currenc'+(FL.length==1?'y':'ies'),'bank',n2(aT),'cbd','tn-s')}${accR}
+${sec('Profit &amp; Loss · This Month','trend','','pl','tn-t')}${li('trend','b4','Net Profit','Income less expenses',fmt(M.np),chg(npPct),npS,'#7c3aed',M.np<0,'pl')}${li('swap','b5','FX Gain / Loss','From currency exchange',fmt(dxN(fxM)),chg(fxPct),fxS,'#e0a020',fxM<0,'pl')}
 <tr class="fp-s fp-net"><td colspan="3"><div class="fp-w"><span class="fp-si">${fiI('shield').replace(/<\/?span[^>]*>/g,'')}</span><span><b>Total Cash &amp; Bank Value</b><small class="mu">All currencies, converted to ${S.base}</small></span></div></td><td class="n"><b class="${net<0?'neg':''}">${S.base} ${fmt(net)}</b></td><td colspan="2" class="n"><span class="${issues?'dn':'up'}" data-go="chk" style="cursor:pointer">${issues?'⚠ '+issues+' book issue'+(issues==1?'':'s'):'✓ Books balanced'}</span></td></tr></table></div></div>`})();
 const alH2_old=alH.replace('<h3>'+fiI('alert')+'Compliance &amp; Alerts</h3>','<h3>'+fiI('alert')+'Alerts &amp; Book Health</h3>');
 return heroH+`<div class="fdn"><div class="w3">${fpH}</div><div class="w2">${brH}</div><div class="w1">${alH2}</div><div class="w1">${txH}</div><div class="w1">${expH}</div><div class="w1">${snap}</div></div>`};
@@ -5484,7 +5484,7 @@ const oc=V.ctx;V.ctx=function(){let h=oc.apply(this,arguments);
  h=h.replace('<button class="plf" onclick="ctOpen()">+ New transaction</button>','<span style="display:flex;gap:8px;flex-wrap:wrap"><button class="plf" onclick="sdOpen()">+ Currency sale deal</button><button class="plo" onclick="ctOpen()">+ Multi-currency entry</button></span>');
  return h};
 /*UPDCHK*/
-(function(){const B='2026-10-18-l';window.PB_BUILD=B;if(location.protocol=='file:')return;let nb=null,tm=0;
+(function(){const B='2026-10-18-m';window.PB_BUILD=B;if(location.protocol=='file:')return;let nb=null,tm=0;
 const busy=()=>{const a=document.activeElement;return !!(document.querySelector('.ov')||(a&&/^(INPUT|TEXTAREA)$/.test(a.tagName)&&String(a.value||'').length>0))};
 function go2(){try{const k='pb_upd_'+nb,n=+(sessionStorage.getItem(k)||0);sessionStorage.setItem(k,n+1)}catch(e){}location.replace(location.pathname+'?v='+encodeURIComponent(nb))}
 function bar(){let d=document.getElementById('pbupd');if(!d){d=document.createElement('div');d.id='pbupd';d.setAttribute('role','button');d.style.cssText='position:fixed;left:50%;transform:translateX(-50%);top:10px;z-index:100000;background:#0b3d33;color:#fff;padding:11px 18px;border-radius:12px;font:700 13px Manrope,system-ui,sans-serif;box-shadow:0 6px 20px rgba(0,0,0,.3);cursor:pointer;text-align:center;max-width:92vw';d.onclick=()=>{d.textContent='Updating…';go2()};document.body.appendChild(d)}d.textContent='A new version of PrimeBook is ready. Tap here to update.'}
@@ -6887,6 +6887,39 @@ nav .ar,nav button .ar,nav button:after{color:#c8a45a}
 .tsw:not(.kh-n) button.on{background:linear-gradient(135deg,#12224a,#22408a)!important;color:#fff!important;box-shadow:0 8px 18px -8px #12224acc!important}
 .fi-qa{background:#fff;border:1px solid #ebe4d3!important;border-radius:18px!important;box-shadow:0 12px 32px -16px #1a2a5240!important}.fi-qa button{font-family:'DM Sans',sans-serif!important;font-weight:600}.fi-qa button .fiic{background:#f6ecd2!important;color:#9a7b32!important}.fi-qa button .fiic svg,.fi-qa button svg{stroke:#9a7b32}.fi-qa button.on,.fi-qa button:hover{color:#12224a!important}
 .ctabs.noprint button.on,.pill.on,.chip.on{background:linear-gradient(135deg,#12224a,#22408a)!important;color:#fff!important}
+`;document.head.appendChild(st)})();
+/*DPM*/(()=>{const st=document.createElement('style');st.textContent=`
+body.vdash main#m{background:linear-gradient(180deg,#f8f5ee,#f4f1ea)}
+body.vdash .p.fdc,body.vdash .dqa2,body.vdash .p.fdc.na2,body.vdash .fp{background:#fff!important;border:1px solid #ebe4d3!important;border-radius:20px!important;box-shadow:0 1px 2px #1a2a5208,0 14px 34px -16px #1a2a5230!important;border-top:1px solid #ebe4d3!important}
+body.vdash .fp{border-top:3px solid #c8a45a!important}
+body.vdash .card-h h3,body.vdash .p h3{font-family:'Cormorant Garamond',Georgia,serif!important;font-size:21px!important;font-weight:700!important;letter-spacing:.3px!important;color:#12224a!important;text-transform:none!important}
+body.vdash .fdn-sub{font-family:'DM Sans',sans-serif;color:#8a7a52}
+body.vdash .card-h h3:before,body.vdash .p:before{background:linear-gradient(#c8a45a,#9a7b32)!important}
+body.vdash .fdn-h{background:radial-gradient(520px 200px at 92% -20%,#c8a45a45,transparent 70%),linear-gradient(125deg,#0a1530,#12224a 60%,#1b3472 130%)!important;border:1px solid #c8a45a55;border-radius:20px!important;box-shadow:0 20px 44px -22px #0a1530cc!important}
+body.vdash .fdn-h h1{font-family:'Cormorant Garamond',Georgia,serif!important;font-size:32px!important;font-weight:700;letter-spacing:.4px;text-transform:none!important;color:#fbf6e8!important}
+body.vdash .fdn-h p{color:#cdd6ee!important;letter-spacing:.3px}
+body.vdash .dqa2{padding:16px 18px!important}body.vdash .dqa2 .dq-h,body.vdash .dqa2>b,body.vdash .dqa2>small{letter-spacing:2.2px;color:#9a7b32!important;font-weight:700}
+body.vdash .dqa2 .dq{border-radius:16px!important;transition:transform .18s}body.vdash .dqa2 .dq:hover{transform:translateY(-3px)}
+body.vdash .dqa2 .dqi{border-radius:16px!important;box-shadow:0 10px 20px -10px #12224a88,inset 0 0 0 1px #ffffff33!important}
+body.vdash .dqa2 .dq.cg .dqi{background:linear-gradient(135deg,#0f766e,#115e59)!important}body.vdash .dqa2 .dq.cr .dqi{background:linear-gradient(135deg,#be3a55,#8c1d38)!important}body.vdash .dqa2 .dq.cb .dqi{background:linear-gradient(135deg,#2f5fd0,#1b3a8f)!important}body.vdash .dqa2 .dq.ca .dqi{background:linear-gradient(135deg,#d9a441,#a97814)!important}body.vdash .dqa2 .dq.cp .dqi{background:linear-gradient(135deg,#7c4dcc,#4c2a95)!important}
+body.vdash .fp-t th{background:#12224a!important;color:#e6d4a0!important}
+body.vdash .fp-s.tn-s td{background:#edf2fc!important;color:#12224a}body.vdash .fp-s.tn-s .fp-si{background:linear-gradient(135deg,#2f5fd0,#1b3a8f)!important;box-shadow:0 4px 10px #1b3a8f55}
+body.vdash .fp-s.tn-t td{background:#e8f4f2!important;color:#0b4f4a}body.vdash .fp-s.tn-t .fp-si{background:linear-gradient(135deg,#0f766e,#115e59)!important;box-shadow:0 4px 10px #115e5955}
+body.vdash .fp-si.b4{background:linear-gradient(135deg,#0f766e,#115e59)!important}body.vdash .fp-si.b5{background:linear-gradient(135deg,#d9a441,#a97814)!important}
+body.vdash .fp-net td{background:#0e1c42!important;color:#fbf6e8!important}body.vdash .fp-net td b{font-family:'Cormorant Garamond',serif;font-size:20px!important;color:#fbf6e8!important}body.vdash .fp-net td .up,body.vdash .fdn .fp-net .up{color:#e6c77d!important}
+body.vdash .fp-t td.n b{font-variant-numeric:lining-nums tabular-nums}
+body.vdash .fp-t .cbo-bar i{background:linear-gradient(90deg,#2f5fd0,#c8a45a)!important}
+body.vdash .fdsel{border:1px solid #e3d8b8;border-radius:10px;background:#fbf9f3}
+body.vdash .lnk{color:#1d3f8f!important}
+body.vdash table.fit th{background:#12224a!important;color:#e6d4a0!important;letter-spacing:1.2px;font-size:10.5px}
+body.vdash .fiic{background:#f6ecd2;color:#8a6a12}body.vdash .fiic svg{stroke:currentColor}
+body.vdash .fp .fiic,body.vdash .na-i,body.vdash .fdn-na2 .na-i{background:#f6ecd2!important;color:#8a6a12!important}
+body.vdash .na-g.u span{color:#9b1c3a}body.vdash .fdn-na2.u{border-left-color:#be3a55!important}body.vdash .fdn-na2.t{border-left-color:#d9a441!important}body.vdash .fdn-na2.m{border-left-color:#8a96b8!important}
+body.vdash .fdn-cnt{background:#12224a!important;color:#e6c77d!important}
+body.vdash .od-card,body.vdash .p[style*="margin:0 0 14px"]{border-radius:20px!important}
+body.vdash .plf,body.vdash .fdd-b{background:linear-gradient(135deg,#12224a,#22408a)!important}
+body.vdash .p.fdc table .up,body.vdash .fdn .up{color:#1d4ed8!important}
+body.vdash .fdn-ic.up,body.vdash .fiic.ok{background:#e4ecfb!important;color:#1d3f8f!important}
 `;document.head.appendChild(st)})();
 if(window.PB_CLOUD){pbBoot()}else if(!SESS){let pv=0;try{pv=sessionStorage.getItem('pb_preview');if(pv)sessionStorage.removeItem('pb_preview')}catch(e){}if(pv)location.reload();else auShow('login')}else{const A0=auAcc();if(!A0){try{localStorage.removeItem(AS)}catch(e){}auShow('login')}else if(!A0.pd)auShow('welcome');else{autoRecur();go()}}
 </script></body></html>
