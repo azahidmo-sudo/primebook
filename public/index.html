@@ -5484,7 +5484,7 @@ const oc=V.ctx;V.ctx=function(){let h=oc.apply(this,arguments);
  h=h.replace('<button class="plf" onclick="ctOpen()">+ New transaction</button>','<span style="display:flex;gap:8px;flex-wrap:wrap"><button class="plf" onclick="sdOpen()">+ Currency sale deal</button><button class="plo" onclick="ctOpen()">+ Multi-currency entry</button></span>');
  return h};
 /*UPDCHK*/
-(function(){const B='2026-10-19-n';window.PB_BUILD=B;if(location.protocol=='file:')return;let nb=null,tm=0;
+(function(){const B='2026-10-19-o';window.PB_BUILD=B;if(location.protocol=='file:')return;let nb=null,tm=0;
 const busy=()=>{const a=document.activeElement;return !!(document.querySelector('.ov')||(a&&/^(INPUT|TEXTAREA)$/.test(a.tagName)&&String(a.value||'').length>0))};
 function go2(){try{const k='pb_upd_'+nb,n=+(sessionStorage.getItem(k)||0);sessionStorage.setItem(k,n+1)}catch(e){}location.replace(location.pathname+'?v='+encodeURIComponent(nb))}
 function bar(){let d=document.getElementById('pbupd');if(!d){d=document.createElement('div');d.id='pbupd';d.setAttribute('role','button');d.style.cssText='position:fixed;left:50%;transform:translateX(-50%);top:10px;z-index:100000;background:#0b3d33;color:#fff;padding:11px 18px;border-radius:12px;font:700 13px Inter,system-ui,sans-serif;box-shadow:0 6px 20px rgba(0,0,0,.3);cursor:pointer;text-align:center;max-width:92vw';d.onclick=()=>{d.textContent='Updating…';go2()};document.body.appendChild(d)}d.textContent='A new version of PrimeBook is ready. Tap here to update.'}
@@ -7478,6 +7478,17 @@ html body #m .fi-qa.qg button.bk .fiic,html body #m .fi-qa.qw button.bk .fiic{wi
 html body #m .fi-qa.qg button.bk .fiic svg,html body #m .fi-qa.qw button.bk .fiic svg{stroke:#6b7488!important}
 html body #m .fi-qa.qg button:focus-visible,html body #m .fi-qa.qw button:focus-visible{outline:2px solid var(--c);outline-offset:2px}
 @media(max-width:720px){html body #m .fi-qa.qg button,html body #m .fi-qa.qw button{flex:0 0 108px;font-size:12px}html body #m .fi-qa.qg button .fiic,html body #m .fi-qa.qw button .fiic{width:40px!important;height:40px!important}}
+`;document.head.appendChild(st)})();
+/*NVF*/
+(function(){
+const st=document.createElement('style');st.textContent=`
+html body nav#nav>button[data-v],html body nav#nav .gh{font-size:14.5px!important;font-weight:650!important;letter-spacing:.5px!important;line-height:1.3;padding-top:13px!important;padding-bottom:13px!important}
+html body nav#nav>button[data-v] .ni,html body nav#nav .gh .ni{width:26px;height:26px}
+html body nav#nav>button[data-v] .ni svg,html body nav#nav .gh .ni svg{width:24px;height:24px}
+html body nav#nav>button[data-v=cmd] .ni,html body nav#nav>button[data-v=smd] .ni{width:32px;height:32px}
+html body nav#nav>button[data-v=cmd] .ni svg,html body nav#nav>button[data-v=smd] .ni svg{width:21px;height:21px}
+html body nav#nav .gh .cv{font-size:12px}
+@media(max-width:720px){html body nav#nav>button[data-v],html body nav#nav .gh{font-size:14.5px!important;letter-spacing:.3px!important;padding-top:10px!important;padding-bottom:10px!important}html body nav#nav>button[data-v] .ni,html body nav#nav .gh .ni{width:24px;height:24px}html body nav#nav>button[data-v] .ni svg,html body nav#nav .gh .ni svg{width:18px;height:18px}html body nav#nav>button[data-v=cmd] .ni,html body nav#nav>button[data-v=smd] .ni{width:26px;height:26px}}
 `;document.head.appendChild(st)})();
 if(window.PB_CLOUD){pbBoot()}else if(!SESS){let pv=0;try{pv=sessionStorage.getItem('pb_preview');if(pv)sessionStorage.removeItem('pb_preview')}catch(e){}if(pv)location.reload();else auShow('login')}else{const A0=auAcc();if(!A0){try{localStorage.removeItem(AS)}catch(e){}auShow('login')}else if(!A0.pd)auShow('welcome');else{autoRecur();go()}}
 </script></body></html>
