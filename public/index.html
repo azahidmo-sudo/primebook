@@ -5484,7 +5484,7 @@ const oc=V.ctx;V.ctx=function(){let h=oc.apply(this,arguments);
  h=h.replace('<button class="plf" onclick="ctOpen()">+ New transaction</button>','<span style="display:flex;gap:8px;flex-wrap:wrap"><button class="plf" onclick="sdOpen()">+ Currency sale deal</button><button class="plo" onclick="ctOpen()">+ Multi-currency entry</button></span>');
  return h};
 /*UPDCHK*/
-(function(){const B='2026-10-19-r';window.PB_BUILD=B;if(location.protocol=='file:')return;let nb=null,tm=0;
+(function(){const B='2026-10-19-s';window.PB_BUILD=B;if(location.protocol=='file:')return;let nb=null,tm=0;
 const busy=()=>{const a=document.activeElement;return !!(document.querySelector('.ov')||(a&&/^(INPUT|TEXTAREA)$/.test(a.tagName)&&String(a.value||'').length>0))};
 function go2(){try{const k='pb_upd_'+nb,n=+(sessionStorage.getItem(k)||0);sessionStorage.setItem(k,n+1)}catch(e){}location.replace(location.pathname+'?v='+encodeURIComponent(nb))}
 function bar(){let d=document.getElementById('pbupd');if(!d){d=document.createElement('div');d.id='pbupd';d.setAttribute('role','button');d.style.cssText='position:fixed;left:50%;transform:translateX(-50%);top:10px;z-index:100000;background:#0b3d33;color:#fff;padding:11px 18px;border-radius:12px;font:700 13px Inter,system-ui,sans-serif;box-shadow:0 6px 20px rgba(0,0,0,.3);cursor:pointer;text-align:center;max-width:92vw';d.onclick=()=>{d.textContent='Updating…';go2()};document.body.appendChild(d)}d.textContent='A new version of PrimeBook is ready. Tap here to update.'}
@@ -7546,5 +7546,36 @@ html body #m .st-tabs .st-t.on *{color:#fff!important}
 html body #m .st-tabs .st-t:not(.on) *{color:#3a4658}
 `;document.head.appendChild(st)})();
 (function(){const _g=go;go=function(){_g.apply(this,arguments);try{document.body.classList.toggle('pb-dash',view=='dash');const h=document.querySelector('#m .top>h2');if(h){h.style.setProperty('color','#232c40','important');const t=h.textContent;if(!h.querySelector('b')&&t.length>3&&t==t.toUpperCase()&&/[A-Z]/.test(t)){h.textContent=t.toLowerCase().replace(/(^|[\s&\/-])([a-z])/g,(m,x,y)=>x+y.toUpperCase()).replace(/\b(And|Of|The|For|In|To)\b/g,w=>w.toLowerCase()).replace(/^./,c=>c.toUpperCase())}}}catch(e){}};})();
+/*TON*/
+(function(){
+const MAP=[
+['red',/payable|bill|expense|supplier|vendor|purchase|pay out|payout|payments? (due|made)|withdraw|paid|spend|overdue/],
+['green',/customer|receivable|sales|invoice|quote|receipt|income|deposit|received|revenue|profit|collect|retainer|payment link|inflow|completed|new deal|deal/],
+['amber',/forex|fx|currenc|rate|stock|inventory|exchange|margin|lots|order/],
+['purple',/payroll|paycheque|employee|time off|team/],
+['indigo',/report|analytic|statement|trial|balance sheet|ageing|aged|trend|performance|analysis|snapshot|insight/],
+['teal',/branch|location|company|entity|entities|backup|audit|control|action center|alert|chart of/],
+['blue',/bank|transfer|reconcil|cashbook|cash|journal|ledger|account|transaction|closing|entries|recurring|manual|expense breakdown/],
+['slate',/print|export|back|setting|user|permission|search|portal|reminder|help/]];
+const tone=t=>{t=(t||'').toLowerCase();for(const [n,r] of MAP)if(r.test(t))return n;return 'blue'};
+const st=document.createElement('style');st.textContent=`
+html body #m [data-tone]{--tc:#1d4ed8;--tt:#e6edfb}
+html body #m [data-tone=green]{--tc:#15803d;--tt:#e3f4e9}
+html body #m [data-tone=red]{--tc:#9f1d3b;--tt:#f8e4ea}
+html body #m [data-tone=blue]{--tc:#1d4ed8;--tt:#e6edfb}
+html body #m [data-tone=amber]{--tc:#b45309;--tt:#fbeed6}
+html body #m [data-tone=purple]{--tc:#7e22ce;--tt:#f0e5fb}
+html body #m [data-tone=indigo]{--tc:#4338ca;--tt:#e7e8fb}
+html body #m [data-tone=teal]{--tc:#0e7490;--tt:#dff2f6}
+html body #m [data-tone=slate]{--tc:#475569;--tt:#e9edf2}
+html body #m button:not(.on):not(.pri)>[data-tone],html body #m :not(button)>[data-tone],html body #m [data-tone]:not(button *){background:var(--tt)!important;color:var(--tc)!important;box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--tc) 22%,transparent)!important}
+html body #m button:not(.on):not(.pri)>[data-tone] svg,html body #m :not(button)>[data-tone] svg,html body #m [data-tone]:not(button *) svg{stroke:var(--tc)!important}
+html body #m button:not(.on):not(.pri):hover>[data-tone]{background:var(--tc)!important}
+html body #m button:not(.on):not(.pri):hover>[data-tone] svg{stroke:#fff!important}
+html body #m .fi-qa:not(.qg):not(.qw) button.on [data-tone]{background:#ffffff26!important}
+`;document.head.appendChild(st);
+function run(){try{if(view=='cmd'||view=='smd')return;document.querySelectorAll('#m .fiic,#m .qi,#m .cb2-ic').forEach(e=>{if(e.closest('.fi-qa.qg,.fi-qa.qw,.tp-r,.tp-chip,.tp-bell,.top,.pri'))return;let lab='';const b=e.closest('button,a');if(b)lab=b.textContent;else{const h=e.closest('h3,.card-h,.cb2-h');if(h)lab=(h.querySelector('h3')||h).textContent;else{const c=e.closest('div');lab=c?c.textContent:''}}e.dataset.tone=tone(lab.slice(0,60))})}catch(x){}}
+const _g=go;go=function(){_g.apply(this,arguments);run();setTimeout(run,80)};
+})();
 if(window.PB_CLOUD){pbBoot()}else if(!SESS){let pv=0;try{pv=sessionStorage.getItem('pb_preview');if(pv)sessionStorage.removeItem('pb_preview')}catch(e){}if(pv)location.reload();else auShow('login')}else{const A0=auAcc();if(!A0){try{localStorage.removeItem(AS)}catch(e){}auShow('login')}else if(!A0.pd)auShow('welcome');else{autoRecur();go()}}
 </script></body></html>
