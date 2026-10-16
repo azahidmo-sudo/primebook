@@ -5484,7 +5484,7 @@ const oc=V.ctx;V.ctx=function(){let h=oc.apply(this,arguments);
  h=h.replace('<button class="plf" onclick="ctOpen()">+ New transaction</button>','<span style="display:flex;gap:8px;flex-wrap:wrap"><button class="plf" onclick="sdOpen()">+ Currency sale deal</button><button class="plo" onclick="ctOpen()">+ Multi-currency entry</button></span>');
  return h};
 /*UPDCHK*/
-(function(){const B='2026-10-19-l';window.PB_BUILD=B;if(location.protocol=='file:')return;let nb=null,tm=0;
+(function(){const B='2026-10-19-m';window.PB_BUILD=B;if(location.protocol=='file:')return;let nb=null,tm=0;
 const busy=()=>{const a=document.activeElement;return !!(document.querySelector('.ov')||(a&&/^(INPUT|TEXTAREA)$/.test(a.tagName)&&String(a.value||'').length>0))};
 function go2(){try{const k='pb_upd_'+nb,n=+(sessionStorage.getItem(k)||0);sessionStorage.setItem(k,n+1)}catch(e){}location.replace(location.pathname+'?v='+encodeURIComponent(nb))}
 function bar(){let d=document.getElementById('pbupd');if(!d){d=document.createElement('div');d.id='pbupd';d.setAttribute('role','button');d.style.cssText='position:fixed;left:50%;transform:translateX(-50%);top:10px;z-index:100000;background:#0b3d33;color:#fff;padding:11px 18px;border-radius:12px;font:700 13px Inter,system-ui,sans-serif;box-shadow:0 6px 20px rgba(0,0,0,.3);cursor:pointer;text-align:center;max-width:92vw';d.onclick=()=>{d.textContent='Updating…';go2()};document.body.appendChild(d)}d.textContent='A new version of PrimeBook is ready. Tap here to update.'}
@@ -7512,10 +7512,10 @@ html body #m .fi-qa.qg button:focus-visible,html body #m .fi-qa.qw button:focus-
 /*BLU*/
 (function(){
 const st=document.createElement('style');st.textContent=`
-:root{--bg:#eaf0f8;--bl-ink:#14284b;--bl-md:#2f5fb3;--bl-tint:#e6eefa;--bl-ln:#d9e3f1;--bl-mu:#5a6a85;--dl-ink:#14284b;--dl-mu:#5a6a85;--dl-ln:#d9e3f1;--dl-gd:#2f5fb3;--dl-em:#0f766e}
-html,body,body[class]{background:radial-gradient(1100px 520px at 90% -8%,rgba(47,95,179,.10),transparent 62%),radial-gradient(900px 480px at 8% 108%,rgba(15,118,110,.06),transparent 62%),linear-gradient(180deg,#f4f8fd 0%,#e7eef8 100%) fixed!important;background-color:#eaf0f8!important}
+:root{--bg:#c9daf1;--bl-ink:#14284b;--bl-md:#2f5fb3;--bl-tint:#e6eefa;--bl-ln:#c3d3ea;--bl-mu:#5a6a85;--dl-ink:#14284b;--dl-mu:#5a6a85;--dl-ln:#d9e3f1;--dl-gd:#2f5fb3;--dl-em:#0f766e}
+html,body,body[class]{background:radial-gradient(1100px 520px at 90% -8%,rgba(255,255,255,.35),transparent 62%),radial-gradient(900px 480px at 8% 108%,rgba(47,95,179,.14),transparent 62%),linear-gradient(180deg,#d3e1f4 0%,#bdd1ec 100%) fixed!important;background-color:#c9daf1!important}
 /* sidebar */
-html body nav#nav,html body aside{background:linear-gradient(180deg,#fbfdff 0,#eff4fb 100%)!important;border-right:1px solid var(--bl-ln)!important;box-shadow:8px 0 28px -22px #14284b55!important}
+html body nav#nav,html body aside{background:linear-gradient(180deg,#f6f9fe 0,#e3ecf8 100%)!important;border-right:1px solid var(--bl-ln)!important;box-shadow:8px 0 28px -22px #14284b55!important}
 html body nav#nav .brand,html body nav#nav .brand.pbx{border-bottom:1px solid var(--bl-ln)!important}
 html body nav#nav .brand,html body nav#nav .brand *{color:var(--bl-ink)!important}
 html body nav#nav .brand span:last-child,html body nav#nav .brand small{color:var(--bl-md)!important}
