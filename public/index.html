@@ -5484,7 +5484,7 @@ const oc=V.ctx;V.ctx=function(){let h=oc.apply(this,arguments);
  h=h.replace('<button class="plf" onclick="ctOpen()">+ New transaction</button>','<span style="display:flex;gap:8px;flex-wrap:wrap"><button class="plf" onclick="sdOpen()">+ Currency sale deal</button><button class="plo" onclick="ctOpen()">+ Multi-currency entry</button></span>');
  return h};
 /*UPDCHK*/
-(function(){const B='2026-10-19-h';window.PB_BUILD=B;if(location.protocol=='file:')return;let nb=null,tm=0;
+(function(){const B='2026-10-19-i';window.PB_BUILD=B;if(location.protocol=='file:')return;let nb=null,tm=0;
 const busy=()=>{const a=document.activeElement;return !!(document.querySelector('.ov')||(a&&/^(INPUT|TEXTAREA)$/.test(a.tagName)&&String(a.value||'').length>0))};
 function go2(){try{const k='pb_upd_'+nb,n=+(sessionStorage.getItem(k)||0);sessionStorage.setItem(k,n+1)}catch(e){}location.replace(location.pathname+'?v='+encodeURIComponent(nb))}
 function bar(){let d=document.getElementById('pbupd');if(!d){d=document.createElement('div');d.id='pbupd';d.setAttribute('role','button');d.style.cssText='position:fixed;left:50%;transform:translateX(-50%);top:10px;z-index:100000;background:#0b3d33;color:#fff;padding:11px 18px;border-radius:12px;font:700 13px Inter,system-ui,sans-serif;box-shadow:0 6px 20px rgba(0,0,0,.3);cursor:pointer;text-align:center;max-width:92vw';d.onclick=()=>{d.textContent='Updating…';go2()};document.body.appendChild(d)}d.textContent='A new version of PrimeBook is ready. Tap here to update.'}
@@ -7416,6 +7416,44 @@ body main .csw button.sp.on,body .csw button.sp.on{background:#8b1e3f!important;
 body .csw button.cu:not(.on){color:#15803d}body .csw button.sp:not(.on){color:#8b1e3f}
 body:not(.supv) .cx-h .cx-i svg{stroke:#15803d!important}body.supv .cx-h .cx-i svg{stroke:#8b1e3f!important}
 `;document.head.appendChild(st);
+})();
+/*SUB*/
+(function(){
+const CU=['cmd','cadd','clist','ctx','crem','cpt','cstm','crv','cbal','cage','csl','cpb','ccx'],SU=['smd','sadd','slist','stx','srem','sstm','srep'];
+const IC={
+cadd:'<circle cx="9.5" cy="8" r="3.6"/><path d="M3 20v-1a5.5 5.5 0 015.5-5.500H11"/><path d="M18 13v6M15 16h6"/>',
+clist:'<circle cx="9" cy="8" r="3.4"/><path d="M2.800 20v-1.200a5.200 5.200 0 015.200-5.200h2a5.200 5.200 0 015.200 5.200V20"/><path d="M16 4.800a3.400 3.400 0 010 6.400M18.200 14.200a5.200 5.200 0 013 4.600V20"/>',
+ctx:'<path d="M7 4L3 8l4 4"/><path d="M3 8h14"/><path d="M17 20l4-4-4-4"/><path d="M21 16H7"/>',
+crem:'<path d="M6 8a6 6 0 0112 0c0 7 3 8 3 8H3s3-1 3-8"/><path d="M10 20a2 2 0 004 0"/>',
+cpt:'<rect x="3" y="4" width="18" height="16" rx="2.500"/><path d="M3 9h18"/><circle cx="12" cy="14.500" r="2.200"/>',
+cstm:'<path d="M5 20V10M12 20V4M19 20v-7"/>',
+sadd:'<path d="M4 9.500L5.600 4h12.800L20 9.500"/><path d="M4 9.500a2.700 2.700 0 005.330 0 2.700 2.700 0 005.340 0A2.700 2.700 0 0020 9.500"/><path d="M5 12.500V20h14v-7.500"/><path d="M12 14v4M10 16h4"/>',
+slist:'<path d="M4 9.500L5.600 4h12.800L20 9.500"/><path d="M4 9.500a2.700 2.700 0 005.330 0 2.700 2.700 0 005.340 0A2.700 2.700 0 0020 9.500"/><path d="M5 12.500V20h14v-7.500M10 20v-4.500h4V20"/>',
+stx:'<path d="M7 4h10a1 1 0 011 1v15l-3-2-3 2-3-2-3 2V5a1 1 0 011-1z"/><path d="M9.500 9h5M9.500 13h5"/>',
+srem:'<circle cx="12" cy="12" r="8.500"/><path d="M12 7.500V12l3 2"/>',
+sstm:'<path d="M14 3H7a1 1 0 00-1 1v16a1 1 0 001 1h10a1 1 0 001-1V7z"/><path d="M14 3v4h4M9 12h6M9 16h6"/>',
+srep:'<path d="M5 20V10M12 20V4M19 20v-7"/>'};
+IC.crv=IC.cstm;IC.srep=IC.cstm;
+const st=document.createElement('style');st.textContent=`
+body .fi-qa.qg button:not(.bk):not(.on){color:#15803d!important}
+body .fi-qa.qg button:not(.bk):not(.on) .fiic{background:#e4f5ea!important;color:#15803d!important;box-shadow:0 0 0 1px #16a34a40}
+body .fi-qa.qg button:not(.bk):not(.on) .fiic svg{stroke:#15803d!important}
+body .fi-qa.qg button:not(.bk):not(.on):hover{background:#effaf2!important}
+body .fi-qa.qg button:not(.bk):not(.on):hover .fiic{background:#15803d!important}body .fi-qa.qg button:not(.bk):not(.on):hover .fiic svg{stroke:#fff!important}
+body.vdash .fi-qa.qg button.on:not(.add):not(.bk),body .fi-qa.qg button.on:not(.add):not(.bk){background:linear-gradient(135deg,#15803d,#22a35a)!important;color:#fff!important;box-shadow:0 6px 16px #15803d40!important}
+body .fi-qa.qg button.on:not(.add):not(.bk) .fiic{background:#ffffff2e!important;box-shadow:none}body .fi-qa.qg button.on .fiic svg,body .fi-qa.qg button.on span{stroke:#fff!important;color:#fff!important}
+body .fi-qa.qw button:not(.bk):not(.on){color:#8b1e3f!important}
+body .fi-qa.qw button:not(.bk):not(.on) .fiic{background:#f7e6eb!important;color:#8b1e3f!important;box-shadow:0 0 0 1px #9f2a4a40}
+body .fi-qa.qw button:not(.bk):not(.on) .fiic svg{stroke:#8b1e3f!important}
+body .fi-qa.qw button:not(.bk):not(.on):hover{background:#fbf1f4!important}
+body .fi-qa.qw button:not(.bk):not(.on):hover .fiic{background:#8b1e3f!important}body .fi-qa.qw button:not(.bk):not(.on):hover .fiic svg{stroke:#fff!important}
+body.vdash .fi-qa.qw button.on:not(.add):not(.bk),body .fi-qa.qw button.on:not(.add):not(.bk){background:linear-gradient(135deg,#8b1e3f,#a93556)!important;color:#fff!important;box-shadow:0 6px 16px #8b1e3f40!important}
+body .fi-qa.qw button.on:not(.add):not(.bk) .fiic{background:#ffffff2e!important;box-shadow:none}body .fi-qa.qw button.on .fiic svg,body .fi-qa.qw button.on span{stroke:#fff!important;color:#fff!important}
+.fi-qa.qg .fiic svg,.fi-qa.qw .fiic svg{fill:none!important;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+body:not(.supv) main .rl-tabs button.on,body:not(.supv) main .rl-bt.p{background:#15803d!important;border-color:#15803d!important;color:#fff!important}
+body.supv main .rl-tabs button.on,body.supv main .rl-bt.p{background:#8b1e3f!important;border-color:#8b1e3f!important;color:#fff!important}
+`;document.head.appendChild(st);
+const _g=go;go=function(){_g.apply(this,arguments);try{const c=CU.includes(view),w=SU.includes(view);document.querySelectorAll('.fi-qa').forEach(q=>{q.classList.toggle('qg',c&&!w);q.classList.toggle('qw',w);if(!c&&!w)return;q.querySelectorAll('button[data-go]').forEach(b=>{const k=b.dataset.go,d=w?IC[k]:IC[k];if(!d||!/^(c|s)/.test(k))return;const v=w?(k[0]=='s'||k=='smd'):true;const sv=b.querySelector('.fiic svg');if(sv&&v)sv.innerHTML=d})})}catch(e){}};
 })();
 if(window.PB_CLOUD){pbBoot()}else if(!SESS){let pv=0;try{pv=sessionStorage.getItem('pb_preview');if(pv)sessionStorage.removeItem('pb_preview')}catch(e){}if(pv)location.reload();else auShow('login')}else{const A0=auAcc();if(!A0){try{localStorage.removeItem(AS)}catch(e){}auShow('login')}else if(!A0.pd)auShow('welcome');else{autoRecur();go()}}
 </script></body></html>
