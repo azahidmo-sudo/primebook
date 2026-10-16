@@ -5484,7 +5484,7 @@ const oc=V.ctx;V.ctx=function(){let h=oc.apply(this,arguments);
  h=h.replace('<button class="plf" onclick="ctOpen()">+ New transaction</button>','<span style="display:flex;gap:8px;flex-wrap:wrap"><button class="plf" onclick="sdOpen()">+ Currency sale deal</button><button class="plo" onclick="ctOpen()">+ Multi-currency entry</button></span>');
  return h};
 /*UPDCHK*/
-(function(){const B='2026-10-18-i';window.PB_BUILD=B;if(location.protocol=='file:')return;let nb=null,tm=0;
+(function(){const B='2026-10-18-j';window.PB_BUILD=B;if(location.protocol=='file:')return;let nb=null,tm=0;
 const busy=()=>{const a=document.activeElement;return !!(document.querySelector('.ov')||(a&&/^(INPUT|TEXTAREA)$/.test(a.tagName)&&String(a.value||'').length>0))};
 function go2(){try{const k='pb_upd_'+nb,n=+(sessionStorage.getItem(k)||0);sessionStorage.setItem(k,n+1)}catch(e){}location.replace(location.pathname+'?v='+encodeURIComponent(nb))}
 function bar(){let d=document.getElementById('pbupd');if(!d){d=document.createElement('div');d.id='pbupd';d.setAttribute('role','button');d.style.cssText='position:fixed;left:50%;transform:translateX(-50%);top:10px;z-index:100000;background:#0b3d33;color:#fff;padding:11px 18px;border-radius:12px;font:700 13px Manrope,system-ui,sans-serif;box-shadow:0 6px 20px rgba(0,0,0,.3);cursor:pointer;text-align:center;max-width:92vw';d.onclick=()=>{d.textContent='Updating…';go2()};document.body.appendChild(d)}d.textContent='A new version of PrimeBook is ready. Tap here to update.'}
@@ -6810,6 +6810,41 @@ const o0=V.cstm;V.cstm=function(){let h=o0.apply(this,arguments);try{const c=S.c
  const card=(k,t,v,sub,on,neg)=>`<button type="button" class="cca-c ${on?'on':''} ${neg?'neg':''}" onclick="scc='${k}';go()"><small>${k=='all'?'':`<span class="cca-b">${k}</span>`}${t}</small><b>${v}</b><em>${sub}</em></button>`;
  const strip=`<div class="cca noprint">${card('all','All accounts',S.base+' '+fmt(tot),cl.length+' currency account'+(cl.length==1?'':'s')+' · '+S.base+' value',scc=='all',tot<-.004)}${cl.map(k=>{const a=mb[k]||{n:0},nm=a.n;return card(k,k+' account',fmt(nm)+' '+k,k==S.base?'Base currency':'Statement in '+k,scc==k,nm<-.004)}).join('')}${canW('cust')?`<button type="button" class="cca-c cca-add" onclick="ccaOpen('${c.id}')">+ Add currency account</button>`:''}</div>`;
  const i=h.indexOf('<div class="p noprint"><div class="cl-tools">');if(i<0)return h;return h.slice(0,i)+strip+h.slice(i)}catch(e){return h}};
+})();
+/*PRM*/(()=>{const l=document.createElement('link');l.rel='stylesheet';l.href='https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&display=swap';document.head.appendChild(l);
+const st=document.createElement('style');st.textContent=`
+body.vk main#m{background:linear-gradient(180deg,#f8f5ee 0,#f4f1ea 100%)}
+body.vk .p,body.vk .cb2-qa,body.vk .cb2-k,body.vk .cbg>div,body.vk .fi-qa,body.vk .bcx,body.vk .pbm{background:#fff!important;border:1px solid #ebe4d3!important;border-radius:18px!important;box-shadow:0 1px 2px #1a2a5208,0 12px 32px -14px #1a2a5226!important}
+body.vk .p h3,body.vk .card-h h3,body.vk .cb2-h h3,body.vk .cb2-qh{font-family:'Cormorant Garamond','Playfair Display',Georgia,serif!important;font-size:21px!important;font-weight:700!important;letter-spacing:.2px!important;color:#12224a!important;text-transform:none!important}
+body.vk .cb2-qh{font-size:12px!important;letter-spacing:2.2px!important;text-transform:uppercase!important;font-family:'DM Sans',sans-serif!important;color:#9a7b32!important;font-weight:700!important}
+body.vk .cb2-sub{display:none}
+body.vk .cb2-qr button{background:#fbf9f3!important;border:1px solid #ece4d0!important;border-radius:14px!important;box-shadow:none!important;transition:all .18s}
+body.vk .cb2-qr button:hover{transform:translateY(-2px);border-color:#c8a45a!important;box-shadow:0 10px 22px -10px #c8a45a88!important;background:#fff!important}
+body.vk .cb2-qr button.pri{background:linear-gradient(135deg,#12224a,#1e3a7a)!important;border-color:#12224a!important;color:#fff!important;box-shadow:0 12px 26px -10px #12224a99!important}
+body.vk .cb2-qr button.pri .qt,body.vk .cb2-qr button.pri .qt *{color:#fff!important}body.vk .cb2-qr button.pri .qi{background:#c8a45a33!important;color:#e6c77d!important}
+body.vk .cb2-k b,body.vk .cbg b,body.vk .cx-h b{font-family:'Cormorant Garamond',Georgia,serif!important;font-weight:700!important;letter-spacing:0!important;font-variant-numeric:lining-nums tabular-nums}
+body.vk .cb2-k b{font-size:27px!important;color:#12224a}body.vk .cb2-k small{letter-spacing:1.4px;text-transform:uppercase;font-size:10.5px!important;font-weight:700;color:#8a7a52}
+body.vk .cb2-ic{border-radius:50%!important;background:linear-gradient(135deg,#f6ecd2,#ecd9a4)!important;color:#7a5c14!important}
+body.vk .cx-h.cx-h{background:radial-gradient(520px 260px at 92% -10%,#c8a45a40,transparent 70%),linear-gradient(125deg,#0a1530 0%,#12224a 55%,#1b3472 120%)!important;border:1px solid #c8a45a55!important;border-radius:22px!important;box-shadow:0 24px 50px -20px #0a1530cc!important;padding:28px 32px!important}
+body.vk .cx-h:after{display:none!important}
+body.vk .cx-l>span{letter-spacing:3px!important;font-size:11px!important;color:#d9b866!important;font-weight:700}
+body.vk .cx-l>b{font-size:50px!important;line-height:1.05;color:#fbf6e8!important;margin:6px 0!important}body.vk .cx-l>b small{font-family:'DM Sans',sans-serif;font-size:15px;color:#d9b866;margin-right:6px;letter-spacing:1px}
+body.vk .cx-l>em{color:#b8c2dc!important;font-style:normal}
+body.vk .cx-r>div{background:#ffffff0d!important;border:1px solid #c8a45a44!important;border-radius:14px!important;backdrop-filter:blur(4px)}body.vk .cx-r span{letter-spacing:1.6px!important;color:#d9b866!important;font-size:10px!important;text-transform:uppercase}body.vk .cx-r b{color:#fff!important;font-size:22px!important}
+body.vk .cx-h.cx-h .cx-l>b{color:#fbf6e8!important}
+.prm-ch{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.prm-ch span{display:inline-flex;gap:7px;align-items:center;padding:5px 11px;border:1px solid #c8a45a55;border-radius:999px;color:#eadfbd;font:600 12px 'DM Sans',sans-serif;background:#ffffff0a}.prm-ch i{font-style:normal;font-weight:800;color:#e6c77d;letter-spacing:.8px}
+body.vk .cb2-g5>.cb2-k:first-child{display:none}body.vk .cb2-g5{grid-template-columns:repeat(4,minmax(0,1fr))!important}
+body.vk .tsw.kh-n{border:1px solid #ebe4d3;box-shadow:0 10px 28px -16px #1a2a5240;background:#fff}body.vk .tsw.kh-n button.on{background:linear-gradient(135deg,#12224a,#22408a)!important;box-shadow:0 8px 18px -8px #12224acc!important}body.vk .tsw.kh-n button:hover:not(.on){background:#f7f1e0!important;color:#7a5c14!important}
+body.vk .kh-t b{font-family:'Cormorant Garamond',Georgia,serif;font-size:34px;color:#12224a;letter-spacing:0}body.vk .kh-t small{color:#8a7a52}body.vk .kh-i{background:linear-gradient(135deg,#12224a,#2a4a96)!important;box-shadow:0 10px 22px -8px #12224aaa,inset 0 0 0 1px #c8a45a88!important}body.vk .kh-i svg{stroke:#e6c77d}
+body.vk table th{background:#12224a!important;color:#e6d4a0!important;letter-spacing:1.3px!important;font-size:10.5px!important;font-weight:700!important;text-transform:uppercase}body.vk table td{border-bottom:1px solid #f0ead9!important}body.vk table tr:hover td{background:#fbf8ef}
+body.vk .fi-qa button{border-radius:14px!important}body.vk .fi-qa button:hover{color:#7a5c14!important}
+body.vk .pbm{background:#fbf3dc!important;border-color:#e6cf8c!important;color:#6b5210!important}
+body.vk .cb2-al{background:linear-gradient(90deg,#fbf3dc,#fff)!important;border:1px solid #e6cf8c!important;border-radius:14px!important;color:#6b5210!important}
+body.vk .bcv{font-family:'Cormorant Garamond',serif!important;font-size:28px!important;font-weight:700!important;color:#12224a}
+body.vk .top .plf.fdd-b,body.vk .top .tbd .plf{background:linear-gradient(135deg,#12224a,#22408a)!important;box-shadow:0 10px 22px -10px #12224acc!important}
+`;document.head.appendChild(st);
+const _g=go;go=function(){_g.apply(this,arguments);try{if(view!='cbd')return;const t=document.querySelector('.tsw');if(!t||document.querySelector('.cx-h.prm'))return;const al=S.j.filter(x=>br=='all'||x.br==br),CB=x=>x.lines.filter(y=>y[0]==1000),cm={};al.forEach(x=>CB(x).forEach(y=>{const k=x.ccy||S.base,r=x.ccy?(+x.rate||1):1;cm[k]=(cm[k]||0)+(y[1]-y[2])/r}));const cash=bal(1000,al),cr=Object.entries(cm).filter(([k,v])=>Math.abs(v)>.004),d=document.createElement('div');d.className='cx-h prm blue';d.style.marginBottom='16px';
+ d.innerHTML=`<div class="cx-l"><span>TOTAL CASH IN HAND</span><b><small>${S.base}</small> ${fmt(Math.abs(cash)<.005?0:cash)}</b><em>${br=='all'?'All branches':bn(br)} · ${cr.length||1} currenc${cr.length==1?'y':'ies'}</em><div class="prm-ch">${cr.map(([k,v])=>`<span><i>${k}</i>${Number(v).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2})}</span>`).join('')}</div></div>`;t.insertAdjacentElement('afterend',d)}catch(e){}};
 })();
 if(window.PB_CLOUD){pbBoot()}else if(!SESS){let pv=0;try{pv=sessionStorage.getItem('pb_preview');if(pv)sessionStorage.removeItem('pb_preview')}catch(e){}if(pv)location.reload();else auShow('login')}else{const A0=auAcc();if(!A0){try{localStorage.removeItem(AS)}catch(e){}auShow('login')}else if(!A0.pd)auShow('welcome');else{autoRecur();go()}}
 </script></body></html>
