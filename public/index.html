@@ -5526,7 +5526,7 @@ const oc=V.ctx;V.ctx=function(){let h=oc.apply(this,arguments);
  h=h.replace('<button class="plf" onclick="ctOpen()">+ New transaction</button>','<span style="display:flex;gap:8px;flex-wrap:wrap"><button class="plf" onclick="sdOpen()">+ Currency sale deal</button><button class="plo" onclick="ctOpen()">+ Multi-currency entry</button></span>');
  return h};
 /*UPDCHK*/
-(function(){const B='2026-10-19-z';window.PB_BUILD=B;if(location.protocol=='file:')return;let nb=null,tm=0;
+(function(){const B='2026-10-19-aa';window.PB_BUILD=B;if(location.protocol=='file:')return;let nb=null,tm=0;
 const busy=()=>{const a=document.activeElement;return !!(document.querySelector('.ov')||(a&&/^(INPUT|TEXTAREA)$/.test(a.tagName)&&String(a.value||'').length>0))};
 function go2(){try{const k='pb_upd_'+nb,n=+(sessionStorage.getItem(k)||0);sessionStorage.setItem(k,n+1)}catch(e){}location.replace(location.pathname+'?v='+encodeURIComponent(nb))}
 function bar(){let d=document.getElementById('pbupd');if(!d){d=document.createElement('div');d.id='pbupd';d.setAttribute('role','button');d.style.cssText='position:fixed;left:50%;transform:translateX(-50%);top:10px;z-index:100000;background:#0b3d33;color:#fff;padding:11px 18px;border-radius:12px;font:700 13px Inter,system-ui,sans-serif;box-shadow:0 6px 20px rgba(0,0,0,.3);cursor:pointer;text-align:center;max-width:92vw';d.onclick=()=>{d.textContent='Updating…';go2()};document.body.appendChild(d)}d.textContent='A new version of PrimeBook is ready. Tap here to update.'}
@@ -7701,7 +7701,7 @@ const st=document.createElement('style');st.textContent=`
 `;document.head.appendChild(st)})();
 /*CAS*/
 (function(){
-const CAS={tab:'inv',ist:'all',isort:'dd',ipg:0,ipp:10,psort:'dd',ppg:0,ppp:10,tpg:0,tpp:15};
+const CAS={tab:'inv',ist:'all',isort:'dd',ipg:0,ipp:10,psort:'dd',ppg:0,ppp:10,tpg:0,tpp:15};window.CAS_=CAS;
 const E=x=>aesc(String(x==null?'':x)),n2=v=>(Math.round(v*100)/100).toFixed(2),T0=()=>today();
 const dueOf=(date,terms)=>new Date(new Date(date+'T00:00:00Z').getTime()+(TD[terms]||0)*864e5).toISOString().slice(0,10);
 const dd=(a,b)=>Math.round((new Date(a+'T00:00:00Z')-new Date(b+'T00:00:00Z'))/864e5);
@@ -7903,6 +7903,18 @@ const st=document.createElement('style');st.textContent=`
 `;document.head.appendChild(st);
 const mi=MENU.findIndex(m=>m[0]=='cmd');if(mi>=0&&!MENU.some(m=>m[0]=='fdk'))MENU.splice(mi+1,0,['fdk','FOREX DESK']);if(!NAV.some(n=>n[0]=='fdk'))NAV.push(['fdk','Forex Desk']);
 NI.fdk='<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M8 10h8l-2.500-2.500M16 14H8l2.500 2.500"/></svg>';
+})();
+/*FRESH*/
+(function(){
+/* Temporary page selection only: never touches S (customers, invoices, payments, ledger). */
+function fresh(){sc='';scq='';scc='all';sfr='';sto='';stq='';sty='all';try{ivF.cust=''}catch(e){}
+ try{const C=window.CAS_;if(C){C.tab='inv';C.ist='all';C.ipg=C.ppg=C.tpg=0}}catch(e){}
+ try{const l=document.getElementById('casl');if(l)l.hidden=true}catch(e){}}
+window.pbFresh=fresh;
+let lv=view,ss=sc,si=ivF.cust;
+const g0=go;go=function(){if(view!==lv&&sc===ss&&ivF.cust===si)fresh();const r=g0.apply(this,arguments);lv=view;ss=sc;si=ivF.cust;return r};
+/* clicking any sidebar item (even the page already open) reopens it fresh */
+document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('#nav button[data-v]');if(b)fresh()},true);
 })();
 if(window.PB_CLOUD){pbBoot()}else if(!SESS){let pv=0;try{pv=sessionStorage.getItem('pb_preview');if(pv)sessionStorage.removeItem('pb_preview')}catch(e){}if(pv)location.reload();else auShow('login')}else{const A0=auAcc();if(!A0){try{localStorage.removeItem(AS)}catch(e){}auShow('login')}else if(!A0.pd)auShow('welcome');else{autoRecur();go()}}
 </script></body></html>
