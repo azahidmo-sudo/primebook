@@ -5484,7 +5484,7 @@ const oc=V.ctx;V.ctx=function(){let h=oc.apply(this,arguments);
  h=h.replace('<button class="plf" onclick="ctOpen()">+ New transaction</button>','<span style="display:flex;gap:8px;flex-wrap:wrap"><button class="plf" onclick="sdOpen()">+ Currency sale deal</button><button class="plo" onclick="ctOpen()">+ Multi-currency entry</button></span>');
  return h};
 /*UPDCHK*/
-(function(){const B='2026-10-18-u';window.PB_BUILD=B;if(location.protocol=='file:')return;let nb=null,tm=0;
+(function(){const B='2026-10-18-v';window.PB_BUILD=B;if(location.protocol=='file:')return;let nb=null,tm=0;
 const busy=()=>{const a=document.activeElement;return !!(document.querySelector('.ov')||(a&&/^(INPUT|TEXTAREA)$/.test(a.tagName)&&String(a.value||'').length>0))};
 function go2(){try{const k='pb_upd_'+nb,n=+(sessionStorage.getItem(k)||0);sessionStorage.setItem(k,n+1)}catch(e){}location.replace(location.pathname+'?v='+encodeURIComponent(nb))}
 function bar(){let d=document.getElementById('pbupd');if(!d){d=document.createElement('div');d.id='pbupd';d.setAttribute('role','button');d.style.cssText='position:fixed;left:50%;transform:translateX(-50%);top:10px;z-index:100000;background:#0b3d33;color:#fff;padding:11px 18px;border-radius:12px;font:700 13px Manrope,system-ui,sans-serif;box-shadow:0 6px 20px rgba(0,0,0,.3);cursor:pointer;text-align:center;max-width:92vw';d.onclick=()=>{d.textContent='Updating…';go2()};document.body.appendChild(d)}d.textContent='A new version of PrimeBook is ready. Tap here to update.'}
@@ -7118,6 +7118,9 @@ V.svd=function(){const L=C().filter(c=>br=='all'||c.br==br),op=L.filter(c=>c.sta
 window.svQ=v=>{Q=v;const x=document.getElementById('sv_q');go();const y=document.getElementById('sv_q');if(y){y.focus();y.setSelectionRange(v.length,v.length)}};
 NAV.push(['svd','Service Desk']);
 const op=V.cpt;V.cpt=function(){let h=op.apply(this,arguments);try{const c=S.cust.find(x=>x.id==cpc);if(!c)return h;const L=C().filter(x=>x.cust==c.id).sort((a,b)=>b.created.localeCompare(a.created));h+=`<div class="sv"><div class="cd" style="margin-top:16px"><div class="cd-h"><h3>Support cases</h3><button class="sv-b g noprint" style="margin-left:auto" onclick="svNew('${c.id}')">+ Raise a case</button></div>${L.length?`<table><tr><th>Case</th><th>Category</th><th>Status</th><th>Opened</th></tr>${L.map(x=>`<tr class="r" onclick="svOpen('${x.id}')"><td><b>${esc(x.no)}</b> ${esc(x.subject)}</td><td>${esc(x.cat)}</td><td><span class="sp ${SC[x.status]}">${x.status}</span></td><td>${x.created.slice(0,10)}</td></tr>`).join('')}</table>`:'<div class="sv-em">No support cases for this customer.</div>'}</div></div>`}catch(e){}return h};
+})();
+/*DCX*/(()=>{const st=document.createElement('style');st.textContent=`body.pgx main .top .tp-r,body.pgx main .top .fdd.tbd,body.pgx main .top .cmk-b{display:none!important}body.pgx main .top{margin-bottom:14px}body.pgx #m .top>h2,body.pgx main .top>h2{color:#12224a!important}`;document.head.appendChild(st);
+const _g=go;go=function(){document.body.classList.toggle('pgx',['dcl','dcr','chs'].includes(view));return _g.apply(this,arguments)};
 })();
 if(window.PB_CLOUD){pbBoot()}else if(!SESS){let pv=0;try{pv=sessionStorage.getItem('pb_preview');if(pv)sessionStorage.removeItem('pb_preview')}catch(e){}if(pv)location.reload();else auShow('login')}else{const A0=auAcc();if(!A0){try{localStorage.removeItem(AS)}catch(e){}auShow('login')}else if(!A0.pd)auShow('welcome');else{autoRecur();go()}}
 </script></body></html>
