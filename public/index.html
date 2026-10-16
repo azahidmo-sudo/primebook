@@ -5484,7 +5484,7 @@ const oc=V.ctx;V.ctx=function(){let h=oc.apply(this,arguments);
  h=h.replace('<button class="plf" onclick="ctOpen()">+ New transaction</button>','<span style="display:flex;gap:8px;flex-wrap:wrap"><button class="plf" onclick="sdOpen()">+ Currency sale deal</button><button class="plo" onclick="ctOpen()">+ Multi-currency entry</button></span>');
  return h};
 /*UPDCHK*/
-(function(){const B='2026-10-19-o';window.PB_BUILD=B;if(location.protocol=='file:')return;let nb=null,tm=0;
+(function(){const B='2026-10-19-p';window.PB_BUILD=B;if(location.protocol=='file:')return;let nb=null,tm=0;
 const busy=()=>{const a=document.activeElement;return !!(document.querySelector('.ov')||(a&&/^(INPUT|TEXTAREA)$/.test(a.tagName)&&String(a.value||'').length>0))};
 function go2(){try{const k='pb_upd_'+nb,n=+(sessionStorage.getItem(k)||0);sessionStorage.setItem(k,n+1)}catch(e){}location.replace(location.pathname+'?v='+encodeURIComponent(nb))}
 function bar(){let d=document.getElementById('pbupd');if(!d){d=document.createElement('div');d.id='pbupd';d.setAttribute('role','button');d.style.cssText='position:fixed;left:50%;transform:translateX(-50%);top:10px;z-index:100000;background:#0b3d33;color:#fff;padding:11px 18px;border-radius:12px;font:700 13px Inter,system-ui,sans-serif;box-shadow:0 6px 20px rgba(0,0,0,.3);cursor:pointer;text-align:center;max-width:92vw';d.onclick=()=>{d.textContent='Updating…';go2()};document.body.appendChild(d)}d.textContent='A new version of PrimeBook is ready. Tap here to update.'}
@@ -7489,6 +7489,35 @@ html body nav#nav>button[data-v=cmd] .ni,html body nav#nav>button[data-v=smd] .n
 html body nav#nav>button[data-v=cmd] .ni svg,html body nav#nav>button[data-v=smd] .ni svg{width:21px;height:21px}
 html body nav#nav .gh .cv{font-size:12px}
 @media(max-width:720px){html body nav#nav>button[data-v],html body nav#nav .gh{font-size:14.5px!important;letter-spacing:.3px!important;padding-top:10px!important;padding-bottom:10px!important}html body nav#nav>button[data-v] .ni,html body nav#nav .gh .ni{width:24px;height:24px}html body nav#nav>button[data-v] .ni svg,html body nav#nav .gh .ni svg{width:18px;height:18px}html body nav#nav>button[data-v=cmd] .ni,html body nav#nav>button[data-v=smd] .ni{width:26px;height:26px}}
+`;document.head.appendChild(st)})();
+/*FSZ*/
+(function(){
+const st=document.createElement('style');st.textContent=`
+/* dashboard type scale: title 28 · greeting 26 · card heading 18 · body 14 · secondary 12.5 · caption 12 · table head 11.5 */
+html body.vdash .top>h2{font-size:28px!important}
+html body.vdash #m .fdn-h h1{font-size:26px!important}html body.vdash #m .fdn-h p{font-size:13.5px!important}
+html body.vdash #m .p h3,html body.vdash #m .card-h h3{font-size:18px!important;line-height:1.25}
+html body.vdash #m .p h3 .od-st,html body.vdash #m .od-st{font-size:16px!important}
+html body.vdash #m .dqa2 .dq-h,html body.vdash #m .dqa2>span:first-child{font-size:12px!important}
+html body.vdash #m .dqa2 button b,html body.vdash #m .dqa2 b{font-size:13px!important}
+html body.vdash #m .od-b{font-size:13px!important}
+html body.vdash #m .mu,html body.vdash #m small.mu,html body.vdash #m td small{font-size:12.5px!important}
+html body.vdash #m p.mu,html body.vdash #m .fdn-sub,html body.vdash #m .od-h p{font-size:13.5px!important}
+html body.vdash #m table td,html body.vdash #m table td.n{font-size:14px!important}
+html body.vdash #m table td b,html body.vdash #m table td .tg{font-size:14px!important}
+html body.vdash #m table td small,html body.vdash #m table td .fp-cn,html body.vdash #m table td .mu{font-size:12.5px!important}
+html body.vdash #m table th{font-size:11.5px!important}
+html body.vdash #m tr.fp-net b{font-size:18px!important}html body.vdash #m tr.fp-net small{font-size:13px!important}html body.vdash #m tr.fp-net .up{font-size:13.5px!important}
+html body.vdash #m .lnk,html body.vdash #m .card-h .lnk,html body.vdash #m [data-go].lnk{font-size:13px!important}
+html body.vdash #m .tg{font-size:12.5px!important}
+html body.vdash #m .rts-h small{font-size:12px!important}html body.vdash #m .rts-h b{font-size:16px!important}html body.vdash #m .rts-a{font-size:12.5px!important}
+html body.vdash #m .na-c{font-size:12.5px!important}html body.vdash #m .na-cl,html body.vdash #m .na-cl b{font-size:12.5px!important}
+html body.vdash #m .p span.ok2,html body.vdash #m .ok2{font-size:12px!important}
+html body.vdash #m .p [class*=bsn] span,html body.vdash #m .p .bsn span{font-size:12.5px!important}
+html body.vdash #m .dqa2-h,html body.vdash #m .dqa2-h span{font-size:12px!important}
+html body.vdash #m .na-g.t span,html body.vdash #m .na-g.t{font-size:12px!important}
+html body.vdash #m .fdn-sn span{font-size:12.5px!important}html body.vdash #m .fdn-sn b{font-size:20px!important}
+html body.vdash #m .rts-c span i{font-size:11px!important}html body.vdash .top kbd{font-size:11px!important}
 `;document.head.appendChild(st)})();
 if(window.PB_CLOUD){pbBoot()}else if(!SESS){let pv=0;try{pv=sessionStorage.getItem('pb_preview');if(pv)sessionStorage.removeItem('pb_preview')}catch(e){}if(pv)location.reload();else auShow('login')}else{const A0=auAcc();if(!A0){try{localStorage.removeItem(AS)}catch(e){}auShow('login')}else if(!A0.pd)auShow('welcome');else{autoRecur();go()}}
 </script></body></html>
