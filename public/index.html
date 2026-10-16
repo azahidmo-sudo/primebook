@@ -5484,7 +5484,7 @@ const oc=V.ctx;V.ctx=function(){let h=oc.apply(this,arguments);
  h=h.replace('<button class="plf" onclick="ctOpen()">+ New transaction</button>','<span style="display:flex;gap:8px;flex-wrap:wrap"><button class="plf" onclick="sdOpen()">+ Currency sale deal</button><button class="plo" onclick="ctOpen()">+ Multi-currency entry</button></span>');
  return h};
 /*UPDCHK*/
-(function(){const B='2026-10-18-k';window.PB_BUILD=B;if(location.protocol=='file:')return;let nb=null,tm=0;
+(function(){const B='2026-10-18-l';window.PB_BUILD=B;if(location.protocol=='file:')return;let nb=null,tm=0;
 const busy=()=>{const a=document.activeElement;return !!(document.querySelector('.ov')||(a&&/^(INPUT|TEXTAREA)$/.test(a.tagName)&&String(a.value||'').length>0))};
 function go2(){try{const k='pb_upd_'+nb,n=+(sessionStorage.getItem(k)||0);sessionStorage.setItem(k,n+1)}catch(e){}location.replace(location.pathname+'?v='+encodeURIComponent(nb))}
 function bar(){let d=document.getElementById('pbupd');if(!d){d=document.createElement('div');d.id='pbupd';d.setAttribute('role','button');d.style.cssText='position:fixed;left:50%;transform:translateX(-50%);top:10px;z-index:100000;background:#0b3d33;color:#fff;padding:11px 18px;border-radius:12px;font:700 13px Manrope,system-ui,sans-serif;box-shadow:0 6px 20px rgba(0,0,0,.3);cursor:pointer;text-align:center;max-width:92vw';d.onclick=()=>{d.textContent='Updating…';go2()};document.body.appendChild(d)}d.textContent='A new version of PrimeBook is ready. Tap here to update.'}
@@ -6862,5 +6862,31 @@ body.vk .top .plf.fdd-b,body.vk .top .tbd .plf{background:linear-gradient(135deg
 const _g=go;go=function(){_g.apply(this,arguments);try{if(view!='cbd')return;const t=document.querySelector('.tsw');if(!t||document.querySelector('.cx-h.prm'))return;const al=S.j.filter(x=>br=='all'||x.br==br),CB=x=>x.lines.filter(y=>y[0]==1000),cm={};al.forEach(x=>CB(x).forEach(y=>{const k=x.ccy||S.base,r=x.ccy?(+x.rate||1):1;cm[k]=(cm[k]||0)+(y[1]-y[2])/r}));const cash=bal(1000,al),cr=Object.entries(cm).filter(([k,v])=>Math.abs(v)>.004),d=document.createElement('div');d.className='cx-h prm blue';d.style.marginBottom='16px';
  d.innerHTML=`<div class="cx-l"><span>TOTAL CASH IN HAND</span><b><small>${S.base}</small> ${fmt(Math.abs(cash)<.005?0:cash)}</b><em>${br=='all'?'All branches':bn(br)} · ${cr.length||1} currenc${cr.length==1?'y':'ies'}</em><div class="prm-ch">${cr.map(([k,v])=>`<span><i>${k}</i>${Number(v).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2})}</span>`).join('')}</div></div>`;t.insertAdjacentElement('afterend',d)}catch(e){}};
 })();
+/*NVP*/(()=>{const st=document.createElement('style');st.textContent=`
+@media(min-width:721px){
+nav#nav,nav{background:radial-gradient(420px 320px at 0 0,#2b4aa044,transparent 70%),linear-gradient(185deg,#0d1a3d 0%,#0a1330 55%,#070d22 100%)!important;border-right:1px solid #c8a45a33!important;box-shadow:6px 0 30px -12px #050a1eaa!important}
+nav .brand,nav .brand.pbx,nav h1{background:transparent!important;border-bottom:1px solid #c8a45a40!important;padding:24px 22px 20px!important}
+nav .brand *{letter-spacing:.2px}
+nav>button,nav .gh,nav button[data-v]{font-family:'DM Sans',system-ui,sans-serif!important;font-weight:600!important;font-size:12.5px!important;letter-spacing:1.3px!important;text-transform:uppercase!important;color:#c9d2ea!important;background:transparent!important;border-radius:12px!important;margin:3px 12px!important;width:calc(100% - 24px)!important;padding:13px 14px!important;box-shadow:none!important;transition:background .2s,color .2s,transform .2s}
+nav>button svg,nav button svg{stroke:#c8a45a!important;opacity:.9}
+nav>button:hover,nav button[data-v]:hover{background:#ffffff0f!important;color:#fff!important;transform:translateX(2px)}
+nav>button[data-v].on,nav>button.on,nav>button[data-v].on.trx,nav .gh.on0,nav>button[data-v=cbd].on,nav>button[data-v=cmd].on,nav>button[data-v=smd].on{background:linear-gradient(90deg,#c8a45a26,#c8a45a0a)!important;color:#f3dca0!important;box-shadow:inset 3px 0 0 #c8a45a,0 8px 24px -14px #000!important;border:1px solid #c8a45a40!important}
+nav>button.on svg,nav>button[data-v].on svg{stroke:#f0d58c!important;opacity:1}
+nav button.sub,nav .sub{font-family:'DM Sans',system-ui,sans-serif!important;font-size:12.5px!important;letter-spacing:.4px!important;text-transform:none!important;font-weight:500!important;color:#aab6d6!important;border-radius:10px!important}
+nav button.sub.on,nav button.sst.on{background:#c8a45a1f!important;color:#f3dca0!important;box-shadow:inset 2px 0 0 #c8a45a!important}
+nav .sub.usr0 .uda{background:linear-gradient(135deg,#c8a45a,#9a7b32)!important;color:#0a1330!important}
+nav::-webkit-scrollbar{width:6px}nav::-webkit-scrollbar-thumb{background:#c8a45a44;border-radius:6px}
+nav .ar,nav button .ar,nav button:after{color:#c8a45a}
+}
+.top{padding:6px 0}.top .tp-chip,.top .tp-bell,.top .tp-ub{border:1px solid #e9e1cc!important;background:#fff!important;box-shadow:0 6px 18px -12px #12224a66!important;border-radius:14px!important}.top .tp-chip .fiic,.top .tp-bell .fiic{background:#f6ecd2!important;color:#9a7b32!important}.top .tp-chip .fiic svg,.top .tp-bell .fiic svg{stroke:#9a7b32}
+.top h2{font-family:'Cormorant Garamond',Georgia,serif!important;font-size:32px!important;font-weight:700!important;letter-spacing:.2px!important;color:#12224a!important;text-transform:none!important}.top h2:after{background:linear-gradient(90deg,#c8a45a,#e6c77d)!important;width:54px!important;height:3px!important}
+.top .tp-user .tp-ub{padding:5px 12px}
+.top .plf.fdd-b,.top .tbd .plf{background:linear-gradient(135deg,#12224a,#22408a)!important;letter-spacing:1.4px;box-shadow:0 12px 24px -12px #12224acc,inset 0 0 0 1px #c8a45a66!important}
+.tsw:not(.kh-n){display:flex;gap:6px;padding:6px;background:#fff;border:1px solid #ebe4d3;border-radius:16px;box-shadow:0 10px 28px -16px #1a2a5240;width:max-content;max-width:100%;overflow-x:auto}
+.tsw:not(.kh-n) button{border:0!important;background:transparent!important;color:#475569!important;font:600 13.5px 'DM Sans',sans-serif!important;padding:10px 16px!important;border-radius:11px!important;text-transform:none!important}
+.tsw:not(.kh-n) button.on{background:linear-gradient(135deg,#12224a,#22408a)!important;color:#fff!important;box-shadow:0 8px 18px -8px #12224acc!important}
+.fi-qa{background:#fff;border:1px solid #ebe4d3!important;border-radius:18px!important;box-shadow:0 12px 32px -16px #1a2a5240!important}.fi-qa button{font-family:'DM Sans',sans-serif!important;font-weight:600}.fi-qa button .fiic{background:#f6ecd2!important;color:#9a7b32!important}.fi-qa button .fiic svg,.fi-qa button svg{stroke:#9a7b32}.fi-qa button.on,.fi-qa button:hover{color:#12224a!important}
+.ctabs.noprint button.on,.pill.on,.chip.on{background:linear-gradient(135deg,#12224a,#22408a)!important;color:#fff!important}
+`;document.head.appendChild(st)})();
 if(window.PB_CLOUD){pbBoot()}else if(!SESS){let pv=0;try{pv=sessionStorage.getItem('pb_preview');if(pv)sessionStorage.removeItem('pb_preview')}catch(e){}if(pv)location.reload();else auShow('login')}else{const A0=auAcc();if(!A0){try{localStorage.removeItem(AS)}catch(e){}auShow('login')}else if(!A0.pd)auShow('welcome');else{autoRecur();go()}}
 </script></body></html>
