@@ -2287,8 +2287,8 @@ async function sha(t){return b64e(new Uint8Array(await crypto.subtle.digest('SHA
 const rnd=n=>crypto.getRandomValues(new Uint8Array(n));
 const accs=()=>{try{return JSON.parse(localStorage.getItem(AK))||[]}catch(e){return[]}},putAccs=a=>{try{localStorage.setItem(AK,JSON.stringify(a))}catch(e){}};
 const auAcc=()=>SESS&&accs().find(a=>a.id==SESS.id);
-function auSess(a){try{localStorage.setItem(AS,JSON.stringify({id:a.id,exp:Date.now()+8*36e5}))}catch(e){}}
-function signOut(){if(window.PB_CLOUD&&window.pbOut)return pbOut();try{localStorage.removeItem(AS);sessionStorage.removeItem('pb_preview')}catch(e){}location.reload()}
+function auSess(a){try{localStorage.setItem(AS,window.pbSecNew?pbSecNew(a.id):JSON.stringify({id:a.id,exp:Date.now()+8*36e5}))}catch(e){}}
+function signOut(){if(window.PB_CLOUD&&window.pbOut)return pbOut();if(window.pbSec&&SESS)return pbSec.logout('manual');try{localStorage.removeItem(AS);sessionStorage.removeItem('pb_preview')}catch(e){}location.reload()}
 const CCY=[['USD','US Dollar',1],['EUR','Euro',1.085],['GBP','British Pound',1.27],['CAD','Canadian Dollar',.73],['AUD','Australian Dollar',.66],['AED','UAE Dirham',.2723],['SAR','Saudi Riyal',.2667],['QAR','Qatari Riyal',.2747],['KWD','Kuwaiti Dinar',3.25],['INR','Indian Rupee',.012],['PKR','Pakistani Rupee',.0036],['BDT','Bangladeshi Taka',.0082],['TRY','Turkish Lira',.03],['CNY','Chinese Yuan',.138],['JPY','Japanese Yen',.0067],['CHF','Swiss Franc',1.12],['SGD','Singapore Dollar',.74],['MYR','Malaysian Ringgit',.21],['EGP','Egyptian Pound',.02],['ZAR','South African Rand',.055],['KES','Kenyan Shilling',.0077],['NGN','Nigerian Naira',.00065],['OMR','Omani Rial',2.6],['BHD','Bahraini Dinar',2.65],['JOD','Jordanian Dinar',1.41],['ETB','Ethiopian Birr',.0083],['SOS','Somali Shilling',.00175],['LKR','Sri Lankan Rupee',.0033],['THB','Thai Baht',.028],['IDR','Indonesian Rupiah',.000062],['PHP','Philippine Peso',.0175],['MXN','Mexican Peso',.054],['BRL','Brazilian Real',.18],['NZD','New Zealand Dollar',.6],['SEK','Swedish Krona',.095],['NOK','Norwegian Krone',.093],['DKK','Danish Krone',.145],['PLN','Polish Zloty',.25]];
 const CTRY=[['Canada','CA','+1','CAD'],['United States','US','+1','USD'],['United Kingdom','GB','+44','GBP'],['United Arab Emirates','AE','+971','AED'],['Saudi Arabia','SA','+966','SAR'],['Qatar','QA','+974','QAR'],['Kuwait','KW','+965','KWD'],['Oman','OM','+968','OMR'],['Bahrain','BH','+973','BHD'],['Jordan','JO','+962','JOD'],['Egypt','EG','+20','EGP'],['Turkey','TR','+90','TRY'],['Pakistan','PK','+92','PKR'],['India','IN','+91','INR'],['Bangladesh','BD','+880','BDT'],['Sri Lanka','LK','+94','LKR'],['Somalia','SO','+252','SOS'],['Kenya','KE','+254','KES'],['Ethiopia','ET','+251','ETB'],['Nigeria','NG','+234','NGN'],['South Africa','ZA','+27','ZAR'],['Australia','AU','+61','AUD'],['New Zealand','NZ','+64','NZD'],['Germany','DE','+49','EUR'],['France','FR','+33','EUR'],['Italy','IT','+39','EUR'],['Spain','ES','+34','EUR'],['Netherlands','NL','+31','EUR'],['Ireland','IE','+353','EUR'],['Belgium','BE','+32','EUR'],['Austria','AT','+43','EUR'],['Portugal','PT','+351','EUR'],['Greece','GR','+30','EUR'],['Switzerland','CH','+41','CHF'],['Sweden','SE','+46','SEK'],['Norway','NO','+47','NOK'],['Denmark','DK','+45','DKK'],['Poland','PL','+48','PLN'],['China','CN','+86','CNY'],['Japan','JP','+81','JPY'],['Singapore','SG','+65','SGD'],['Malaysia','MY','+60','MYR'],['Thailand','TH','+66','THB'],['Indonesia','ID','+62','IDR'],['Philippines','PH','+63','PHP'],['Mexico','MX','+52','MXN'],['Brazil','BR','+55','BRL']];
 const ctryOf=n=>CTRY.find(c=>c[0].toLowerCase()==String(n||'').trim().toLowerCase()),ctryTxt=n=>{const c=ctryOf(n);return c?c[1]+' \u00b7 '+c[2]+' \u00b7 '+c[3]:''};
@@ -5526,7 +5526,7 @@ const oc=V.ctx;V.ctx=function(){let h=oc.apply(this,arguments);
  h=h.replace('<button class="plf" onclick="ctOpen()">+ New transaction</button>','<span style="display:flex;gap:8px;flex-wrap:wrap"><button class="plf" onclick="sdOpen()">+ Currency sale deal</button><button class="plo" onclick="ctOpen()">+ Multi-currency entry</button></span>');
  return h};
 /*UPDCHK*/
-(function(){const B='2026-10-19-ae';window.PB_BUILD=B;if(location.protocol=='file:')return;let nb=null,tm=0;
+(function(){const B='2026-10-19-af';window.PB_BUILD=B;if(location.protocol=='file:')return;let nb=null,tm=0;
 const busy=()=>{const a=document.activeElement;return !!(document.querySelector('.ov')||(a&&/^(INPUT|TEXTAREA)$/.test(a.tagName)&&String(a.value||'').length>0))};
 function go2(){try{const k='pb_upd_'+nb,n=+(sessionStorage.getItem(k)||0);sessionStorage.setItem(k,n+1)}catch(e){}location.replace(location.pathname+'?v='+encodeURIComponent(nb))}
 function bar(){let d=document.getElementById('pbupd');if(!d){d=document.createElement('div');d.id='pbupd';d.setAttribute('role','button');d.style.cssText='position:fixed;left:50%;transform:translateX(-50%);top:10px;z-index:100000;background:#0b3d33;color:#fff;padding:11px 18px;border-radius:12px;font:700 13px Inter,system-ui,sans-serif;box-shadow:0 6px 20px rgba(0,0,0,.3);cursor:pointer;text-align:center;max-width:92vw';d.onclick=()=>{d.textContent='Updating…';go2()};document.body.appendChild(d)}d.textContent='A new version of PrimeBook is ready. Tap here to update.'}
@@ -6398,14 +6398,14 @@ const CF={url:'https://htrlqotaetdwccervhmd.supabase.co',key:'sb_publishable_GjG
 window.PB_CLOUD=(function(){try{return sessionStorage.getItem('pb_preview')?null:CF}catch(e){return CF}})();
 const SK='pb_sb',lsG=k=>{try{return localStorage.getItem(k)}catch(e){return null}},lsS=(k,v)=>{try{localStorage.setItem(k,v)}catch(e){}},lsD=k=>{try{localStorage.removeItem(k)}catch(e){}};
 let SB=null;try{SB=JSON.parse(lsG(SK))}catch(e){}
-const sbSave=s=>{SB=s;s?lsS(SK,JSON.stringify(s)):lsD(SK)};
+const sbSave=s=>{if(s&&window.__pbOut)return;SB=s;s?lsS(SK,JSON.stringify(s)):lsD(SK)};
 const fix=j=>({access_token:j.access_token,refresh_token:j.refresh_token,expires_at:j.expires_at||Math.floor(Date.now()/1000)+(j.expires_in||3600),user:j.user||(SB&&SB.user)});
 async function api(path,o){o=o||{};const h={apikey:CF.key,'Content-Type':'application/json'};if(SB&&SB.access_token&&!o.anon)h.Authorization='Bearer '+SB.access_token;if(o.prefer)h.Prefer=o.prefer;
 const r=await fetch(CF.url+path,{method:o.method||'GET',headers:h,body:o.body?JSON.stringify(o.body):undefined});let j=null;try{j=await r.json()}catch(e){}
 if(!r.ok){const er=new Error((j&&(j.msg||j.message||j.error_description||j.error))||('Request failed ('+r.status+')'));er.status=r.status;er.code=j&&(j.error_code||j.code);throw er}return j}
-async function refresh(){if(!SB||!SB.refresh_token)throw Object.assign(new Error('Signed out'),{status:401});try{const j=await api('/auth/v1/token?grant_type=refresh_token',{method:'POST',body:{refresh_token:SB.refresh_token},anon:1});sbSave(fix(j))}catch(e){if(e.status>=400&&e.status<500){sbSave(null)}throw e}}
+async function refresh(){if(!SB||!SB.refresh_token)throw Object.assign(new Error('Signed out'),{status:401});try{const j=await api('/auth/v1/token?grant_type=refresh_token',{method:'POST',body:{refresh_token:SB.refresh_token},anon:1});sbSave(fix(j))}catch(e){if(e.status>=400&&e.status<500){sbSave(null);if(window.pbSec&&SESS)pbSec.logout('server')}throw e}}
 async function ensure(){if(!SB)throw Object.assign(new Error('Signed out'),{status:401});if(SB.expires_at-60<Date.now()/1000)await refresh()}
-async function rest(p,o){await ensure();try{return await api('/rest/v1/'+p,o)}catch(e){if(e.status==401){await refresh();return await api('/rest/v1/'+p,o)}throw e}}
+async function rest(p,o){await ensure();try{return await api('/rest/v1/'+p,o)}catch(e){if(e.status==401&&/PB_SESSION/.test(e.message||'')){if(window.pbSec&&SESS)pbSec.logout('server');throw e}if(e.status==401){await refresh();return await api('/rest/v1/'+p,o)}throw e}}
 const jwt=t=>{try{return JSON.parse(atob(t.split('.')[1].replace(/-/g,'+').replace(/_/g,'/')))}catch(e){return{}}};
 const isNet=e=>e&&(e instanceof TypeError||e.name=='TypeError');
 const friendly=e=>{if(isNet(e))return'Cannot reach the server. Check your internet connection and try again.';const m=String(e&&e.message||'');if(/invalid login/i.test(m))return'Email or password is incorrect.';if(/not confirmed/i.test(m))return'Confirm your email first. Open the message we sent you and tap the link.';if(e&&e.status==429||/rate limit|too many/i.test(m))return'Too many attempts. Wait a few minutes and try again.';if(/already registered|already been registered/i.test(m))return'That email already has an account. Sign in instead.';if(/password/i.test(m)&&/short|least|weak|characters/i.test(m))return m;return m||'Something went wrong. Please try again.'};
@@ -6432,19 +6432,19 @@ const uid=SB.user.id,em=SB.user.email,r=await getBook();let A=accs().filter(x=>x
 if(r){lsS(dataK(uid),JSON.stringify(r.data));setMeta({id:r.id,ver:r.version,dirty:0});a.pd=1}
 else if(!a.pd&&!lsG(dataK(uid))){const L=localBooks(uid);if(L.length&&!AU.tmp.skipImp){AU.tmp={...AU.tmp,imp:L};A.push(a);putAccs(A);return cshow('c_import')}}
 else if(lsG(dataK(uid))&&!a.pd){a.pd=1}
-A.push(a);putAccs(A);lsS(AS,JSON.stringify({id:uid,exp:Date.now()+30*864e5}));location.reload()}
+A.push(a);putAccs(A);lsS(AS,pbSecNew(uid,!window.__pbFreshLogin));location.reload()}
 const H={
-async login(v){AU.tmp={...AU.tmp,em:v.em};const j=await api('/auth/v1/token?grant_type=password',{method:'POST',body:{email:v.em.trim(),password:v.p},anon:1});sbSave(fix(j));await afterAuth()},
-async signup(v){AU.tmp={...AU.tmp,em:v.em};if(v.p.length<10)throw new Error('Use at least 10 characters for the password.');if(v.p!==v.p2)throw new Error('The two passwords do not match.');const j=await api('/auth/v1/signup',{method:'POST',body:{email:v.em.trim(),password:v.p},anon:1});if(j&&j.access_token){sbSave(fix(j));await afterAuth()}else cshow('c_check')},
+async login(v){window.__pbFreshLogin=1;AU.tmp={...AU.tmp,em:v.em};const j=await api('/auth/v1/token?grant_type=password',{method:'POST',body:{email:v.em.trim(),password:v.p},anon:1});sbSave(fix(j));await afterAuth()},
+async signup(v){window.__pbFreshLogin=1;AU.tmp={...AU.tmp,em:v.em};if(v.p.length<10)throw new Error('Use at least 10 characters for the password.');if(v.p!==v.p2)throw new Error('The two passwords do not match.');const j=await api('/auth/v1/signup',{method:'POST',body:{email:v.em.trim(),password:v.p},anon:1});if(j&&j.access_token){sbSave(fix(j));await afterAuth()}else cshow('c_check')},
 async forgot(v){AU.tmp={...AU.tmp,em:v.em};await api('/auth/v1/recover',{method:'POST',body:{email:v.em.trim()},anon:1});cshow('c_login','','If that email has an account, a reset link is on its way.')},
-async reset(v){if(v.p.length<10)throw new Error('Use at least 10 characters for the password.');if(v.p!==v.p2)throw new Error('The two passwords do not match.');await api('/auth/v1/user',{method:'PUT',body:{password:v.p}});await afterAuth()},
-async mfa(v){const fid=AU.tmp.fid;const ch=await api('/auth/v1/factors/'+fid+'/challenge',{method:'POST',body:{}});const j=await api('/auth/v1/factors/'+fid+'/verify',{method:'POST',body:{challenge_id:ch.id,code:String(v.c).replace(/\s/g,'')}});sbSave(fix(j));await afterAuth()},
-async imp(v){const uid=SB.user.id,L=AU.tmp.imp||[];if(v.pick!=='new'){const x=L[+v.pick],d=lsG(dataK(x.id));if(d)lsS(dataK(uid),d);setMeta({dirty:1})}else AU.tmp.skipImp=1;const A=accs().filter(q=>q.id!=uid),a=accs().find(q=>q.id==uid)||{id:uid,un:SB.user.email,em:SB.user.email,name:SB.user.email.split('@')[0],ph:'',pd:0,ev:1};if(v.pick!=='new')a.pd=1;A.push(a);putAccs(A);lsS(AS,JSON.stringify({id:uid,exp:Date.now()+30*864e5}));location.reload()}};
+async reset(v){window.__pbFreshLogin=1;if(v.p.length<10)throw new Error('Use at least 10 characters for the password.');if(v.p!==v.p2)throw new Error('The two passwords do not match.');await api('/auth/v1/user',{method:'PUT',body:{password:v.p}});await afterAuth()},
+async mfa(v){window.__pbFreshLogin=1;const fid=AU.tmp.fid;const ch=await api('/auth/v1/factors/'+fid+'/challenge',{method:'POST',body:{}});const j=await api('/auth/v1/factors/'+fid+'/verify',{method:'POST',body:{challenge_id:ch.id,code:String(v.c).replace(/\s/g,'')}});sbSave(fix(j));await afterAuth()},
+async imp(v){const uid=SB.user.id,L=AU.tmp.imp||[];if(v.pick!=='new'){const x=L[+v.pick],d=lsG(dataK(x.id));if(d)lsS(dataK(uid),d);setMeta({dirty:1})}else AU.tmp.skipImp=1;const A=accs().filter(q=>q.id!=uid),a=accs().find(q=>q.id==uid)||{id:uid,un:SB.user.email,em:SB.user.email,name:SB.user.email.split('@')[0],ph:'',pd:0,ev:1};if(v.pick!=='new')a.pd=1;A.push(a);putAccs(A);lsS(AS,pbSecNew(uid,!window.__pbFreshLogin));location.reload()}};
 const runCF=async f=>{const b=f.querySelector('button');if(b&&b.disabled)return;const k=f.dataset.cf,v=Object.fromEntries(new FormData(f));if(b){b.disabled=true;b.textContent='Please wait…'}try{await H[k](v)}catch(x){cshow(AU.step,friendly(x))}};
 document.addEventListener('submit',e=>{const f=e.target.closest('form[data-cf]');if(!f)return;e.preventDefault();e.stopPropagation();runCF(f)},true);
 document.addEventListener('click',e=>{const bt=e.target.closest&&e.target.closest('form[data-cf] button');if(!bt||bt.type=='button')return;const f=bt.closest('form[data-cf]');e.preventDefault();e.stopPropagation();runCF(f)},true);
 document.addEventListener('keydown',e=>{if(e.key!='Enter')return;const f=e.target.closest&&e.target.closest('form[data-cf]');if(!f||e.target.tagName=='BUTTON')return;e.preventDefault();runCF(f)},true);
-document.addEventListener('click',e=>{const a=e.target.closest('[data-cs]');if(!a)return;e.preventDefault();e.stopPropagation();const t=a.dataset.cs;if(t=='c_out'){sbSave(null);return cshow('c_login')}if(t=='c_offline'){try{sessionStorage.setItem('pb_preview','1');const A=accs().filter(x=>x.id!='preview');A.push({id:'preview',un:'preview',em:'preview@local',name:'Preview',ph:'',pd:0,ev:1});putAccs(A);lsS(AS,JSON.stringify({id:'preview',exp:Date.now()+8*36e5}))}catch(x){}return location.reload()}cshow(t)},true);
+document.addEventListener('click',e=>{const a=e.target.closest('[data-cs]');if(!a)return;e.preventDefault();e.stopPropagation();const t=a.dataset.cs;if(t=='c_out'){sbSave(null);return cshow('c_login')}if(t=='c_offline'){try{sessionStorage.setItem('pb_preview','1');const A=accs().filter(x=>x.id!='preview');A.push({id:'preview',un:'preview',em:'preview@local',name:'Preview',ph:'',pd:0,ev:1});putAccs(A);lsS(AS,pbSecNew('preview'))}catch(x){}return location.reload()}cshow(t)},true);
 /* ---- sync ---- */
 let tmr=0,busy=0,again=0,state='ok',rt=0,pollT=0,remoteNewer=null;
 let lastOk=0;const pill=(s,msg)=>{state=s;if(s=='ok')lastOk=Date.now();let p=document.getElementById('pbpill');if(!p){p=document.createElement('div');p.id='pbpill';p.setAttribute('role','button');p.setAttribute('tabindex','0');p.style.cursor='pointer';p.style.webkitTapHighlightColor='transparent';p.onclick=()=>pillClick();p.addEventListener('touchend',function(e){e.preventDefault();pillClick()},{passive:false});document.body.appendChild(p)}const M={ok:'Saved online',sav:'Saving…',off:'Offline. Will retry',err:msg||'Sync problem',new:'New data from another device. Tap to refresh',con:'Sync conflict. Tap to fix',na:msg||'Not synced'};p.className='pbp '+s;p.textContent=M[s]||s;p.title=M[s]};
@@ -6477,8 +6477,16 @@ else if(m.dirty)push();else if(state!='new')pill('ok')}catch(e){if(isNet(e))pill
 function startSync(){if(hasEnt()){pill('na','Multi-company is not synced yet');return}pill('sav');check(true);clearInterval(pollT);pollT=setInterval(()=>{if(!document.hidden&&!busy&&!meta().dirty)check(false)},25000);addEventListener('online',()=>check(false));document.addEventListener('visibilitychange',()=>{if(document.hidden&&meta().dirty)push();else if(!document.hidden)check(false)})}
 /* ---- sign out ---- */
 window.pbOut=async function(){if(SB&&meta().dirty){pill('sav');await push();if(meta().dirty&&!confirm('Some changes are not saved online yet. Sign out anyway and lose them?'))return}
-const uid=SB&&SB.user&&SB.user.id;try{if(SB)await api('/auth/v1/logout',{method:'POST',body:{}})}catch(e){}
+if(window.pbSec&&SESS)return pbSec.logout('manual');const uid=SB&&SB.user&&SB.user.id;try{if(SB)await api('/auth/v1/logout',{method:'POST',body:{}})}catch(e){}
 if(uid){lsD(dataK(uid));lsD('pb_meta_'+uid);putAccs(accs().filter(a=>a.id!=uid))}sbSave(null);lsD(AS);location.reload()};
+/* ---- session-guard hooks used by the inactivity module ---- */
+(function(){const T=(p,ms)=>Promise.race([p,new Promise(r=>setTimeout(r,ms))]);
+function wipe(){if(!window.PB_CLOUD){lsD(AS);return}const uid=SB&&SB.user&&SB.user.id;try{if(uid){lsD(dataK(uid));lsD('pb_meta_'+uid);putAccs(accs().filter(a=>a.id!=uid))}}catch(e){}window.__pbOut=window.__pbOut||0;SB=null;lsD(SK);lsD(AS);try{sessionStorage.clear()}catch(e){}}
+window.pbSecHooks={wipe,
+ quiet(){try{if(window.PB_CLOUD&&SB&&SB.access_token)fetch(CF.url+'/auth/v1/logout?scope=local',{method:'POST',keepalive:true,headers:{apikey:CF.key,Authorization:'Bearer '+SB.access_token}}).catch(()=>{})}catch(e){}wipe()},
+ async touch(ago,im){if(!SB||!window.PB_CLOUD)return null;try{const r=await rest('rpc/pb_session_touch',{method:'POST',body:{p_idle_min:im,p_idle_s:ago}});window.pbSecServer=true;return r}catch(e){if(e.status==404||e.code=='PGRST202'||/could not find the function/i.test(e.message||'')){window.pbSecServer=false;return null}throw e}},
+ flush(){if(SB&&!hasEnt()&&meta().dirty)return push()},
+ async logout(reason){try{if(SB&&window.PB_CLOUD){if(reason!=='manual'&&meta().dirty&&!hasEnt())await T(push(),2500);try{await T(ensure(),2000)}catch(e){}await T((async()=>{try{await api('/rest/v1/rpc/pb_session_end',{method:'POST',body:{}})}catch(e){}try{await api('/auth/v1/logout'+(reason=='manual'?'':'?scope=local'),{method:'POST',body:{}})}catch(e){}})(),3000)}}catch(e){}wipe()}};})();
 /* ---- two-step (authenticator) enrolment ---- */
 window.pbMfa=async function(){try{await ensure();const u=await api('/auth/v1/user');for(const f of (u.factors||[]))if(f.factor_type=='totp'&&f.status!='verified'){try{await api('/auth/v1/factors/'+f.id,{method:'DELETE'})}catch(e){}}
 const f=await api('/auth/v1/factors',{method:'POST',body:{factor_type:'totp',friendly_name:'PrimeBook '+Date.now(),issuer:'PrimeBook'}});
@@ -6492,7 +6500,7 @@ window.pbSyncNow=()=>{pill('sav');push()};
 /* ---- boot ---- */
 window.pbBoot=async function(){
 const hs=new URLSearchParams(location.hash.replace(/^#/,''));if(hs.get('access_token')){const t=hs.get('type');sbSave({access_token:hs.get('access_token'),refresh_token:hs.get('refresh_token'),expires_at:Math.floor(Date.now()/1000)+(+hs.get('expires_in')||3600)});try{history.replaceState(null,'',location.pathname+location.search)}catch(e){}try{const u=await api('/auth/v1/user');SB.user=u;sbSave(SB)}catch(e){sbSave(null);return cshow('c_login',friendly(e))}if(t=='recovery'){return cshow('c_reset')}}
-if(!SB||!SB.refresh_token){lsD(AS);return cshow('c_login')}
+if(window.pbSecGate&&!pbSecGate(!!hs.get('access_token')))return cshow('c_login');if(!SB||!SB.refresh_token){lsD(AS);return cshow('c_login')}
 try{await ensure()}catch(e){if(!isNet(e)){lsD(AS);return cshow('c_login','Your session ended. Please sign in again.')}}
 let mf=null;try{mf=await needMfa()}catch(e){}
 if(mf){AU.tmp={...AU.tmp,fid:mf};return cshow('c_mfa')}
@@ -8273,5 +8281,102 @@ const css=document.createElement('style');css.textContent=`
 @media(max-width:700px){.crw-lb select,.crw-lb input[type=date]{width:100%}.crw-lb{flex:1 1 140px}.crw-s span{flex:1 1 45%}.crw-s span:nth-child(odd){border-right:1px solid #e8eef8}}
 @media print{.crw-f,.crw-h .crw-a,.crw-l{display:none!important}}`;document.head.appendChild(css);
 })();
+/*SEC*/
+(function(){
+const MAXH=8,AUTO=15,LOWM=5,WARN=60000,AK0='fd_sess';
+const K_ACT='pb_act',K_OUT='pb_logout',K_WHY='pb_why',K_IDL='pb_idle_min';
+const g=k=>{try{return localStorage.getItem(k)}catch(e){return null}},s=(k,v)=>{try{localStorage.setItem(k,v)}catch(e){}},d=k=>{try{localStorage.removeItem(k)}catch(e){}};
+let last=Date.now(),lastWr=0,out=false,warnOn=false,warnKind='',lastTouch=0,touchAct=0,first=true,flushed=false,bc=null,tmr=0,focusBack=null;
+const H=()=>window.pbSecHooks||{};
+const idleMin=()=>{const v=+g(K_IDL)||AUTO;return Math.min(AUTO,Math.max(LOWM,Math.round(v)))};
+const t0=()=>SESS?(+SESS.t0||(+SESS.exp-MAXH*36e5)):0;
+const eff=()=>Math.max(last,+g(K_ACT)||0);
+const esc=x=>String(x).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const cloud=()=>!!window.PB_CLOUD;
+window.pbSecNew=function(id,keep){const n=Date.now();let t=n;if(keep&&SESS&&SESS.id==id&&+SESS.t0&&n<+SESS.t0+MAXH*36e5)t=+SESS.t0;s(K_ACT,String(n));d(K_WHY);return JSON.stringify({id,exp:t+MAXH*36e5,t0:t})};
+/* ---- messages shown on the sign-in screen after an automatic sign-out ---- */
+const whyMsg=()=>{let w=null;try{w=JSON.parse(g(K_WHY))}catch(e){}if(!w||Date.now()-(+w.t||0)>6e5){d(K_WHY);return''}d(K_WHY);
+ return w.r=='idle'?'You were signed out after '+(+w.m||idleMin())+' minutes of inactivity to protect your financial data. Please sign in again.':w.r=='max'?'Your 8-hour secure session has ended. Please sign in again.':w.r=='server'?'Your session is no longer valid. Please sign in again.':w.r=='resume'||w.r=='legacy'?'For your security, please sign in again.':w.r=='other'?'You were signed out in another tab or window.':''};
+const _au=window.auShow||auShow;auShow=function(st,err,ok){if((st=='login'||st=='c_login')&&!err&&!ok){const m=whyMsg();if(m)ok=m}return _au.call(this,st,err,ok)};
+/* ---- silent expiry check before anything is shown (page load) ---- */
+window.pbSecGate=function(fresh){const n=Date.now();let why=null;
+ if(SESS){const T=+SESS.t0;if(!T&&cloud())why='legacy';else{const st=T||(+SESS.exp-MAXH*36e5);if(n>=st+MAXH*36e5)why='max';else{const a=+g(K_ACT)||0;if(!a)s(K_ACT,String(n));else if(n-a>idleMin()*6e4)why='idle'}}}
+ else if(cloud()&&g('pb_sb')&&!fresh)why='resume';
+ if(!why)return true;
+ try{s(K_WHY,JSON.stringify({r:why,t:n,m:idleMin()}))}catch(e){}
+ try{(H().quiet||H().wipe||(()=>{}))()}catch(e){}SESS=null;d(AK0);return false};
+/* ---- warning dialog ---- */
+const css=document.createElement('style');css.textContent=`html body #pbsw{position:fixed;inset:0;z-index:2147483000;display:flex;align-items:center;justify-content:center;padding:16px;background:rgba(10,20,40,.62);backdrop-filter:blur(3px);font-family:Inter,system-ui,-apple-system,Segoe UI,sans-serif}
+html body #pbsw .bx{width:100%;max-width:440px;background:#fff;color:#14203a;border-radius:18px;box-shadow:0 24px 70px rgba(5,12,30,.45);overflow:hidden;animation:pbsIn .22s ease-out}
+html body #pbsw .hd{display:flex;gap:12px;align-items:center;padding:18px 22px;background:linear-gradient(120deg,#14284a,#22449b);color:#fff}html body #pbsw .hd svg{flex:none;width:34px;height:34px}html body #pbsw .hd b{display:block;font-size:17px;letter-spacing:.01em;text-transform:none}html body #pbsw .hd span{display:block;font-size:12.5px;opacity:.85;margin-top:1px}
+html body #pbsw .bd{padding:22px 22px 8px;text-align:center}html body #pbsw .bd p{margin:0;font-size:14px;line-height:1.55;color:#42506b}
+html body #pbsw .cd{font:700 46px/1.1 Inter,system-ui,sans-serif;font-variant-numeric:tabular-nums;color:#14284a;margin:14px 0 4px;letter-spacing:.02em}html body #pbsw .cd.lo{color:#b42318}
+html body #pbsw .pbwb{display:block;height:8px;border-radius:99px;background:#dbe4f5;margin:12px 0 4px;overflow:hidden}html body #pbsw .pbwb i{display:block;height:100%;width:100%;background:linear-gradient(90deg,#22449b,#3b82f6);border-radius:99px;transition:width 1s linear}html body #pbsw .pbwb i.lo{background:#d92d20}
+html body #pbsw .ft{display:flex;gap:10px;padding:14px 22px 18px}html body #pbsw .ft button{flex:1;padding:12px 14px;border-radius:12px;font:600 14.5px Inter,system-ui,sans-serif;cursor:pointer;border:1px solid #cfd8ea;background:#fff;color:#14284a;text-transform:none;letter-spacing:0}html body #pbsw .ft button.pr{background:#14284a;border-color:#14284a;color:#fff}html body #pbsw .ft button:focus-visible{outline:3px solid #93b4ff;outline-offset:2px}
+html body #pbsw .nt{padding:0 22px 16px;text-align:center;font-size:11.5px;color:#7a869c}
+html body #pbsb{position:fixed;top:0;left:0;right:0;z-index:2147482990;display:flex;gap:12px;align-items:center;justify-content:center;padding:9px 14px;background:#7a1c10;color:#fff;font:600 13.5px Inter,system-ui,sans-serif}html body #pbsb button{padding:5px 12px;border-radius:8px;border:1px solid #fff;background:transparent;color:#fff;font:600 12.5px Inter,system-ui,sans-serif;cursor:pointer}
+html body #pbso{position:fixed;inset:0;z-index:2147483600;display:flex;align-items:center;justify-content:center;padding:20px;background:linear-gradient(135deg,#0d1b36,#1b3a7a);color:#fff;font-family:Inter,system-ui,-apple-system,Segoe UI,sans-serif;text-align:center}
+html body #pbso .bx{max-width:420px}html body #pbso svg{width:56px;height:56px;margin-bottom:14px;opacity:.95}html body #pbso h2{margin:0 0 8px;font-size:22px;text-transform:none;letter-spacing:0;color:#fff}html body #pbso p{margin:0 0 6px;font-size:14.5px;line-height:1.55;opacity:.88}html body #pbso small{display:block;margin-top:10px;font-size:12px;opacity:.65}html body #pbso button{margin-top:18px;padding:12px 22px;border-radius:12px;border:0;background:#fff;color:#14284a;font:700 14.5px Inter,system-ui,sans-serif;cursor:pointer}
+@keyframes pbsIn{from{opacity:0;transform:translateY(10px) scale(.98)}to{opacity:1;transform:none}}@media(prefers-reduced-motion:reduce){html body #pbsw .bx{animation:none}html body #pbsw .pbwb i{transition:none}}@media print{#pbsw,#pbsb{display:none!important}}`;document.head.appendChild(css);
+const SHIELD='<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 3l11 4v8c0 7-4.6 11.6-11 14C9.6 26.6 5 22 5 15V7z"/><path d="M16 10v7l4 2.5"/></svg>';
+const LOCK='<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="6" y="14" width="20" height="14" rx="3"/><path d="M10 14V10a6 6 0 0112 0v4"/><circle cx="16" cy="21" r="1.6"/></svg>';
+const mmss=ms=>{const t=Math.max(0,Math.ceil(ms/1000)),m=Math.floor(t/60);return m+':'+String(t%60).padStart(2,'0')};
+const modeLbl=()=>idleMin()<=5?'High-security mode ('+idleMin()+' min)':'Inactivity limit '+idleMin()+' min';
+function showIdle(rem){let o=document.getElementById('pbsw');
+ if(!o){focusBack=document.activeElement;o=document.createElement('div');o.id='pbsw';o.setAttribute('role','alertdialog');o.setAttribute('aria-modal','true');o.setAttribute('aria-labelledby','pbswt');o.setAttribute('aria-describedby','pbswd');
+  o.innerHTML=`<div class="bx"><div class="hd">${SHIELD}<div><b id="pbswt">Are you still there?</b><span>${esc(modeLbl())}</span></div></div><div class="bd"><p id="pbswd">For your security, you will be signed out automatically because there has been no activity for a while.</p><div class="cd" id="pbswc" aria-hidden="true"></div><div class="pbwb"><i id="pbswp"></i></div><span id="pbswl" class="sr" style="position:absolute;left:-9999px" aria-live="assertive"></span></div><div class="ft"><button type="button" id="pbswo">Sign out now</button><button type="button" class="pr" id="pbswk">Stay signed in</button></div><div class="nt">${cloud()?'Your changes are saved online before you are signed out.':'Your session closes and you return to the sign-in page.'}</div></div>`;
+  document.body.appendChild(o);document.getElementById('pbswk').onclick=()=>stay();document.getElementById('pbswo').onclick=()=>logout('manual');
+  o.addEventListener('keydown',e=>{if(e.key=='Tab'){const b=[...o.querySelectorAll('button')],i=b.indexOf(document.activeElement);e.preventDefault();b[(i+(e.shiftKey?-1:1)+b.length)%b.length].focus()}if(e.key=='Escape'){e.preventDefault();stay()}});
+  document.getElementById('pbswk').focus();window.__pbWarn=Date.now()}
+ const c=document.getElementById('pbswc'),p=document.getElementById('pbswp');if(c){c.textContent=mmss(rem);c.className='cd'+(rem<=10000?' lo':'')}if(p){p.style.width=Math.max(0,rem/WARN*100)+'%';p.className=rem<=10000?'lo':''}
+ const l=document.getElementById('pbswl');const sec=Math.ceil(rem/1000);if(l&&(sec%15==0||sec<=5))l.textContent='Signing out in '+sec+' seconds.'}
+function showMax(rem){let b=document.getElementById('pbsb');if(!b){b=document.createElement('div');b.id='pbsb';b.setAttribute('role','alert');b.innerHTML='<span id="pbsbt"></span><button type="button" id="pbsbo">Sign out now</button>';document.body.appendChild(b);document.getElementById('pbsbo').onclick=()=>logout('manual')}
+ document.getElementById('pbsbt').textContent='Your 8-hour secure session ends in '+mmss(rem)+'. Save your work; you will need to sign in again.'}
+function hideWarn(){const o=document.getElementById('pbsw');if(o){o.remove();try{focusBack&&focusBack.focus&&focusBack.focus()}catch(e){}}const b=document.getElementById('pbsb');if(b)b.remove();warnOn=false;flushed=false}
+function stay(){const n=Date.now();last=n;s(K_ACT,String(n));lastWr=n;hideWarn();touch(true);tick()}
+/* ---- activity tracking: counts only genuine user input, never timers or sync polling ---- */
+const act=e=>{if(out||!SESS||warnOn||e.isTrusted===false)return;const n=Date.now();if(n-last<500)return;last=n;if(n-lastWr>4000){lastWr=n;s(K_ACT,String(n))}};
+['pointerdown','mousedown','keydown','touchstart','wheel','scroll','mousemove'].forEach(ev=>addEventListener(ev,act,{capture:true,passive:true}));
+/* ---- server heartbeat ---- */
+async function touch(force){if(!SESS||out||!H().touch)return;const n=Date.now(),e=eff();if(!force&&!first&&(n-lastTouch<6e4||e<=touchAct||document.hidden))return;first=false;lastTouch=n;touchAct=e;
+ try{await H().touch(Math.max(0,Math.round((n-e)/1000)),idleMin())}catch(x){if(x&&(x.status==401||x.status==403)&&/PB_SESSION/.test(x.message||''))logout('server')}}
+/* ---- the clock ---- */
+function tick(){if(out||!SESS)return;const n=Date.now();try{const m=+(typeof S!='undefined'&&S&&S.sec&&S.sec.idle);if(m&&m>=LOWM&&m<=AUTO&&String(m)!==g(K_IDL))s(K_IDL,String(m))}catch(e){}
+ const eIdle=eff()+idleMin()*6e4-n,eMax=t0()+MAXH*36e5-n,rem=Math.min(eIdle,eMax);
+ if(rem<=0)return logout(eMax<=0?'max':'idle');
+ if(rem<=WARN){const kind=eMax<=eIdle?'max':'idle';warnOn=true;if(!flushed){flushed=true;try{H().flush&&H().flush()}catch(e){}}if(kind=='max'){const o=document.getElementById('pbsw');if(o)o.remove();showMax(rem)}else showIdle(rem)}
+ else if(warnOn)hideWarn();
+ touch(false)}
+/* ---- sign-out: server revoke, data wipe, every tab, redirect ---- */
+const TXT={idle:['Signed out for inactivity','You were inactive for '],max:['Secure session ended','Your 8-hour session limit was reached.'],server:['Session ended','Your session is no longer valid.'],manual:['Signed out','You have been signed out safely.'],other:['Signed out','You signed out in another tab or window.']};
+function cover(r){let o=document.getElementById('pbso');if(!o){o=document.createElement('div');o.id='pbso';o.setAttribute('role','alert');document.body.appendChild(o)}
+ const t=TXT[r]||TXT.server,sub=r=='idle'?t[1]+idleMin()+' minutes.':t[1];
+ o.innerHTML=`<div class="bx">${LOCK}<h2>${esc(t[0])}</h2><p>${esc(sub)}</p><p>${cloud()?'Your financial data has been cleared from this device.':'Your session has been closed.'}</p><small>Taking you to the sign-in page…</small><button type="button" id="pbsoo">Sign in</button></div>`;
+ document.getElementById('pbsoo').onclick=()=>go2();hideWarn();
+ try{const m=document.getElementById('m');if(m)m.innerHTML='';document.querySelectorAll('.ov,.pbm,#pbm').forEach(x=>x.remove())}catch(e){}}
+const go2=()=>{try{location.replace(location.pathname)}catch(e){location.reload()}};
+async function logout(reason,remote){if(out)return;out=true;window.__pbOut=1;clearInterval(tmr);cover(reason);
+ if(!remote){try{s(K_WHY,JSON.stringify({r:reason,t:Date.now(),m:idleMin()}));const m=JSON.stringify({r:reason,t:Date.now(),n:Math.random()});s(K_OUT,m);bc&&bc.postMessage({t:'out',r:reason})}catch(e){}
+  try{await (H().logout?H().logout(reason):Promise.resolve())}catch(e){}}
+ else{try{H().wipe&&H().wipe()}catch(e){}}
+ SESS=null;d(AK0);setTimeout(go2,remote?500:1100)}
+window.pbSec={logout,touch:()=>touch(true),idleMin,get server(){return window.pbSecServer},
+ setIdle(m){m=Math.min(AUTO,Math.max(LOWM,+m||AUTO));s(K_IDL,String(m));try{S.sec=S.sec||{};S.sec.idle=m;save()}catch(e){}touch(true);try{go()}catch(e){}}};
+try{bc=new BroadcastChannel('pb_sec');bc.onmessage=m=>{if(m.data&&m.data.t=='out'&&SESS&&!out)logout(m.data.r||'other','remote')}}catch(e){}
+addEventListener('storage',e=>{if(out||!SESS)return;
+ if(e.key===K_OUT&&e.newValue){let m={};try{m=JSON.parse(e.newValue)}catch(x){}return logout(m.r||'other','remote')}
+ if(e.key===AK0&&e.newValue===null)return logout('other','remote');
+ if(e.key==='pb_sb'&&e.newValue===null&&cloud())return logout('other','remote');
+ if(e.key===K_ACT)tick()});
+['visibilitychange','focus','pageshow','online'].forEach(ev=>addEventListener(ev,()=>{tick()}));
+tmr=setInterval(tick,1000);
+/* ---- settings card ---- */
+const ov=V.bk;V.bk=function(){const h=ov?ov.apply(this,arguments):'';if(!SESS)return h;const m=idleMin(),sv=window.pbSecServer;
+ const st=cloud()?(sv===true?'<span style="color:#0f7a4f;font-weight:700">Active</span>: the server also refuses expired sessions.':sv===false?'<span style="color:#b45309;font-weight:700">Not installed yet</span>: timers run in this browser only. The owner should run <b>supabase/session-guard.sql</b> once in the Supabase SQL editor.':'Checking…'):'Not applicable (local account).';
+ return `<div class="cd-card" style="margin:0 0 14px"><h4>Session security</h4><p>You are signed out automatically after a period of inactivity, and always after <b>8 hours</b>, so a forgotten screen never stays open.</p><div class="sh" style="margin:0;align-items:center;gap:10px;flex-wrap:wrap"><span style="font-weight:600">Inactivity timeout</span><select onchange="pbSec.setIdle(this.value)" style="padding:8px 10px;border-radius:10px">${[[15,'15 minutes (standard)'],[10,'10 minutes'],[5,'5 minutes (high security)']].map(([v,l])=>`<option value="${v}" ${v==m?'selected':''}>${l}</option>`).join('')}</select></div><p class="mu" style="margin:10px 0 0;font-size:12.5px">A warning appears 60 seconds before sign-out. Server-side enforcement: ${st}</p></div>`+h};
+setTimeout(()=>{if(SESS)tick()},0);
+})();
+
+if(!window.PB_CLOUD&&window.pbSecGate)pbSecGate();
 if(window.PB_CLOUD){pbBoot()}else if(!SESS){let pv=0;try{pv=sessionStorage.getItem('pb_preview');if(pv)sessionStorage.removeItem('pb_preview')}catch(e){}if(pv)location.reload();else auShow('login')}else{const A0=auAcc();if(!A0){try{localStorage.removeItem(AS)}catch(e){}auShow('login')}else if(!A0.pd)auShow('welcome');else{autoRecur();go()}}
 </script></body></html>
