@@ -5589,7 +5589,7 @@ const oc=V.ctx;V.ctx=function(){let h=oc.apply(this,arguments);
  h=h.replace('<button class="plf" onclick="ctOpen()">+ New transaction</button>','<span style="display:flex;gap:8px;flex-wrap:wrap"><button class="plf" onclick="sdOpen()">+ Currency sale deal</button><button class="plo" onclick="ctOpen()">+ Multi-currency entry</button></span>');
  return h};
 /*UPDCHK*/
-(function(){const B='2026-10-19-cm';window.PB_BUILD=B;if(location.protocol=='file:')return;let nb=null,tm=0;
+(function(){const B='2026-10-19-cn';window.PB_BUILD=B;if(location.protocol=='file:')return;let nb=null,tm=0;
 const busy=()=>{const a=document.activeElement;return !!(document.querySelector('.ov')||(a&&/^(INPUT|TEXTAREA)$/.test(a.tagName)&&String(a.value||'').length>0))};
 function go2(){try{const k='pb_upd_'+nb,n=+(sessionStorage.getItem(k)||0);sessionStorage.setItem(k,n+1)}catch(e){}location.replace(location.pathname+'?v='+encodeURIComponent(nb))}
 function bar(){let d=document.getElementById('pbupd');if(!d){d=document.createElement('div');d.id='pbupd';d.setAttribute('role','button');d.style.cssText='position:fixed;left:50%;transform:translateX(-50%);top:10px;z-index:100000;background:#0b3d33;color:#fff;padding:11px 18px;border-radius:12px;font:700 13px Inter,system-ui,sans-serif;box-shadow:0 6px 20px rgba(0,0,0,.3);cursor:pointer;text-align:center;max-width:92vw';d.onclick=()=>{d.textContent='Updating…';go2()};document.body.appendChild(d)}d.textContent='A new version of PrimeBook is ready. Tap here to update.'}
@@ -10691,10 +10691,12 @@ const rsAll=()=>{const c=stt();c.res=c.res||[];return c.res};
 function model(){
  const cs=stt(),cc=Object.keys(S.rates),since=addD(tdy(),-29),since7=addD(tdy(),-6);
  const brs=S.br.filter(b=>br=='all'||b.id==br);
- const P={};cc.forEach(c=>P[c]={c,q:0,v:0,mk:0,by:{},buyQ:0,sellQ:0,buyV:0,sellV:0,pl30:0,nB:0,nS:0,last:'',lastB:{},rs:0,rsn:0,po:0});
+ const P={};cc.forEach(c=>P[c]={c,q:0,v:0,mk:0,by:{},buyQ:0,sellQ:0,buyV:0,sellV:0,pl30:0,nB:0,nS:0,last:'',lastB:{},rs:0,rsn:0,po:0,pi:0,hl:''});
  {const today=tdy();let ch=false;rsAll().forEach(r=>{if(r.status=='active'&&r.exp&&r.exp<today){r.status='expired';(r.hist=r.hist||[]).push({t:new Date().toISOString(),by:'System',act:'Expired',amt:r.amt-(r.used||0)});ch=true}});if(ch)setTimeout(()=>{try{save()}catch(e){}},0)}
  rsAll().filter(r=>r.status=='active').forEach(r=>{if(br!='all'&&r.br!=br)return;const x=P[r.cur];if(!x)return;x.rs+=Math.max(0,r.amt-(r.used||0));x.rsn++});
  cs.req.filter(x=>x.status=='pending'&&P[x.cur]&&(br=='all'||x.from==br)).forEach(x=>{P[x.cur].po+=x.type=='transfer'?+x.amt:Math.max(0,-(+x.diff||0))});
+ cs.req.filter(x=>x.status=='pending'&&x.type=='transfer'&&P[x.cur]&&(br=='all'||x.to==br)).forEach(x=>{P[x.cur].pi+=+x.amt||0});
+ Object.keys(S.pos||{}).forEach(k=>{const a=k.split('|');if(a.length>1&&P[a[1]]&&(br=='all'||a[0]==br))P[a[1]].hl=P[a[1]].hl||a[0]});
  Object.keys(S.pos||{}).forEach(k=>{const p=k.split('|'),b=p.length>1?p[0]:'',c=p.length>1?p[1]:p[0];if(!P[c])return;if(br!='all'&&b!=br)return;const e=S.pos[k]||{},qq=e.q||0;if(Math.abs(qq)<1e-9)return;const x=P[c];x.q+=qq;x.v+=qq*(e.c||0);x.by[b]={q:qq,c:e.c||0}});
  const D=(S.fx||[]).filter(d=>(br=='all'||d.br==br)&&P[d.cur]);
  const dayB={};for(let i=13;i>=0;i--)dayB[addD(tdy(),-i)]={b:0,s:0};
@@ -10706,7 +10708,8 @@ function model(){
   const h=rh.filter(z=>z.cur==c);x.spark=h.slice(-14).map(z=>(z.b+z.s)/2);x.lastRate=h.length?h[h.length-1].date:'';
   x.chg=h.length>1?(((h[h.length-1].b+h[h.length-1].s)/2)-((h[h.length-2].b+h[h.length-2].s)/2))/(((h[h.length-2].b+h[h.length-2].s)/2)||1)*100:null;
   x.min=+r.minq||0;x.max=+cs.max[c]||0;x.daily=x.sellQ/30;x.cover=x.daily>0?x.q/x.daily:null;x.name=r.name||'';
-  x.av=Math.max(0,x.q-x.rs);x.st=x.q<=1e-9?'out':(x.min>0&&x.av<=x.min)?'low':(x.max>0&&x.q>x.max)?'over':'ok';return x});
+  x.av=Math.max(0,x.q-x.rs);x.st=x.q<=1e-9?'out':(x.min>0&&x.av<=x.min)?'low':(x.max>0&&x.q>x.max)?'over':'ok';
+  x.ss=x.av>.004?((x.min>0&&x.av<x.min)?'low':'in'):'out';x.inc=x.pi>.004;if(x.hl==''){const d=(S.fx||[]).filter(z=>z.cur==c&&(br=='all'||z.br==br)).slice(-1)[0];if(d)x.hl=d.br}return x});
  const held=rows.filter(r=>r.q>1e-9),tv=held.reduce((s,r)=>s+r.v,0),tm=held.reduce((s,r)=>s+r.mk,0);
  rows.forEach(r=>r.sh=tm>0&&r.q>0?r.mk/tm*100:0);
  const real=rows.reduce((s,r)=>s+r.pl30,0),sold=rows.reduce((s,r)=>s+r.sellV,0),bought=rows.reduce((s,r)=>s+r.buyV,0);
@@ -10749,6 +10752,19 @@ function movements(){
 
 /* ---------- small ui pieces ---------- */
 const spark=(a,w=76,h=24)=>{if(!a||a.length<2)return'<span class="cs-mu">—</span>';const mn=Math.min(...a),mx=Math.max(...a),sp=mx-mn||1,pts=a.map((v,i)=>(i/(a.length-1)*w).toFixed(1)+','+(h-2-(v-mn)/sp*(h-4)).toFixed(1)).join(' '),up=a[a.length-1]>=a[0];return`<svg class="cs-sp" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}"><polyline fill="none" stroke="${up?'#16a34a':'#dc2626'}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" points="${pts}"/></svg>`};
+const FLC={EUR:'EU',USD:'US',GBP:'GB',CAD:'CA',AED:'AE',KES:'KE',ETB:'ET',SAR:'SA',INR:'IN',UGX:'UG',TZS:'TZ',RWF:'RW',SOS:'SO',SDG:'SD',EGP:'EG',TRY:'TR',PKR:'PK',QAR:'QA',KWD:'KW',BHD:'BH',OMR:'OM',CHF:'CH',JPY:'JP',CNY:'CN',AUD:'AU',NZD:'NZ',ZAR:'ZA',NGN:'NG',GHS:'GH',DJF:'DJ',ERN:'ER',BIF:'BI',MAD:'MA',JOD:'JO',LBP:'LB'};
+const cflag=c=>FLC[c]?String.fromCodePoint(...[...FLC[c]].map(ch=>127397+ch.charCodeAt(0))):c.slice(0,3);
+const cname=(c,r)=>{if(r&&r.name)return r.name;try{return new Intl.DisplayNames(['en'],{type:'currency'}).of(c)||c}catch(e){return c}};
+const ICW='<svg class="cs-wi2" viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><path d="M12 3.5l9.5 16.5h-19z" fill="#fee2e2" stroke="#dc2626" stroke-width="2" stroke-linejoin="round"/><path d="M12 10v4.500M12 17.200v.1" stroke="#dc2626" stroke-width="2" stroke-linecap="round"/></svg>';
+const SSB=r=>r.ss=='out'?`<span class="cs-bd bad">Out of Stock</span>${r.inc?'<span class="cs-bd inc">Incoming stock</span>':''}`:r.ss=='low'?'<span class="cs-bd warn">Low Stock</span>':'<span class="cs-bd ok">In Stock</span>'+(r.st=='over'?'<span class="cs-bd info">Over max</span>':'');
+const SSR={out:0,low:1,in:2};
+let expd={};
+function locsOf(r){const o=[],rv={};rsAll().filter(z=>z.status=='active'&&z.cur==r.c).forEach(z=>rv[z.br]=(rv[z.br]||0)+Math.max(0,z.amt-(z.used||0)));
+ Object.entries(r.by).forEach(([b,e])=>o.push({n:'Currency stock',ty:'Stock',b:brOf(b),q:e.q,rs:rv[b]||0,av:Math.max(0,e.q-(rv[b]||0))}));
+ const P=cpos(S.j),A=accts();A.filter(a=>a.ccy==r.c&&!a.off&&(br=='all'||a.br==br||a.shared)).forEach(a=>{const h=P[a.id+'#'+r.c];o.push({n:a.label,ty:a.kind=='Bank'?'Bank account':a.sub?'Sub-account':'Cash account',b:brOf(a.br),bal:h?h.b:0})});
+ Object.values(P).filter(h=>h.ccy==r.c&&h.id.startsWith('sub|')&&!o.some(z=>z.n==(A.find(a=>a.id==h.id)||{}).label)).forEach(h=>{const a=A.find(x=>x.id==h.id);if(a&&(br=='all'||a.br==br))o.push({n:a.label,ty:'Sub-account',b:brOf(a.br),bal:h.b})});
+ return o}
+function locText(r){const s=Object.entries(r.by).sort((a,b)=>b[1].q-a[1].q);if(s.length)return{t:brOf(s[0][0])+(s.length>1?' +'+(s.length-1)+' more':''),h:0};const a=locsOf(r).filter(z=>z.ty!='Stock')[0];if(a)return{t:a.n,h:1};if(r.hl)return{t:brOf(r.hl),h:1};return{t:'No stock location yet',h:1}}
 const badge=s=>({ok:'<span class="cs-bd ok">Healthy</span>',low:'<span class="cs-bd warn">Low</span>',out:'<span class="cs-bd bad">Out</span>',over:'<span class="cs-bd info">Over max</span>'})[s];
 const dn=n=>n>0.004?'cs-up':n<-0.004?'cs-dn':'';
 function donut(m){const R=m.held.slice().sort((a,b)=>b.mk-a.mk);if(!R.length||m.tm<=0)return'<div class="cs-empty">No currency in stock yet.<br><small>Buy currency in the Forex Desk to see allocation.</small></div>';let top=R.slice(0,5),rest=R.slice(5),oth=rest.reduce((s,r)=>s+r.mk,0);const seg=top.map((r,i)=>({l:r.c,v:r.mk,c:CUR_PAL[i]}));if(oth>0)seg.push({l:'Other',v:oth,c:CUR_PAL[5]});const C=2*Math.PI*52;let off=0;
@@ -10770,17 +10786,26 @@ function chrome(m){const pend=m.cs.req.filter(x=>x.status=='pending').length;con
  <div class="cs-act">${canW()?`<button class="cs-b pri" data-csx="go" data-csv="fdk">Buy / sell currency</button><button class="cs-b" data-csx="tf">Transfer stock</button><button class="cs-b" data-csx="go" data-csv="fx" data-cssub="rates">Board rates</button>`:''}<button class="cs-b" data-csx="csv">Export CSV</button></div></div>`}
 
 function posTable(m,full){
- let R=m.rows.filter(r=>fs=='all'?true:fs=='held'?r.q>1e-9:r.st==fs);if(fcur)R=R.filter(r=>r.c==fcur);const s=q.trim().toLowerCase();if(s)R=R.filter(r=>(r.c+' '+r.name).toLowerCase().includes(s));
- const val={c:r=>r.c,q:r=>r.q,av:r=>r.av,avg:r=>r.avg,mid:r=>r.mid,v:r=>r.v,mk:r=>r.mk,g:r=>r.g,sh:r=>r.sh,cov:r=>r.cover==null?1e9:r.cover};
+ const cnt={all:m.rows.length,in:0,low:0,out:0,ord:0};m.rows.forEach(r=>{cnt[r.ss]++;if(r.ss=='out'&&r.inc)cnt.ord++});
+ let R=m.rows.filter(r=>fs=='all'?true:fs=='ord'?(r.ss=='out'&&r.inc):r.ss==fs);if(fcur)R=R.filter(r=>r.c==fcur);const s=q.trim().toLowerCase();if(s)R=R.filter(r=>(r.c+' '+cname(r.c,S.rates[r.c])+' '+locText(r).t).toLowerCase().includes(s));
+ const val={c:r=>r.c,q:r=>r.q,av:r=>r.av,ss:r=>SSR[r.ss],loc:r=>locText(r).t,avg:r=>r.avg,mid:r=>r.mid,v:r=>r.v,mk:r=>r.mk,g:r=>r.g,sh:r=>r.sh,cov:r=>r.cover==null?1e9:r.cover};
  R.sort((a,b)=>{const f=val[sk]||val.mk,x=f(a),y=f(b);return(typeof x=='string'?x.localeCompare(y):x-y)*sd});
- const th=(k,l,n)=>`<th class="${n?'n':''}"><button data-csx="sort" data-csk="${k}">${l}${sk==k?(sd>0?' ▲':' ▼'):''}</button></th>`;
+ const th=(k,l,n,x)=>`<th class="${n?'n':''}${x?' cs-x':''}"><button data-csx="sort" data-csk="${k}">${l}${sk==k?(sd>0?' ▲':' ▼'):''}</button></th>`;
  const tot=R.reduce((a,r)=>({v:a.v+r.v,mk:a.mk+r.mk,g:a.g+(r.q>1e-9?r.g:0)}),{v:0,mk:0,g:0});
- const body=R.map(r=>`<tr data-csx="det" data-csc="${E(r.c)}" class="cs-row"><td><div class="cs-cc"><span class="cs-fl">${E(r.c.slice(0,3))}</span><div><b>${E(r.c)}</b><small>${E(r.name||'—')}</small></div></div></td><td class="n">${qf(r.q)}</td><td class="n"><b>${qf(r.av)}</b></td><td class="n">${r.rs>.004?`<span class="cs-rsv">${qf(r.rs)}</span>`:'—'}</td><td class="n">${r.avg?r.avg.toFixed(4):'—'}</td><td class="n">${r.mid.toFixed(4)}${r.chg!=null?`<small class="${dn(r.chg)}">${r.chg>0?'▲':r.chg<0?'▼':''} ${Math.abs(r.chg).toFixed(2)}%</small>`:''}</td><td>${spark(r.spark)}</td><td class="n">${mf(r.v)}</td><td class="n"><b>${mf(r.mk)}</b></td><td class="n ${dn(r.g)}">${r.q>1e-9?sgn(r.g):'—'}</td><td class="n">${r.sh?r.sh.toFixed(1)+'%':'—'}</td><td class="n">${r.cover==null?'—':Math.round(r.cover)+' d'}</td><td>${badge(r.st)}</td></tr>`).join('');
- return`<div class="cs-card"><div class="cs-ch"><div><h3>Currency positions</h3><p>All figures in ${E(S.base)}. Select a row for branch detail, deals and rate history.</p></div>
- <div class="cs-flt noprint"><input id="cs-q" type="search" placeholder="Search currency" value="${E(q)}" autocomplete="off"><select data-csx="fs"><option value="all"${fs=='all'?' selected':''}>All currencies</option><option value="held"${fs=='held'?' selected':''}>In stock</option><option value="low"${fs=='low'?' selected':''}>Low</option><option value="out"${fs=='out'?' selected':''}>Out of stock</option><option value="over"${fs=='over'?' selected':''}>Over max</option></select></div></div>
- ${R.length?`<div class="cs-w"><table class="cs-t"><thead><tr>${th('c','Currency')}${th('q','On hand',1)}${th('av','Available',1)}<th class="n">Reserved</th>${th('avg','Avg cost',1)}${th('mid','Board mid',1)}<th>Trend</th>${th('v','Cost value',1)}${th('mk','Market value',1)}${th('g','Unrealised',1)}${th('sh','Share',1)}${th('cov','Cover',1)}<th>Status</th></tr></thead><tbody>${body}</tbody><tfoot><tr><td>Total</td><td></td><td></td><td></td><td></td><td></td><td></td><td class="n">${mf(tot.v)}</td><td class="n">${mf(tot.mk)}</td><td class="n ${dn(tot.g)}">${sgn(tot.g)}</td><td></td><td></td><td></td></tr></tfoot></table></div>`:`<div class="cs-empty">${Object.keys(S.rates).length?'No currency matches your filter.':'No currencies registered yet.<br><small>Add currencies under Settings → Currencies, then buy stock in the Forex Desk.</small>'}</div>`}</div>`}
+ const body=R.map(r=>{const z=r.ss=='out',L=locText(r),ex=!!expd[r.c],nm=cname(r.c,S.rates[r.c]);
+  let h=`<tr data-csx="det" data-csc="${E(r.c)}" class="cs-row${z?' cs-z':''}"><td><div class="cs-cc"><button class="cs-ex${ex?' on':''}" data-csx="exp" data-csc="${E(r.c)}" aria-label="Show accounts for ${E(r.c)}" aria-expanded="${ex}">›</button><span class="cs-fl">${E(cflag(r.c))}</span><div><b>${E(r.c)} — ${E(nm)}</b></div></div></td>
+  <td class="n">${z?`<span class="cs-zr">${ICW}${fmt(r.av)}</span><small class="cs-zm">No available stock</small>`:`<b>${fmt(r.av)}</b>`}</td><td><div class="cs-st">${SSB(r)}</div></td>
+  <td class="cs-loc${L.h?' h':''}">${E(L.t)}${L.h?'<small>last known</small>':''}</td>
+  <td class="n cs-x">${fmt(r.q)}</td><td class="n">${r.rs>.004?`<span class="cs-rsv">${fmt(r.rs)}</span>`:'—'}</td><td class="n cs-x">${r.avg?r.avg.toFixed(4):'—'}</td><td class="n cs-x">${r.mid.toFixed(4)}${r.chg!=null?`<small class="${dn(r.chg)}">${r.chg>0?'▲':r.chg<0?'▼':''} ${Math.abs(r.chg).toFixed(2)}%</small>`:''}</td><td class="cs-x">${spark(r.spark)}</td><td class="n cs-x">${mf(r.v)}</td><td class="n"><b>${mf(r.mk)}</b></td><td class="n cs-x ${dn(r.g)}">${r.q>1e-9?sgn(r.g):'—'}</td><td class="n cs-x">${r.sh?r.sh.toFixed(1)+'%':'—'}</td><td class="n cs-x">${r.cover==null?'—':Math.round(r.cover)+' d'}</td></tr>`;
+  if(ex){const L2=locsOf(r);h+=`<tr class="cs-xr"><td colspan="14"><div class="cs-bk"><table><thead><tr><th>Account / location</th><th>Type</th><th>Branch</th><th class="n">On hand / balance</th><th class="n">Reserved</th><th class="n">Available</th></tr></thead><tbody>${L2.length?L2.map(a=>a.ty=='Stock'?`<tr><td>${E(a.n)}</td><td>${a.ty}</td><td>${E(a.b)}</td><td class="n">${fmt(a.q)}</td><td class="n">${a.rs>.004?fmt(a.rs):'—'}</td><td class="n"><b>${fmt(a.av)}</b></td></tr>`:`<tr><td>${E(a.n)}</td><td>${a.ty}</td><td>${E(a.b)}</td><td class="n">${fmt(a.bal)}</td><td class="n">—</td><td class="n cs-mu">account balance</td></tr>`).join(''):'<tr><td colspan="6" class="cs-mu">No stock location or account is assigned to this currency yet.</td></tr>'}</tbody></table><small class="cs-mu">Available stock = on hand − active reservations. Account balances are shown for reference and are not added to stock.${z&&L.h&&L2.length?' Locations shown for zero-stock currencies are historical.':''}</small></div></td></tr>`}
+  return h}).join('');
+ const chip=(k,l)=>`<button type="button" class="cs-fc${fs==k?' on':''}" data-csx="fsb" data-csv="${k}">${l} <em>${cnt[k]}</em></button>`;
+ return`<div class="cs-card"><div class="cs-ch"><div><h3>Currency Stock Balances</h3><p>Real-time currency availability across accounts and stock locations.</p></div>
+ <div class="cs-flt noprint"><input id="cs-q" type="search" placeholder="Search currency or location" value="${E(q)}" autocomplete="off"></div></div>
+ <div class="cs-fcs noprint">${chip('all','All Currencies')}${chip('in','In Stock')}${chip('low','Low Stock')}${chip('out','Out of Stock')}${chip('ord','Ordered')}<span class="cs-mu cs-fn">Values in ${E(S.base)} unless noted</span></div>
+ ${R.length?`<div class="cs-w"><table class="cs-t"><thead><tr>${th('c','Currency')}${th('av','Available balance',1)}${th('ss','Status')}${th('loc','Stock location')}${th('q','On hand',1,1)}<th class="n">Reserved</th>${th('avg','Avg cost',1,1)}${th('mid','Board mid',1,1)}<th class="cs-x">Trend</th>${th('v','Cost value',1,1)}${th('mk','Market value',1)}${th('g','Unrealised',1,1)}${th('sh','Share',1,1)}${th('cov','Cover',1,1)}</tr></thead><tbody>${body}</tbody><tfoot><tr><td>Total</td><td></td><td></td><td></td><td class="cs-x"></td><td></td><td class="cs-x"></td><td class="cs-x"></td><td class="cs-x"></td><td class="n cs-x">${mf(tot.v)}</td><td class="n">${mf(tot.mk)}</td><td class="n cs-x ${dn(tot.g)}">${sgn(tot.g)}</td><td class="cs-x"></td><td class="cs-x"></td></tr></tfoot></table></div>`:`<div class="cs-empty">${Object.keys(S.rates).length?'No currency matches your filter.':'No currencies registered yet.<br><small>Add currencies under Settings → Currencies, then buy stock in the Forex Desk.</small>'}</div>`}</div>`}
 
-const WID=[['kp','Key figures',12],['ask','Ask your currency stock',12],['in','Smart insights',8],['al','Allocation',4],['po','Currency positions',12],['ac','Deal activity',8],['br','By branch',4]],SPANS=[4,6,8,12];
+const WID=[['kp','Key figures',12],['ask','Ask your currency stock',12],['in','Smart insights',8],['al','Allocation',4],['po','Currency Stock Balances',12],['ac','Deal activity',8],['br','By branch',4]],SPANS=[4,6,8,12];
 let wedit=false,dragId='';
 const layKey=()=>String(me().name||'user');
 function lay(){const cs=stt();cs.lay=cs.lay||{};let L=cs.lay[layKey()];if(!L)L=cs.lay[layKey()]={order:WID.map(w=>w[0]),hide:[],span:{}};
@@ -10834,7 +10859,7 @@ function lmTab(m){const w=canW(),own=me().role=='Owner';
  const rows=m.rows.map(r=>`<tr><td><b>${E(r.c)}</b><small>${E(r.name||'')}</small></td><td class="n">${qf(r.q)}</td><td class="n"><input class="cs-in2" type="number" min="0" step="any" id="lm_min_${E(r.c)}" value="${r.min||''}" placeholder="None" ${w?'':'disabled'}></td><td class="n"><input class="cs-in2" type="number" min="0" step="any" id="lm_max_${E(r.c)}" value="${r.max||''}" placeholder="None" ${w?'':'disabled'}></td><td>${badge(r.st)}</td></tr>`).join('');
  return`<div class="cs-card"><div class="cs-ch"><div><h3>Stock limits</h3><p>Minimum triggers low-stock alerts and the dashboard insights. Maximum flags overstock. Leave blank for no limit.</p></div></div>${rows?`<div class="cs-w"><table class="cs-t"><thead><tr><th>Currency</th><th class="n">On hand</th><th class="n">Minimum</th><th class="n">Maximum</th><th>Status</th></tr></thead><tbody>${rows}</tbody></table></div>${w?'<div class="cs-ft"><button class="cs-b pri" data-csx="lmsave">Save limits</button></div>':''}`:'<div class="cs-empty">No currencies registered yet.</div>'}</div>
  <div class="cs-g2b"><div class="cs-card"><div class="cs-ch"><div><h3>Approval control</h3><p>Transfers and count adjustments above this value, in ${E(S.base)}, need an Owner or Manager to approve. Zero turns the control off.</p></div></div><div class="cs-fg"><label>Approval threshold<input id="lm_thr" type="number" min="0" step="any" value="${m.cs.thr||''}" placeholder="0" ${own?'':'disabled'}></label></div>${own?'<div class="cs-ft"><button class="cs-b pri" data-csx="thrsave">Save threshold</button></div>':'<p class="cs-mu">Only the Owner can change this.</p>'}</div>
- <div class="cs-card"><div class="cs-ch"><div><h3>Ledger reconciliation</h3><p>Position records against account 1100.</p></div></div><div class="cs-rc"><div><span>Positions at cost</span><b>${mf(m.tv)}</b></div><div><span>Ledger balance</span><b>${mf(m.led)}</b></div><div><span>Difference</span><b class="${Math.abs(m.diff)>0.05?'cs-dn':'cs-up'}">${sgn(m.diff)}</b></div></div><p class="cs-mu">${Math.abs(m.diff)>0.05?'The records disagree. Check recent journal entries and manual postings to Currency Stock.':'Currency positions and the general ledger agree.'}</p></div></div>`}
+ <div class="cs-card"><div class="cs-ch"><div><h3>Ledger reconciliation</h3><p>Position records against account 1100.</p></div></div><div class="cs-rc"><div><span>Positions at cost</span><b>${mf(m.tv)}</b></div><div><span>Ledger balance</span><b>${mf(m.led)}</b></div><div><span>Difference</span><b class="${Math.abs(m.diff)>0.05?'cs-dn':'cs-up'}">${sgn(m.diff)}</b></div></div><p class="cs-mu">${Math.abs(m.diff)>0.05?'The records disagree. Check recent journal entries and manual postings to Currency Stock.':'Currency stock balances and the general ledger agree.'}</p></div></div>`}
 
 function auTab(){const L=stt().log.slice().reverse(),s=aud.q.trim().toLowerCase();const R=L.filter(x=>(!aud.act||x.act==aud.act)&&(!s||(x.by+' '+x.cur+' '+x.detail+' '+x.act).toLowerCase().includes(s))).slice(0,300);const acts=[...new Set(L.map(x=>x.act))];
  return`<div class="cs-card"><div class="cs-ch"><div><h3>Audit trail</h3><p>Who changed currency stock controls, and when. Deals and journal entries are audited in the main Audit Trail.</p></div><div class="cs-flt noprint"><input id="cs-aq" type="search" placeholder="Search" value="${E(aud.q)}" autocomplete="off"><select data-csx="af"><option value="">All actions</option>${acts.map(a=>`<option${aud.act==a?' selected':''}>${E(a)}</option>`).join('')}</select></div></div>${R.length?`<div class="cs-w"><table class="cs-t"><thead><tr><th>When</th><th>User</th><th>Action</th><th>Currency</th><th>Branch</th><th class="n">Amount</th><th>Detail</th></tr></thead><tbody>${R.map(x=>`<tr><td>${E(x.t.slice(0,16).replace('T',' '))}</td><td>${E(x.by)}<small>${E(x.role)}</small></td><td><b>${E(x.act)}</b></td><td>${E(x.cur||'—')}</td><td>${x.br?E(brOf(x.br)):'—'}</td><td class="n">${x.amt===''?'—':mf(x.amt)}</td><td class="cs-mu">${E(x.detail)}</td></tr>`).join('')}</tbody></table></div>`:'<div class="cs-empty">No control activity recorded yet.<br><small>Transfers, counts, limits and approvals appear here.</small></div>'}</div>`}
@@ -10928,7 +10953,7 @@ function csvOut(){let name,rows;const m=model();
  if(typeof dlSave=='function')dlSave(name,b);else{const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=name;document.body.appendChild(a);a.click();a.remove()}}
 function detail(c){const m=model(),r=m.P[c];if(!r)return;const brsH=Object.keys(r.by).filter(b=>Math.abs(r.by[b].q)>1e-9).map(b=>`<tr><td>${E(brOf(b))}</td><td class="n">${qf(r.by[b].q)}</td><td class="n">${r.by[b].c.toFixed(4)}</td><td class="n">${mf(r.by[b].q*r.by[b].c)}</td><td class="n">${mf(r.by[b].q*r.mid)}</td></tr>`).join('');
  const mvs=movements().filter(x=>x.cur==c).slice(0,8),rh=(S.rh||[]).filter(h=>h.cur==c).slice(-6).reverse(),rt=S.rates[c];
- modal=`<div class="cs-md-b" data-csx="mclose"><div class="cs-md" role="dialog" aria-label="${E(c)} detail"><div class="cs-mh"><div class="cs-cc"><span class="cs-fl">${E(c.slice(0,3))}</span><div><b>${E(c)}</b><small>${E(r.name||'Currency')}</small></div></div><button class="cs-x" data-csx="mclose" aria-label="Close">×</button></div>
+ modal=`<div class="cs-md-b" data-csx="mclose"><div class="cs-md" role="dialog" aria-label="${E(c)} detail"><div class="cs-mh"><div class="cs-cc"><span class="cs-fl">${E(cflag(c))}</span><div><b>${E(c)} — ${E(cname(c,r))}</b></div></div><button class="cs-x" data-csx="mclose" aria-label="Close">×</button></div>
  <div class="cs-mk"><div><span>On hand</span><b>${qf(r.q)}</b></div><div><span>Market value</span><b>${mf(r.mk)}</b></div><div><span>Unrealised</span><b class="${dn(r.g)}">${r.q>1e-9?sgn(r.g):'—'}</b></div><div><span>Realised 30d</span><b class="${dn(r.pl30)}">${sgn(r.pl30)}</b></div></div>
  <div class="cs-mt"><div><span>We buy at</span><b>${rt.b.toFixed(4)}</b></div><div><span>We sell at</span><b>${rt.s.toFixed(4)}</b></div><div><span>Spread</span><b>${r.spread.toFixed(2)}%</b></div><div><span>Cover</span><b>${r.cover==null?'—':Math.round(r.cover)+' days'}</b></div></div>
  <h4>By branch</h4>${brsH?`<table class="cs-t"><thead><tr><th>Branch</th><th class="n">Quantity</th><th class="n">Avg cost</th><th class="n">Cost</th><th class="n">Market</th></tr></thead><tbody>${brsH}</tbody></table>`:'<p class="cs-mu">No stock held.</p>'}
@@ -10961,6 +10986,8 @@ document.addEventListener('click',ev=>{const t=ev.target.closest('[data-csx]');i
  else if(a=='ctclr'){cnt={};cntRev=null;go()}
  else if(a=='ctcan'){cntRev=null;go()}
  else if(a=='ctpost')postCount()
+ else if(a=='fsb'){fs=t.dataset.csv;go()}
+ else if(a=='exp'){expd[t.dataset.csc]=!expd[t.dataset.csc];go()}
  else if(a=='rssub')rsSubmit()
  else if(a=='rsrel')rsChange(t.dataset.csid,'rel')
  else if(a=='rsuse')rsChange(t.dataset.csid,'use')
@@ -11092,6 +11119,21 @@ html body .cs-ask .cs-askb{display:flex;gap:10px}html body .cs-ask .cs-askb inpu
 html body .cs-askx{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
 html body .cs-ans{margin-top:14px;padding:14px 16px;border-radius:12px;background:#f3f7ff;border:1px solid #dbe6fb}html body .cs-ans p{margin:6px 0 0;font-size:13.5px;line-height:1.5;white-space:pre-wrap;color:#0f1f46}html body .cs-ans .cs-bd{margin-bottom:2px}
 @media print{html body .cs-ask{display:none}}`;document.head.appendChild(s)})();
+(function(){const s=document.createElement('style');s.textContent=`
+html body .cs-cc .cs-fl{font:400 18px 'Inter',system-ui,sans-serif;line-height:1}
+html body .cs-cc b{white-space:nowrap}
+html body .cs-ex{flex:none;width:22px;height:22px;border:0;background:transparent;color:#64748b;border-radius:6px;cursor:pointer;font:600 16px/1 'Inter';transition:transform .15s}html body .cs-ex:hover{background:#e6eeff}html body .cs-ex.on{transform:rotate(90deg)}
+html body .cs-t tbody tr.cs-z td{background:#fff6f6}html body .cs-t tbody tr.cs-z td:first-child{box-shadow:inset 3px 0 0 #dc2626}html body .cs-t tbody tr.cs-z:hover td{background:#fff0f0}
+html body .cs-zr{display:inline-flex;align-items:center;gap:6px;color:#b91c1c;font:700 13.5px 'Inter';font-variant-numeric:tabular-nums}html body .cs-zm{display:block;color:#b91c1c;font:500 11.5px 'Inter';margin-top:2px}
+html body .cs-st{display:flex;flex-wrap:wrap;gap:4px}html body .cs-bd.inc{background:#fef3c7;color:#92400e}
+html body .cs-loc{font:500 13px 'Inter';color:#0f1f46}html body .cs-loc small{display:block;font:500 11px 'Inter';color:#64748b}html body .cs-loc.h{color:#64748b;font-style:italic}
+html body .cs-fcs{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:0 0 12px}
+html body .cs-fc{border:1px solid #cddcf5;background:#fff;color:#1e3a8a;border-radius:999px;padding:6px 12px;font:600 12.5px 'Inter';cursor:pointer}html body .cs-fc em{font-style:normal;color:#64748b;margin-left:4px;font-weight:600}html body .cs-fc.on{background:#1d4ed8;border-color:#1d4ed8;color:#fff}html body .cs-fc.on em{color:#dbe7ff}
+html body .cs-fn{margin-left:auto;font-size:12px}
+html body .cs-xr td{background:#f7faff!important;padding:0!important}html body .cs-bk{padding:10px 16px 14px 44px}html body .cs-bk table{width:100%;border-collapse:collapse}html body .cs-bk th{font:600 11px 'Inter';color:#64748b;text-align:left;padding:6px 8px;text-transform:uppercase;letter-spacing:.04em}html body .cs-bk th.n,html body .cs-bk td.n{text-align:right}html body .cs-bk td{padding:7px 8px;font:500 13px 'Inter';border-top:1px solid #e3ebfa}
+@media(max-width:1700px){html body .cs-t thead th:is(:nth-child(7),:nth-child(8),:nth-child(9),:nth-child(13),:nth-child(14)),html body .cs-t tbody tr:not(.cs-xr)>td:is(:nth-child(7),:nth-child(8),:nth-child(9),:nth-child(13),:nth-child(14)),html body .cs-t tfoot td:is(:nth-child(7),:nth-child(8),:nth-child(9),:nth-child(13),:nth-child(14)){display:none}html body .cs-xr td{display:table-cell}}
+@media(max-width:1100px){html body .cs-t .cs-x{display:none}}
+@media(max-width:700px){html body .cs-fn{display:none}html body .cs-bk{padding-left:12px}}`;document.head.appendChild(s)})();
 /*PTL*/(function(){
 const A=aesc,R2=v=>Math.round((+v||0)*100)/100;
 const rest=(p,o)=>window.pbRest(p,o);
