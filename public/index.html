@@ -4754,10 +4754,10 @@ const st=document.createElement('style');st.textContent=TG.map(g=>`body.tr-${g[2
 .tsw{display:inline-flex;flex-wrap:wrap;gap:0;margin:0 0 12px;border:1.5px solid var(--ln);border-radius:999px;overflow:hidden;background:var(--pn);max-width:100%}.tsw button{border:0;background:none;padding:9px 20px;font:700 14px 'Inter',sans-serif;color:var(--mu,#667085);cursor:pointer;min-height:0;width:auto;border-radius:0}.tsw button:hover:not(.on){background:var(--ac2,#eef1fb)}.tsw button.on{color:#fff!important}
 @media(max-width:700px){.tsw{border-radius:16px}.tsw button{padding:8px 12px;font-size:13px}}`;document.head.appendChild(st);
 const st2=document.createElement('style');st2.textContent=Object.entries(HC).map(([k,c])=>`body.tr-${k} #m .top>h2{color:${c}!important}body.tr-${k} #m .top>h2::after{background:${c}!important}`).join('');document.head.appendChild(st2);
-const _gt=go;go=function(){_gt.apply(this,arguments);const g=TG.find(x=>x[4].includes(view));TG.forEach(x=>document.body.classList.remove('tr-'+x[2]));const nav=document.getElementById('nav');
- if(nav&&!nav.querySelector('[data-v="std"]')){const f=TG.slice(2).find(x=>ok(x[0]));if(f){const b=document.createElement('button');b.dataset.v=f[0];b.innerHTML='<span class="ni">'+(NI.std||NI.cbd||'')+'</span>TRANSACTIONS';b.onclick=()=>{view=f[0];ce='';cwalk=false;MD=null;go()};const gh=nav.querySelector('.grp,button[data-v="pyd"]');nav.insertBefore(b,gh||nav.querySelector('.nf'))}}
- if(nav){{const b=nav.querySelector('button[data-v="cbd"]'),on=g===TG[0]||g===TG[1];if(b){b.classList.toggle('on',on);b.classList.toggle('trx',on)}};const nb=nav.querySelector('button[data-v="std"]');if(nb){const on=!!g&&g!==TG[0]&&g!==TG[1];nb.classList.toggle('on',on);nb.classList.toggle('trx',on)}}
- if(!g)return;document.body.classList.add('tr-'+g[2]);const t=document.querySelector('#m .top');if(t&&!document.getElementById('tsw'))t.insertAdjacentHTML('afterend',`<div class="tsw noprint" id="tsw">${TG.filter(x=>ok(x[0])&&((x===TG[0]||x===TG[1])===(g===TG[0]||g===TG[1]))).map(x=>`<button type="button" class="${x===g?'on t-'+x[2]:''}" onclick="view='${x[0]}';go()">${x[1]}</button>`).join('')}</div>`)};
+const fam=x=>x===TG[0]||x===TG[1]?0:x===TG[2]?1:2;const _gt=go;go=function(){_gt.apply(this,arguments);const g=TG.find(x=>x[4].includes(view));TG.forEach(x=>document.body.classList.remove('tr-'+x[2]));const nav=document.getElementById('nav');
+ if(nav&&!nav.querySelector('[data-v="sld"]')){const f=TG.slice(3).find(x=>ok(x[0]));if(f){const b=document.createElement('button');b.dataset.v=f[0];b.innerHTML='<span class="ni">'+(NI.sld||NI.cbd||'')+'</span>TRANSACTIONS';b.onclick=()=>{view=f[0];ce='';cwalk=false;MD=null;go()};const gh=nav.querySelector('.grp,button[data-v="pyd"]');nav.insertBefore(b,gh||nav.querySelector('.nf'))}}
+ if(nav){{const b=nav.querySelector('button[data-v="cbd"]'),on=g===TG[0]||g===TG[1];if(b){b.classList.toggle('on',on);b.classList.toggle('trx',on)}};{const s2=nav.querySelector('button[data-v="std"]');if(s2){s2.classList.toggle('on',g===TG[2]);s2.classList.toggle('trx',g===TG[2])}const nb=nav.querySelector('button[data-v="sld"]');if(nb){const on=g===TG[3]||g===TG[4];nb.classList.toggle('on',on);nb.classList.toggle('trx',on)}}}
+ if(!g)return;document.body.classList.add('tr-'+g[2]);const t=document.querySelector('#m .top');if(t&&!document.getElementById('tsw')&&TG.filter(x=>ok(x[0])&&fam(x)==fam(g)).length>1)t.insertAdjacentHTML('afterend',`<div class="tsw noprint" id="tsw">${TG.filter(x=>ok(x[0])&&(fam(x)==fam(g))).map(x=>`<button type="button" class="${x===g?'on t-'+x[2]:''}" onclick="view='${x[0]}';go()">${x[1]}</button>`).join('')}</div>`)};
 })();
 (function(){const st=document.createElement('style');st.textContent=`
 /*GREEN-NAV*/
@@ -5526,7 +5526,7 @@ const oc=V.ctx;V.ctx=function(){let h=oc.apply(this,arguments);
  h=h.replace('<button class="plf" onclick="ctOpen()">+ New transaction</button>','<span style="display:flex;gap:8px;flex-wrap:wrap"><button class="plf" onclick="sdOpen()">+ Currency sale deal</button><button class="plo" onclick="ctOpen()">+ Multi-currency entry</button></span>');
  return h};
 /*UPDCHK*/
-(function(){const B='2026-10-19-ax';window.PB_BUILD=B;if(location.protocol=='file:')return;let nb=null,tm=0;
+(function(){const B='2026-10-19-ay';window.PB_BUILD=B;if(location.protocol=='file:')return;let nb=null,tm=0;
 const busy=()=>{const a=document.activeElement;return !!(document.querySelector('.ov')||(a&&/^(INPUT|TEXTAREA)$/.test(a.tagName)&&String(a.value||'').length>0))};
 function go2(){try{const k='pb_upd_'+nb,n=+(sessionStorage.getItem(k)||0);sessionStorage.setItem(k,n+1)}catch(e){}location.replace(location.pathname+'?v='+encodeURIComponent(nb))}
 function bar(){let d=document.getElementById('pbupd');if(!d){d=document.createElement('div');d.id='pbupd';d.setAttribute('role','button');d.style.cssText='position:fixed;left:50%;transform:translateX(-50%);top:10px;z-index:100000;background:#0b3d33;color:#fff;padding:11px 18px;border-radius:12px;font:700 13px Inter,system-ui,sans-serif;box-shadow:0 6px 20px rgba(0,0,0,.3);cursor:pointer;text-align:center;max-width:92vw';d.onclick=()=>{d.textContent='Updating…';go2()};document.body.appendChild(d)}d.textContent='A new version of PrimeBook is ready. Tap here to update.'}
@@ -8468,7 +8468,7 @@ const st=document.createElement('style');st.textContent=`
 .fxd .cas-t th,.fxd .cas-t td{padding:10px 10px}.fxd-fl{display:flex;gap:10px;flex-wrap:wrap;align-items:end}.fxd-fl label{min-width:130px}
 @media(max-width:1000px){.fxd-tk{grid-template-columns:1fr}.fxd-tabs{grid-template-columns:1fr}}@media(max-width:720px){.fxd-form{grid-template-columns:1fr}.fxd-fl label{flex:1 1 130px}}
 `;document.head.appendChild(st);
-const mi=MENU.findIndex(m=>m[0]=='cmd');if(mi>=0&&!MENU.some(m=>m[0]=='fdk'))MENU.splice(mi+1,0,['fdk','FOREX DESK']);if(!NAV.some(n=>n[0]=='fdk'))NAV.push(['fdk','Forex Desk']);
+const mi=MENU.findIndex(m=>m[0]=='cmd');if(mi>=0&&!MENU.some(m=>m[0]=='fdk'))MENU.splice(mi+1,0,['fdk','FOREX DESK']);if(!NAV.some(n=>n[0]=='fdk'))NAV.push(['fdk','Forex Desk']);{const fi=MENU.findIndex(m=>m[0]=='fdk');if(fi>=0&&!MENU.some(m=>m[0]=='std'))MENU.splice(fi+1,0,['std','CURRENCY STOCK']);const ni=NAV.findIndex(n=>n[0]=='std');if(ni>=0)NAV[ni]=['std','CURRENCY STOCK'];else NAV.push(['std','CURRENCY STOCK'])}
 NI.fdk='<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M8 10h8l-2.500-2.500M16 14H8l2.500 2.500"/></svg>';
 })();
 /*FXW*/
