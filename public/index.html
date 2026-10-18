@@ -5526,7 +5526,7 @@ const oc=V.ctx;V.ctx=function(){let h=oc.apply(this,arguments);
  h=h.replace('<button class="plf" onclick="ctOpen()">+ New transaction</button>','<span style="display:flex;gap:8px;flex-wrap:wrap"><button class="plf" onclick="sdOpen()">+ Currency sale deal</button><button class="plo" onclick="ctOpen()">+ Multi-currency entry</button></span>');
  return h};
 /*UPDCHK*/
-(function(){const B='2026-10-19-bv';window.PB_BUILD=B;if(location.protocol=='file:')return;let nb=null,tm=0;
+(function(){const B='2026-10-19-bw';window.PB_BUILD=B;if(location.protocol=='file:')return;let nb=null,tm=0;
 const busy=()=>{const a=document.activeElement;return !!(document.querySelector('.ov')||(a&&/^(INPUT|TEXTAREA)$/.test(a.tagName)&&String(a.value||'').length>0))};
 function go2(){try{const k='pb_upd_'+nb,n=+(sessionStorage.getItem(k)||0);sessionStorage.setItem(k,n+1)}catch(e){}location.replace(location.pathname+'?v='+encodeURIComponent(nb))}
 function bar(){let d=document.getElementById('pbupd');if(!d){d=document.createElement('div');d.id='pbupd';d.setAttribute('role','button');d.style.cssText='position:fixed;left:50%;transform:translateX(-50%);top:10px;z-index:100000;background:#0b3d33;color:#fff;padding:11px 18px;border-radius:12px;font:700 13px Inter,system-ui,sans-serif;box-shadow:0 6px 20px rgba(0,0,0,.3);cursor:pointer;text-align:center;max-width:92vw';d.onclick=()=>{d.textContent='Updating…';go2()};document.body.appendChild(d)}d.textContent='A new version of PrimeBook is ready. Tap here to update.'}
@@ -10366,6 +10366,78 @@ html body .cbx-b2{background:#fff;color:#1d4ed8;border:1px solid #cbd8ee}html bo
 @media(max-width:700px){html body .cbx-bd{grid-template-columns:1fr}html body .cbx-r2{grid-template-columns:1fr}html body .cbx-ov{padding:0}html body .cbx-md{border-radius:0;min-height:100vh}html body .cbx-hint{display:none}html body .cbx-menu{position:fixed;left:16px;right:16px;top:auto;width:auto}}
 @media print{.cbx-dd,.cbx-ov{display:none!important}}`;
 document.head.appendChild(css);
+})();
+
+/*DND*/(function(){
+/* Drag-and-drop ordering for Cashbook & Banks headings and tabs. Hold or drag a heading, release to place it. The order is saved per person. */
+const ROWS=[
+ {id:'cbhead',sel:'#tsw',item:'button',key:e=>e.textContent.trim(),ok:c=>/Cashbook/.test(c.textContent)&&/Banks/.test(c.textContent)},
+ {id:'cbtabs',sel:'.cbm-tabs',item:'button',key:e=>e.dataset.cbmt},
+ {id:'ktabs',sel:'.fi-qa',item:'button:not(.bk):not(.dnd-rs)',key:e=>e.dataset.go,when:()=>['cash','dcl','dcr','chs'].includes(view)},
+ {id:'btabs',sel:'.fi-qa',item:'button:not(.bk):not(.dnd-rs)',key:e=>e.dataset.go,when:()=>['bank','bxf','brc','cpz'].includes(view)}];
+const who=()=>((typeof me=='function'&&me())||{}).name||'_';
+const ordOf=id=>((S.nvo||{})[who()]||{})[id];
+const tt=m=>{try{window.rpToast?rpToast(m):0}catch(e){}};
+let D=null,flag=0,live=null;
+const rowOf=el=>{const c=el.parentElement;if(!c)return null;for(const r of ROWS){if(r.when&&!r.when())continue;if(c.matches(r.sel)&&(!r.ok||r.ok(c)))return{r,c}}return null};
+const itemsOf=(r,c)=>[...c.querySelectorAll(':scope > '+r.item)].filter(e=>r.key(e));
+function applyOrder(r,c){const items=itemsOf(r,c);if(items.length<2)return;const o=ordOf(r.id)||[],pos=e=>{const i=o.indexOf(r.key(e));return i<0?1e3+items.indexOf(e):i};
+ const want=items.slice().sort((a,b)=>pos(a)-pos(b));if(want.every((e,i)=>e===items[i])){mark(r,c,items);return}
+ want.forEach(e=>c.appendChild(e));const rs0=c.querySelector(':scope > .dnd-rs');if(rs0)c.appendChild(rs0);mark(r,c,want)}
+function mark(r,c,items){c.dataset.dnd=r.id;items.forEach(e=>{e.setAttribute('title',e.getAttribute('title')||'Hold and drag to change the order');e.dataset.dndi='1';e.setAttribute('aria-roledescription','reorderable item')});
+ const custom=!!ordOf(r.id),rs=c.querySelector(':scope > .dnd-rs');
+ if(custom&&!rs){const b=document.createElement('button');b.type='button';b.className='dnd-rs';b.title='Reset to the default order';b.setAttribute('aria-label','Reset order');b.textContent='↺';b.dataset.dndrs=r.id;c.appendChild(b)}
+ if(!custom&&rs)rs.remove()}
+function enhance(){if(D)return;ROWS.forEach(r=>{if(r.when&&!r.when())return;document.querySelectorAll(r.sel).forEach(c=>{if(r.ok&&!r.ok(c))return;if(r.id=='cbtabs'&&!c.closest('.cbm'))return;applyOrder(r,c)})})}
+let raf=0;const sched=()=>{if(raf)return;raf=requestAnimationFrame(()=>{raf=0;try{enhance()}catch(e){}})};
+function boot(){const m=document.getElementById('m');if(!m)return setTimeout(boot,200);new MutationObserver(sched).observe(m,{childList:true,subtree:true});const t=document.getElementById('tsw');sched()}
+boot();
+const sv=(r,c)=>{S.nvo=S.nvo||{};const u=who();S.nvo[u]=S.nvo[u]||{};S.nvo[u][r.id]=itemsOf(r,c).map(r.key);try{save()}catch(e){}};
+const say=m=>{if(!live){live=document.createElement('div');live.setAttribute('aria-live','polite');live.style.cssText='position:absolute;left:-9999px';document.body.appendChild(live)}live.textContent=m};
+/* ---- FLIP animation for neighbours ---- */
+const rects=(list)=>new Map(list.map(e=>[e,e.getBoundingClientRect()]));
+function flip(list,before){list.forEach(e=>{if(e===D.el)return;const a=before.get(e),b=e.getBoundingClientRect(),dx=a.left-b.left,dy=a.top-b.top;if(!dx&&!dy)return;e.style.transition='none';e.style.transform=`translate(${dx}px,${dy}px)`;e.getBoundingClientRect();e.style.transition='transform .2s cubic-bezier(.2,.8,.2,1)';e.style.transform=''})}
+function start(e,el,r,c){const rc=el.getBoundingClientRect();D={el,r,c,x0:e.clientX,y0:e.clientY,l0:el.offsetLeft,t0:el.offsetTop,order0:itemsOf(r,c).slice(),pid:e.pointerId,on:false,moved:false,w:rc.width};}
+function lift(){const d=D;d.on=true;d.el.classList.add('dnd-lift');d.c.classList.add('dnd-act');document.body.classList.add('dnd-on');say('Picked up '+d.el.textContent.trim()+'. Move, then release to place.')}
+function move(e){if(!D)return;const d=D,dx=e.clientX-d.x0,dy=e.clientY-d.y0;
+ if(!d.on){if(Math.hypot(dx,dy)>8){if(d.touch){clearTimeout(d.tm);D=null;return}lift()}else return}
+ e.preventDefault();d.moved=true;
+ const list=itemsOf(d.r,d.c),over=list.find(x=>{if(x===d.el)return false;const q=x.getBoundingClientRect();return e.clientX>=q.left&&e.clientX<=q.right&&e.clientY>=q.top-6&&e.clientY<=q.bottom+6});
+ if(over){const q=over.getBoundingClientRect(),cx=q.left+q.width/2,i=list.indexOf(d.el),j=list.indexOf(over);if((i<j&&e.clientX>cx)||(i>j&&e.clientX<cx)){const before=rects(list);if(i<j)over.after(d.el);else over.before(d.el);flip(list,before)}}
+ d.el.style.transform=`translate(${e.clientX-d.x0-(d.el.offsetLeft-d.l0)}px,${e.clientY-d.y0-(d.el.offsetTop-d.t0)}px) scale(1.05)`}
+function end(cancel){if(!D)return;const d=D;clearTimeout(d.tm);D=null;document.body.classList.remove('dnd-on');d.c.classList.remove('dnd-act');
+ const el=d.el;if(!d.on){return}
+ flag=1;setTimeout(()=>flag=0,350);
+ if(cancel){const l=d.order0;l.forEach(x=>d.c.appendChild(x));const rs=d.c.querySelector(':scope > .dnd-rs');if(rs)d.c.appendChild(rs)}
+ el.style.transition='transform .18s cubic-bezier(.2,.8,.2,1)';el.style.transform='';
+ setTimeout(()=>{el.classList.remove('dnd-lift');el.style.transition=''},190);
+ const now=itemsOf(d.r,d.c),changed=now.some((x,i)=>x!==d.order0[i]);
+ if(changed&&!cancel){sv(d.r,d.c);mark(d.r,d.c,now);tt('Order saved.');say('Order saved.')}}
+document.addEventListener('pointerdown',e=>{if(e.button>0||D)return;const t=e.target;if(!t.closest||t.closest('input,select,textarea'))return;
+ const el=t.closest('#tsw > button,.cbm-tabs > button,.fi-qa > button');if(!el||el.classList.contains('bk')||el.classList.contains('dnd-rs'))return;
+ const m=rowOf(el);if(!m||!itemsOf(m.r,m.c).includes(el)||itemsOf(m.r,m.c).length<2)return;
+ start(e,el,m.r,m.c);D.touch=e.pointerType=='touch'||e.pointerType=='pen';D.tm=setTimeout(()=>{if(D&&!D.on)lift()},D.touch?260:220)},true);
+document.addEventListener('pointermove',move,true);
+document.addEventListener('pointerup',()=>end(false),true);document.addEventListener('pointercancel',()=>end(true),true);
+document.addEventListener('touchmove',e=>{if(D&&D.on)e.preventDefault()},{passive:false});
+document.addEventListener('contextmenu',e=>{if(D&&D.on)e.preventDefault()},true);
+document.addEventListener('click',e=>{if(flag){e.stopPropagation();e.preventDefault();flag=0;return}
+ const rs=e.target.closest&&e.target.closest('[data-dndrs]');if(rs){e.stopPropagation();e.preventDefault();const id=rs.dataset.dndrs;if(S.nvo&&S.nvo[who()])delete S.nvo[who()][id];try{save()}catch(_){}tt('Order reset.');go()}},true);
+document.addEventListener('keydown',e=>{if(D&&e.key=='Escape'){e.stopPropagation();end(true);return}
+ if(!e.altKey||(e.key!='ArrowLeft'&&e.key!='ArrowRight'))return;const el=document.activeElement;if(!el||!el.dataset||!el.dataset.dndi)return;const m=rowOf(el);if(!m)return;
+ const l=itemsOf(m.r,m.c),i=l.indexOf(el),j=i+(e.key=='ArrowLeft'?-1:1);if(i<0||j<0||j>=l.length)return;e.preventDefault();e.stopPropagation();
+ if(j>i)l[j].after(el);else l[j].before(el);sv(m.r,m.c);mark(m.r,m.c,itemsOf(m.r,m.c));el.focus();say(el.textContent.trim()+' moved to position '+(j+1)+' of '+l.length+'. Order saved.')},true);
+const css=document.createElement('style');css.textContent=`
+html body [data-dndi]{touch-action:manipulation;-webkit-user-select:none;user-select:none;cursor:grab}
+html body [data-dndi]:active{cursor:grabbing}
+html body .dnd-lift{position:relative;z-index:60;cursor:grabbing!important;box-shadow:0 14px 30px -8px #0a1f4d66,0 0 0 2px #2563eb!important;background:#fff!important;color:#1d4ed8!important;border-radius:10px!important;opacity:.97;transition:none!important;will-change:transform}
+html body.dnd-on,html body.dnd-on *{cursor:grabbing!important;-webkit-user-select:none;user-select:none}
+html body .dnd-act{outline:2px dashed #93b4f0;outline-offset:4px;border-radius:12px}
+html body .dnd-rs{border:0;background:#eaf1ff!important;color:#1d4ed8!important;width:28px;height:28px;border-radius:50%;font-size:15px;line-height:1;cursor:pointer;align-self:center;padding:0;margin-left:4px;box-shadow:none!important}
+html body .fi-qa{position:relative}html body .fi-qa .dnd-rs{position:absolute;top:8px;right:10px;margin:0}html body .dnd-rs:hover{background:#dbe7ff!important}
+@media(prefers-reduced-motion:reduce){html body [data-dndi]{transition:none!important}}`;
+document.head.appendChild(css);
+window.__dnd={ROWS};
 })();
 
 /*CSK*/(()=>{
