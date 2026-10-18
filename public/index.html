@@ -2852,13 +2852,13 @@ document.addEventListener('click',e=>{const t=e.target.closest&&e.target.closest
 
 /* ---------- Cash Management: one menu item with tabs ---------- */
 const KTABS=[['cash','Transfer'],['dcl','Daily Cash Closing'],['dcr','Daily Cash Report'],['chs','Closing History']],KG=['cbd'].concat(KTABS.map(x=>x[0]));
-const ktabs=()=>`<div class="ctabs noprint">${view!='cbd'?'<button type="button" class="bk" data-go="cbd">&lsaquo; Back</button>':''}${canW('cash')?'<button type="button" class="add" onclick="mfOpen()">+ Add transaction</button>':''}${KTABS.map(([k,t])=>`<button type="button" data-go="${k}" class="${k==view?'on':''}">${t}</button>`).join('')}</div>`;
+const ktabs=()=>`<div class="ctabs noprint">${view!='cbd'?'<button type="button" class="bk" data-go="cbd">&lsaquo; Back</button>':''}${KTABS.map(([k,t])=>`<button type="button" data-go="${k}" class="${k==view?'on':''}">${t}</button>`).join('')}</div>`;
 KG.forEach(k=>{const o=V[k];if(o)V[k]=function(){return ktabs()+o.apply(this,arguments)}});
 const _go2=go;go=function(){_go2.apply(this,arguments);const b=document.querySelector('nav [data-v="cbd"]');if(b&&KG.includes(view))b.classList.add('on')};
 
 /* ---------- Banks: one menu item with tabs ---------- */
 const BTABS=[['bank','Bank Accounts'],['bxf','Transfers'],['brc','Bank Import & Reconcile'],['cpz','Cash & Bank Position']],BKG=['bkd'].concat(BTABS.map(x=>x[0]));
-const btabs=()=>`<div class="ctabs noprint">${view!='bkd'?'<button type="button" class="bk" data-go="bkd">&lsaquo; Back</button>':''}${canW('cash')?'<button type="button" class="add" onclick="mfOpen()">+ Add transaction</button>':''}${BTABS.map(([k,t])=>`<button type="button" data-go="${k}" class="${k==view?'on':''}">${t}</button>`).join('')}</div>`;
+const btabs=()=>`<div class="ctabs noprint">${view!='bkd'?'<button type="button" class="bk" data-go="bkd">&lsaquo; Back</button>':''}${BTABS.map(([k,t])=>`<button type="button" data-go="${k}" class="${k==view?'on':''}">${t}</button>`).join('')}</div>`;
 BKG.forEach(k=>{const o=V[k];if(o)V[k]=function(){return btabs()+o.apply(this,arguments)}});
 const _go3=go;go=function(){_go3.apply(this,arguments);const b=document.querySelector('nav [data-v="bkd"]');if(b&&BKG.includes(view))b.classList.add('on')};
 
@@ -5526,7 +5526,7 @@ const oc=V.ctx;V.ctx=function(){let h=oc.apply(this,arguments);
  h=h.replace('<button class="plf" onclick="ctOpen()">+ New transaction</button>','<span style="display:flex;gap:8px;flex-wrap:wrap"><button class="plf" onclick="sdOpen()">+ Currency sale deal</button><button class="plo" onclick="ctOpen()">+ Multi-currency entry</button></span>');
  return h};
 /*UPDCHK*/
-(function(){const B='2026-10-19-bl';window.PB_BUILD=B;if(location.protocol=='file:')return;let nb=null,tm=0;
+(function(){const B='2026-10-19-bm';window.PB_BUILD=B;if(location.protocol=='file:')return;let nb=null,tm=0;
 const busy=()=>{const a=document.activeElement;return !!(document.querySelector('.ov')||(a&&/^(INPUT|TEXTAREA)$/.test(a.tagName)&&String(a.value||'').length>0))};
 function go2(){try{const k='pb_upd_'+nb,n=+(sessionStorage.getItem(k)||0);sessionStorage.setItem(k,n+1)}catch(e){}location.replace(location.pathname+'?v='+encodeURIComponent(nb))}
 function bar(){let d=document.getElementById('pbupd');if(!d){d=document.createElement('div');d.id='pbupd';d.setAttribute('role','button');d.style.cssText='position:fixed;left:50%;transform:translateX(-50%);top:10px;z-index:100000;background:#0b3d33;color:#fff;padding:11px 18px;border-radius:12px;font:700 13px Inter,system-ui,sans-serif;box-shadow:0 6px 20px rgba(0,0,0,.3);cursor:pointer;text-align:center;max-width:92vw';d.onclick=()=>{d.textContent='Updating…';go2()};document.body.appendChild(d)}d.textContent='A new version of PrimeBook is ready. Tap here to update.'}
@@ -9568,6 +9568,76 @@ html body .rd-af{display:flex;gap:10px;flex-wrap:wrap;align-items:center}html bo
 html[data-theme=dark] body .rd-pn,html[data-theme=dark] body .rd-card,html[data-theme=dark] body .rd-kpi,html[data-theme=dark] body .rd-rail,html[data-theme=dark] body .rd-list,html[data-theme=dark] body .rd-tile{background:#0f1c3d!important;border-color:#223a73}
 html[data-theme=dark] body .rd-ph h3,html[data-theme=dark] body .rd-card>b,html[data-theme=dark] body .rd-it b,html[data-theme=dark] body .rd-rt b,html[data-theme=dark] body .rd-lt b,html[data-theme=dark] body .rd-kpi>b,html[data-theme=dark] body .rd-tb h3,html[data-theme=dark] body .rd-tile{color:#e2ebff!important}
 html[data-theme=dark] body .rd-in,html[data-theme=dark] body .rd-fg div{background:#14264f;border-color:#223a73}html[data-theme=dark] body .rd-lh{background:#14264f}html[data-theme=dark] body .rd-lr:hover,html[data-theme=dark] body .rd-row:hover{background:#17306a}
+`;document.head.appendChild(css);
+})();
+
+/*DWG*/(function(){
+/* Main Dashboard: simple widget editor. Move, resize, hide and restore cards. Saved per user. */
+const A=x=>String(x==null?'':x).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const SIZES=[4,6,8,12];
+const NAMES={hero:'Financial health',kpi:'Key figures',ins:'Smart insights',kpt:'Key performance indicators',qa:'Quick actions',deals:'Pending sales deals',rates:'Exchange rates',acc:'Account balances',brn:'Branch performance',act:'Action center',rec:'Recent transactions',exp:'Expense breakdown',snp:'Business snapshot'};
+const DEF={hero:12,kpi:12,ins:6,kpt:6,qa:12,deals:12,rates:12,acc:12,brn:8,act:4,rec:4,exp:4,snp:4};
+const HEAD={'account balances':'acc','branch performance':'brn','action center':'act','recent transactions':'rec','expense breakdown':'exp','business snapshot':'snp'};
+let edit=false,drag=null;
+const key=()=>((me()||{}).name)||'u';
+const L=()=>{S.dwl=S.dwl||{};return S.dwl[key()]||(S.dwl[key()]={ord:[],hid:[],sp:{}})};
+const heading=e=>{const h=e.querySelector('h3,h2,b');return h?h.textContent.trim():''};
+function collect(m){const out=[];const add=(id,el,label)=>{if(el&&!out.some(o=>o.el===el)&&!out.some(o=>o.id==id))out.push({id,el,label:label||NAMES[id]||id})};
+ const dsh=m.querySelector(':scope>.dsh');
+ if(dsh){add('hero',dsh.querySelector(':scope>.dsh-hero'));add('kpi',dsh.querySelector(':scope>.dsh-kp'));const r=dsh.querySelector(':scope>.dsh-r');if(r){const k=[...r.children];add('ins',k[0]);add('kpt',k[1]);k.slice(2).forEach((e,i)=>add('dx'+i,e,heading(e)))}}
+ add('qa',m.querySelector(':scope>.dqa2'));add('deals',m.querySelector(':scope>.fdc'));add('rates',m.querySelector(':scope>.rts'));
+ const fdn=m.querySelector(':scope>.fdn');if(fdn)[...fdn.children].forEach((e,i)=>{if(e.classList.contains('fdn-h'))return;const hl=heading(e).toLowerCase(),id=Object.keys(HEAD).filter(k=>hl.indexOf(k)==0).map(k=>HEAD[k])[0]||'fx'+i;add(id,e,heading(e)||id)});
+ [...m.children].forEach((e,i)=>{if(e.classList.contains('top')||e.classList.contains('ctabs')||e.classList.contains('tsw')||e.classList.contains('dwb')||e.classList.contains('dwg')||out.some(o=>o.el===e||o.el.contains(e)||e.contains(o.el)))return;if(e.querySelector('*')||e.textContent.trim())add('mx'+i,e,heading(e)||'Panel')});
+ return out}
+function build(){const m=document.getElementById('m');if(!m||view!='dash'||m.querySelector('.dwg'))return;
+ const W=collect(m);if(W.length<2)return;const lay=L(),byId={};W.forEach(w=>byId[w.id]=w);
+ const ids=[...lay.ord.filter(i=>byId[i]),...W.map(w=>w.id).filter(i=>!lay.ord.includes(i))];
+ const hid=lay.hid.filter(i=>byId[i]);
+ const g=document.createElement('div');g.className='dwg'+(edit?' edit':'');
+ ids.forEach((id,n)=>{const w=byId[id];if(hid.includes(id))return;const sp=lay.sp[id]||DEF[id]||12,d=document.createElement('div');d.className='dw';d.dataset.dwid=id;d.style.setProperty('--sp',sp);
+  if(edit){d.innerHTML=`<div class="dw-t" draggable="true" data-dwgrip="${id}"><span class="dw-g" title="Drag to move">⋮⋮</span><b>${A(w.label)}</b><span class="dw-a"><button type="button" data-dwx="up" data-dwid="${id}" title="Move earlier">↑</button><button type="button" data-dwx="dn" data-dwid="${id}" title="Move later">↓</button><button type="button" data-dwx="sz" data-dwid="${id}" title="Change width">${sp==12?'Full':sp==8?'2/3':sp==6?'Half':'1/3'}</button><button type="button" data-dwx="hd" data-dwid="${id}" title="Hide">✕</button></span></div>`}
+  d.appendChild(w.el);g.appendChild(d)});
+ /* clean up emptied containers */
+ ['.dsh','.fdn'].forEach(s=>{const c=m.querySelector(':scope>'+s);if(c&&!c.querySelector('.dw,.dwg')&&!c.contains(g)){const left=[...c.children].filter(x=>!x.classList.contains('fdn-h'));if(!left.length||left.every(x=>!x.textContent.trim()))c.remove()}});
+ const bar=document.createElement('div');bar.className='dwb noprint';
+ const hidden=hid.map(i=>`<button type="button" data-dwx="show" data-dwid="${i}">+ ${A(byId[i].label)}</button>`).join('');
+ bar.innerHTML=edit?`<div class="dwb-e"><div><b>Customize dashboard</b><span>Drag a card by its handle, or use the arrows. Changes save automatically.</span></div><div class="dwb-a"><button type="button" class="b s" data-dwx="reset">Reset</button><button type="button" class="b" data-dwx="done">Done</button></div></div>${hidden?`<div class="dwb-h"><span>Hidden cards</span>${hidden}</div>`:''}`:`<button type="button" class="dwb-c" data-dwx="edit"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><path d="M17.5 14v7M14 17.5h7"/></svg>Customize</button>`;
+ const top=m.querySelector(':scope>.top');if(top)top.after(bar);else m.prepend(bar);bar.after(g)}
+document.addEventListener('click',e=>{const el=e.target.closest&&e.target.closest('[data-dwx]');if(!el||view!='dash')return;e.stopPropagation();e.preventDefault();
+ const a=el.dataset.dwx,id=el.dataset.dwid,lay=L(),cur=[...document.querySelectorAll('.dwg>.dw')].map(x=>x.dataset.dwid);
+ const all=()=>{const m=document.getElementById('m'),seen=lay.ord.slice();cur.forEach(i=>{if(!seen.includes(i))seen.push(i)});lay.hid.forEach(i=>{if(!seen.includes(i))seen.push(i)});return seen};
+ if(a=='edit')edit=true;else if(a=='done')edit=false;
+ else if(a=='reset'){S.dwl[key()]={ord:[],hid:[],sp:{}}}
+ else if(a=='hd'){if(!lay.hid.includes(id))lay.hid.push(id)}
+ else if(a=='show'){lay.hid=lay.hid.filter(i=>i!=id)}
+ else if(a=='sz'){const c=lay.sp[id]||DEF[id]||12;lay.sp[id]=SIZES[(SIZES.indexOf(c)+1)%SIZES.length]}
+ else if(a=='up'||a=='dn'){const o=cur.slice(),i=o.indexOf(id),j=a=='up'?i-1:i+1;if(i<0||j<0||j>=o.length)return;[o[i],o[j]]=[o[j],o[i]];lay.ord=[...o,...all().filter(x=>!o.includes(x))]}
+ save();go()},true);
+document.addEventListener('dragstart',e=>{const g=e.target.closest&&e.target.closest('[data-dwgrip]');if(!g)return;drag=g.dataset.dwgrip;try{e.dataTransfer.setData('text/plain',drag);e.dataTransfer.effectAllowed='move'}catch(x){}const w=g.closest('.dw');if(w)w.classList.add('drag')});
+document.addEventListener('dragover',e=>{if(drag&&e.target.closest&&e.target.closest('.dw')){e.preventDefault()}});
+document.addEventListener('dragend',()=>{drag=null;document.querySelectorAll('.dw.drag').forEach(x=>x.classList.remove('drag'))});
+document.addEventListener('drop',e=>{if(!drag)return;const t=e.target.closest&&e.target.closest('.dw');if(!t||t.dataset.dwid==drag){drag=null;return}e.preventDefault();
+ const lay=L(),o=[...document.querySelectorAll('.dwg>.dw')].map(x=>x.dataset.dwid),i=o.indexOf(drag),j=o.indexOf(t.dataset.dwid);if(i<0||j<0){drag=null;return}
+ o.splice(i,1);o.splice(j,0,drag);lay.ord=[...o,...lay.ord.filter(x=>!o.includes(x))];drag=null;save();go()});
+const _g=go;go=function(){_g.apply(this,arguments);try{if(view!='dash')edit=false;else build()}catch(e){console.error('DWG',e)}};
+const css=document.createElement('style');css.textContent=`
+html body .dwb{display:flex;flex-direction:column;gap:10px;margin:0 0 12px}
+html body .dwb-c{align-self:flex-end;display:inline-flex;align-items:center;gap:8px;border:1px solid #cddcf5;background:#fff!important;color:#1d4ed8!important;font-size:13px;font-weight:600;padding:8px 14px;border-radius:12px;cursor:pointer;box-shadow:none!important}
+html body .dwb-c:hover{background:#eef4ff!important;border-color:#93b4f5}html body .dwb-c svg{width:16px;height:16px}
+html body .dwb-e{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;padding:12px 16px;border-radius:16px;background:linear-gradient(135deg,#0a2766,#1347b8 60%,#2563eb);color:#fff;box-shadow:0 10px 26px #1d4ed84d}
+html body .dwb-e b{display:block;font-size:15px;color:#fff}html body .dwb-e span{font-size:13px;color:#c3d4fb}html body .dwb-a{display:flex;gap:8px}
+html body .dwb-e .b.s{background:#ffffff1f!important;color:#fff!important;border:1px solid #ffffff55!important}html body .dwb-e .b:not(.s){background:#fff!important;color:#1d4ed8!important}
+html body .dwb-h{display:flex;gap:8px;flex-wrap:wrap;align-items:center;padding:10px 14px;border-radius:14px;border:1px dashed #93b4f5;background:#f3f7ff}html body .dwb-h>span{font-size:11.5px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:#64748b}
+html body .dwb-h button{border:1px solid #cddcf5;background:#fff!important;color:#1d4ed8!important;font-size:13px;font-weight:600;padding:6px 12px;border-radius:99px;cursor:pointer;box-shadow:none!important}
+html body .dwg{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:14px;align-items:start}
+html body .dw{grid-column:span var(--sp,12);min-width:0;position:relative}
+html body .dw>*:not(.dw-t){margin:0!important;width:100%;box-sizing:border-box;grid-column:auto!important}
+html body .dwg.edit .dw{outline:2px dashed #93b4f5;outline-offset:3px;border-radius:18px;background:#ffffff55}
+html body .dwg.edit .dw>*:not(.dw-t){pointer-events:none;opacity:.88}html body .dw.drag{opacity:.45}
+html body .dw-t{display:flex;align-items:center;gap:10px;padding:8px 10px;margin:0 0 8px!important;border-radius:12px;background:#1d4ed8;color:#fff;cursor:grab;font-size:13px;user-select:none}
+html body .dw-t b{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#fff;font-size:13px}html body .dw-g{font-size:16px;letter-spacing:-2px;opacity:.85}
+html body .dw-a{display:flex;gap:4px}html body .dw-a button{border:0;background:#ffffff26!important;color:#fff!important;min-width:30px;height:28px;padding:0 8px;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;box-shadow:none!important}html body .dw-a button:hover{background:#ffffff48!important}
+@media(max-width:900px){html body .dw{grid-column:span 12}}
 `;document.head.appendChild(css);
 })();
 
