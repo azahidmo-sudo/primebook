@@ -5526,7 +5526,7 @@ const oc=V.ctx;V.ctx=function(){let h=oc.apply(this,arguments);
  h=h.replace('<button class="plf" onclick="ctOpen()">+ New transaction</button>','<span style="display:flex;gap:8px;flex-wrap:wrap"><button class="plf" onclick="sdOpen()">+ Currency sale deal</button><button class="plo" onclick="ctOpen()">+ Multi-currency entry</button></span>');
  return h};
 /*UPDCHK*/
-(function(){const B='2026-10-19-bj';window.PB_BUILD=B;if(location.protocol=='file:')return;let nb=null,tm=0;
+(function(){const B='2026-10-19-bk';window.PB_BUILD=B;if(location.protocol=='file:')return;let nb=null,tm=0;
 const busy=()=>{const a=document.activeElement;return !!(document.querySelector('.ov')||(a&&/^(INPUT|TEXTAREA)$/.test(a.tagName)&&String(a.value||'').length>0))};
 function go2(){try{const k='pb_upd_'+nb,n=+(sessionStorage.getItem(k)||0);sessionStorage.setItem(k,n+1)}catch(e){}location.replace(location.pathname+'?v='+encodeURIComponent(nb))}
 function bar(){let d=document.getElementById('pbupd');if(!d){d=document.createElement('div');d.id='pbupd';d.setAttribute('role','button');d.style.cssText='position:fixed;left:50%;transform:translateX(-50%);top:10px;z-index:100000;background:#0b3d33;color:#fff;padding:11px 18px;border-radius:12px;font:700 13px Inter,system-ui,sans-serif;box-shadow:0 6px 20px rgba(0,0,0,.3);cursor:pointer;text-align:center;max-width:92vw';d.onclick=()=>{d.textContent='Updating…';go2()};document.body.appendChild(d)}d.textContent='A new version of PrimeBook is ready. Tap here to update.'}
@@ -9408,11 +9408,24 @@ function posTable(m,full){
  <div class="cs-flt noprint"><input id="cs-q" type="search" placeholder="Search currency" value="${E(q)}" autocomplete="off"><select data-csx="fs"><option value="all"${fs=='all'?' selected':''}>All currencies</option><option value="held"${fs=='held'?' selected':''}>In stock</option><option value="low"${fs=='low'?' selected':''}>Low</option><option value="out"${fs=='out'?' selected':''}>Out of stock</option><option value="over"${fs=='over'?' selected':''}>Over max</option></select></div></div>
  ${R.length?`<div class="cs-w"><table class="cs-t"><thead><tr>${th('c','Currency')}${th('q','Quantity',1)}${th('avg','Avg cost',1)}${th('mid','Board mid',1)}<th>Trend</th>${th('v','Cost value',1)}${th('mk','Market value',1)}${th('g','Unrealised',1)}${th('sh','Share',1)}${th('cov','Cover',1)}<th>Status</th></tr></thead><tbody>${body}</tbody><tfoot><tr><td>Total</td><td></td><td></td><td></td><td></td><td class="n">${mf(tot.v)}</td><td class="n">${mf(tot.mk)}</td><td class="n ${dn(tot.g)}">${sgn(tot.g)}</td><td></td><td></td><td></td></tr></tfoot></table></div>`:`<div class="cs-empty">${Object.keys(S.rates).length?'No currency matches your filter.':'No currencies registered yet.<br><small>Add currencies under Settings → Currencies, then buy stock in the Forex Desk.</small>'}</div>`}</div>`}
 
-function overview(m){
- const ins=m.ins.slice(0,6);
- const kp=`<div class="cs-kg">${kpi('Cost value',mf(m.tv),'Weighted average cost','',IC.v)}${kpi('Market value',mf(m.tm),'At board mid-rates','',IC.m)}${kpi('Unrealised gain',sgn(m.gain),m.tv>0?(m.gain/m.tv*100).toFixed(2)+'% of cost':'—',dn(m.gain),IC.g)}${kpi('Realised (30 days)',sgn(m.real),m.rows.reduce((s,r)=>s+r.nS,0)+' sales',dn(m.real),IC.r)}${kpi('Sold (30 days)',mf(m.sold),'Bought '+mf(m.bought),'',IC.t)}${kpi('Within limits',m.held.length?Math.round(m.held.filter(r=>r.st=='ok').length/m.held.length*100)+'%':'—',m.held.filter(r=>r.st!='ok').length+' to review','',IC.s)}</div>`;
- const icard=`<div class="cs-card"><div class="cs-ch"><div><h3><span class="cs-ai">AI</span> Smart insights</h3><p>Checked against your ledger, deals, limits and board rates.</p></div></div>${ins.length?`<div class="cs-ins">${ins.map(i=>`<div class="cs-in s${i.sev}"><i></i><div><b>${E(i.t)}</b><p>${E(i.d)}</p></div>${i.act&&canW()||i.act&&['audit','rates','lim','tr'].includes(i.act)?`<button class="cs-b sm" data-csx="ins" data-csa="${E(i.act)}">${E(i.lab)}</button>`:''}</div>`).join('')}</div>${m.ins.length>6?`<p class="cs-mu cs-more">${m.ins.length-6} more item${m.ins.length-6==1?'':'s'} of lower priority.</p>`:''}`:`<div class="cs-ok"><svg viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 4.500-3.200 8-8 9-4.800-1-8-4.500-8-9V6z"/><path d="M8.500 12l2.500 2.500 4.500-5"/></svg><div><b>All clear</b><p>${m.held.length?'Stock levels, rates and ledger all look healthy.':'Nothing to review yet. Insights appear once you hold currency stock.'}</p></div></div>`}</div>`;
- return kp+`<div class="cs-g2"><div class="cs-c2">${icard}</div><div class="cs-card"><div class="cs-ch"><div><h3>Allocation</h3><p>Share of market value</p></div></div>${donut(m)}</div></div>`+posTable(m)+`<div class="cs-g2b"><div class="cs-card"><div class="cs-ch"><div><h3>Deal activity</h3><p>Daily bought and sold value</p></div></div>${bars(m)}</div>${branchCard(m)}</div>`}
+const WID=[['kp','Key figures',12],['in','Smart insights',8],['al','Allocation',4],['po','Currency positions',12],['ac','Deal activity',8],['br','By branch',4]],SPANS=[4,6,8,12];
+let wedit=false,dragId='';
+const layKey=()=>String(me().name||'user');
+function lay(){const cs=stt();cs.lay=cs.lay||{};let L=cs.lay[layKey()];if(!L)L=cs.lay[layKey()]={order:WID.map(w=>w[0]),hide:[],span:{}};
+ L.order=(L.order||[]).filter(k=>WID.some(w=>w[0]==k));WID.forEach(w=>{if(!L.order.includes(w[0]))L.order.push(w[0])});L.hide=(L.hide||[]).filter(k=>WID.some(w=>w[0]==k));L.span=L.span||{};return L}
+const spanOf=(L,k)=>+L.span[k]||WID.find(w=>w[0]==k)[2];
+function widgetBody(k,m){
+ if(k=='kp')return`<div class="cs-kg">${kpi('Cost value',mf(m.tv),'Weighted average cost','',IC.v)}${kpi('Market value',mf(m.tm),'At board mid-rates','',IC.m)}${kpi('Unrealised gain',sgn(m.gain),m.tv>0?(m.gain/m.tv*100).toFixed(2)+'% of cost':'—',dn(m.gain),IC.g)}${kpi('Realised (30 days)',sgn(m.real),m.rows.reduce((s,r)=>s+r.nS,0)+' sales',dn(m.real),IC.r)}${kpi('Sold (30 days)',mf(m.sold),'Bought '+mf(m.bought),'',IC.t)}${kpi('Within limits',m.held.length?Math.round(m.held.filter(r=>r.st=='ok').length/m.held.length*100)+'%':'—',m.held.filter(r=>r.st!='ok').length+' to review','',IC.s)}</div>`;
+ if(k=='in'){const ins=m.ins.slice(0,6);return`<div class="cs-card"><div class="cs-ch"><div><h3><span class="cs-ai">AI</span> Smart insights</h3><p>Checked against your ledger, deals, limits and board rates.</p></div></div>${ins.length?`<div class="cs-ins">${ins.map(i=>`<div class="cs-in s${i.sev}"><i></i><div><b>${E(i.t)}</b><p>${E(i.d)}</p></div>${i.act&&canW()||i.act&&['audit','rates','lim','tr'].includes(i.act)?`<button class="cs-b sm" data-csx="ins" data-csa="${E(i.act)}">${E(i.lab)}</button>`:''}</div>`).join('')}</div>${m.ins.length>6?`<p class="cs-mu cs-more">${m.ins.length-6} more item${m.ins.length-6==1?'':'s'} of lower priority.</p>`:''}`:`<div class="cs-ok"><svg viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 4.500-3.200 8-8 9-4.800-1-8-4.500-8-9V6z"/><path d="M8.500 12l2.500 2.500 4.500-5"/></svg><div><b>All clear</b><p>${m.held.length?'Stock levels, rates and ledger all look healthy.':'Nothing to review yet. Insights appear once you hold currency stock.'}</p></div></div>`}</div>`}
+ if(k=='al')return`<div class="cs-card"><div class="cs-ch"><div><h3>Allocation</h3><p>Share of market value</p></div></div>${donut(m)}</div>`;
+ if(k=='po')return posTable(m);
+ if(k=='ac')return`<div class="cs-card"><div class="cs-ch"><div><h3>Deal activity</h3><p>Daily bought and sold value</p></div></div>${bars(m)}</div>`;
+ if(k=='br')return branchCard(m);return''}
+function overview(m){const L=lay(),vis=L.order.filter(k=>!L.hide.includes(k)),hid=L.order.filter(k=>L.hide.includes(k));
+ const tool=(k,i)=>`<div class="cs-wt noprint"><span class="cs-grip" draggable="true" data-csw="${k}" title="Drag to move" aria-label="Drag to move">⋮⋮</span><b>${E(WID.find(w=>w[0]==k)[1])}</b><span class="cs-wa"><button type="button" data-csx="wmv" data-csid="${k}" data-csa="-1" title="Move earlier" aria-label="Move earlier"${i==0?' disabled':''}>↑</button><button type="button" data-csx="wmv" data-csid="${k}" data-csa="1" title="Move later" aria-label="Move later"${i==vis.length-1?' disabled':''}>↓</button><button type="button" data-csx="wsz" data-csid="${k}" title="Change width">${{4:'⅓',6:'½',8:'⅔',12:'Full'}[spanOf(L,k)]}</button><button type="button" data-csx="whd" data-csid="${k}" title="Hide this widget" aria-label="Hide">Hide</button></span></div>`;
+ const bar=wedit?`<div class="cs-we noprint"><div><b>Customising your dashboard</b><span>Drag a widget by ⋮⋮, or use the arrows. Change its width or hide it. Saved automatically for ${E(me().name||'you')}.</span></div><div class="cs-wb"><button type="button" class="cs-b sm" data-csx="wrst">Reset layout</button><button type="button" class="cs-b sm pri" data-csx="wdone">Done</button></div></div>`:`<div class="cs-wc noprint"><button type="button" class="cs-b sm" data-csx="wedit">⚙ Customise widgets</button></div>`;
+ const tray=wedit&&hid.length?`<div class="cs-wtray noprint"><span>Hidden widgets</span>${hid.map(k=>`<button type="button" class="cs-b sm" data-csx="wshow" data-csid="${k}">+ ${E(WID.find(w=>w[0]==k)[1])}</button>`).join('')}</div>`:'';
+ return bar+tray+`<div class="cs-wg${wedit?' edit':''}">${vis.map((k,i)=>`<section class="cs-wi" data-csw="${k}" style="--sp:${spanOf(L,k)}">${wedit?tool(k,i):''}${widgetBody(k,m)}</section>`).join('')||'<div class="cs-empty cs-card" style="grid-column:1/-1">All widgets are hidden. Use Customise widgets to add them back.</div>'}</div>`}
 function branchCard(m){const bs=m.brs.map(b=>{let v=0,n=0;m.rows.forEach(r=>{const e=r.by[b.id];if(e){v+=e.q*r.mid;if(e.q>1e-9)n++}});return{b,v,n}}),mx=Math.max(1,...bs.map(x=>x.v));return`<div class="cs-card"><div class="cs-ch"><div><h3>By branch</h3><p>Market value held</p></div></div>${bs.length?bs.map(x=>`<div class="cs-br"><div><b>${E(x.b.name)}</b><small>${x.n} currenc${x.n==1?'y':'ies'}</small></div><div class="cs-bb"><i style="width:${Math.max(0,x.v/mx*100).toFixed(1)}%"></i></div><b>${mf(x.v)}</b></div>`).join(''):'<div class="cs-empty">No branches.</div>'}</div>`}
 
 function branches(m){const cols=m.rows.filter(r=>r.q>1e-9||Object.keys(r.by).length);
@@ -9467,6 +9480,9 @@ function doAdjust(b,c,d,note){const s=snap();try{const k=b+'|'+c;let v;if(d<0){c
   v=r2c(v);if(v>0){post({date:tdy(),br:b,tt:'Stock adjustment',csc:c,csq:d,memo:'Stock count '+(d>0?'surplus ':'shortage ')+qf(Math.abs(d))+' '+c+(note?' · '+note:''),lines:d<0?[['6500',v,0],['1100',0,v]]:[['1100',v,0],['6500',0,v]]})}return''}catch(e){restore(s);return e.message||'Could not post the adjustment.'}}
 const valOf=(b,c,a)=>a*(((S.pos[b+'|'+c]||{}).c)||mid(c));
 
+
+function wsave(){save();go()}
+function wMove(k,d){const L=lay(),vis=L.order.filter(x=>!L.hide.includes(x)),i=vis.indexOf(k),j=i+d;if(i<0||j<0||j>=vis.length)return;const t=vis[j];const a=L.order.indexOf(k),b=L.order.indexOf(t);L.order[a]=t;L.order[b]=k;wsave()}
 function finish(msg,bad){save();ts=Date.now();go();if(msg)toastM(msg,bad)}
 function submitTransfer(){const o={from:val('tf_from'),to:val('tf_to'),cur:val('tf_cur'),amt:val('tf_amt'),note:val('tf_note').trim()};tfp=o;if(!canW())return toastM('You do not have permission to move currency stock.',1);
  const a=+o.amt;if(!(a>0))return toastM('Enter an amount greater than zero.',1);if(o.from==o.to)return toastM('Choose two different branches.',1);
@@ -9512,6 +9528,12 @@ document.addEventListener('click',ev=>{const t=ev.target.closest('[data-csx]');i
  else if(a=='go'){modal=null;showModal();if(t.dataset.cssub)sub=t.dataset.cssub;view=t.dataset.csv;go()}
  else if(a=='tf'){modal=null;showModal();tab='tr';if(t.dataset.csc)tfp={...tfp,cur:t.dataset.csc};go()}
  else if(a=='ins'){const x=t.dataset.csa;if(x=='audit'){tab='au';go()}else if(x=='rates'){sub='rates';view='fx';go()}else if(x=='lim'){tab='lm';go()}else if(x=='tr'){tab='tr';go()}else if(x.startsWith('tf:')){const p=x.split(':');tfp={cur:p[1],from:p[2],to:p[3],amt:p[4]};tab='tr';go()}}
+ else if(a=='wedit'){wedit=true;go()}else if(a=='wdone'){wedit=false;go()}
+ else if(a=='wmv')wMove(t.dataset.csid,+t.dataset.csa)
+ else if(a=='wsz'){const L=lay(),k=t.dataset.csid,i=SPANS.indexOf(spanOf(L,k));L.span[k]=SPANS[(i+1)%SPANS.length];wsave()}
+ else if(a=='whd'){const L=lay();if(!L.hide.includes(t.dataset.csid))L.hide.push(t.dataset.csid);wsave()}
+ else if(a=='wshow'){const L=lay();L.hide=L.hide.filter(x=>x!=t.dataset.csid);wsave()}
+ else if(a=='wrst'){if(confirm('Restore the default widget layout?')){stt().lay[layKey()]=null;lay();wsave()}}
  else if(a=='csv')csvOut()
  else if(a=='tfsub')submitTransfer()
  else if(a=='appr')decide(t.dataset.csid,1)
@@ -9527,6 +9549,11 @@ document.addEventListener('change',ev=>{const t=ev.target.closest('[data-csx]');
  else if(a=='tfc'){tfp={...tfp,from:val('tf_from'),to:val('tf_to'),cur:val('tf_cur'),amt:val('tf_amt'),note:val('tf_note')};go()}
  else if(a=='cnt'){const v=t.value;cnt[t.dataset.csk]=v;if(cntRev){cntRev=null;const n=val('ct_note');cnt._note=n;go();return}const c=t.closest('tr').querySelector('.cs-df'),d=v===''?null:(+v-(+t.dataset.sys));c.textContent=d==null?'—':(d>0?'+':'')+qf(d);c.className='n cs-df '+(d==null?'':dn(d))}});
 document.addEventListener('input',ev=>{if(view!='std')return;const t=ev.target;if(t.id=='cs-q'){q=t.value;go();keepFocus('cs-q')}else if(t.id=='cs-aq'){aud.q=t.value;go();keepFocus('cs-aq')}else if(t.id=='ct_note')cnt._note=t.value;else if(t.id=='tf_amt'||t.id=='tf_note')tfp={...tfp,[t.id=='tf_amt'?'amt':'note']:t.value}});
+
+document.addEventListener('dragstart',e=>{const g=e.target.closest&&e.target.closest('.cs-grip');if(!g||view!='std')return;dragId=g.dataset.csw;e.dataTransfer.effectAllowed='move';try{e.dataTransfer.setData('text/plain',dragId)}catch(x){}const w=g.closest('.cs-wi');if(w)setTimeout(()=>w.classList.add('drag'),0)});
+document.addEventListener('dragover',e=>{if(!dragId||view!='std')return;const w=e.target.closest&&e.target.closest('.cs-wi');if(!w)return;e.preventDefault();document.querySelectorAll('.cs-wi.over').forEach(x=>x!==w&&x.classList.remove('over'));if(w.dataset.csw!=dragId)w.classList.add('over')});
+document.addEventListener('drop',e=>{if(!dragId||view!='std')return;const w=e.target.closest&&e.target.closest('.cs-wi');if(!w)return;e.preventDefault();const to=w.dataset.csw,from=dragId;dragId='';if(to&&to!=from){const L=lay(),o=L.order.filter(x=>x!=from),i=o.indexOf(to);const fi=L.order.indexOf(from),ti=L.order.indexOf(to);o.splice(fi<ti?i+1:i,0,from);L.order=o;wsave()}else go()});
+document.addEventListener('dragend',()=>{dragId='';document.querySelectorAll('.cs-wi.drag,.cs-wi.over').forEach(x=>x.classList.remove('drag','over'))});
 document.addEventListener('keydown',ev=>{if(ev.key=='Escape'&&modal){modal=null;showModal()}});
 setInterval(()=>{if(view!='std'||modal||document.hidden)return;const a=document.activeElement;if(a&&/INPUT|SELECT|TEXTAREA/.test(a.tagName))return;go()},30000);
 
@@ -9562,6 +9589,18 @@ html body .cs-tabs u{text-decoration:none;background:#dc2626;color:#fff;border-r
 html body .cs-act{display:flex;gap:8px;flex-wrap:wrap}
 html body .cs-b{border:1px solid #c7d7fb;background:#fff;color:#1d4ed8;padding:8px 14px;border-radius:10px;font:600 13px 'Inter';cursor:pointer;min-height:36px}
 html body .cs-b:hover{background:#eef3ff}html body .cs-b.pri{background:linear-gradient(135deg,#1d4ed8,#3b82f6)!important;border-color:transparent;color:#fff!important;box-shadow:0 6px 16px #2563eb44}html body .cs-b.sm{padding:5px 11px;min-height:30px;font-size:12px}
+html body .cs-wg{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:16px;align-items:start}
+html body .cs-wi{grid-column:span var(--sp,12);min-width:0;position:relative}
+html body .cs-wg.edit .cs-wi{outline:2px dashed #93b4f7;outline-offset:6px;border-radius:18px}
+html body .cs-wi.drag{opacity:.4}html body .cs-wi.over{outline:3px solid #2563eb!important;background:#e6eeff55}
+html body .cs-wt{display:flex;align-items:center;gap:10px;margin:0 0 8px;padding:7px 10px;border-radius:12px;background:#12399c;color:#fff}
+html body .cs-wt b{font:600 12.5px 'Inter';flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+html body .cs-grip{cursor:grab;font:700 16px/1 'Inter';letter-spacing:-2px;padding:4px 8px;border-radius:8px;background:#ffffff26;user-select:none;touch-action:none}html body .cs-grip:active{cursor:grabbing}
+html body .cs-wa{display:flex;gap:4px}html body .cs-wa button{border:0;background:#ffffff26;color:#fff;font:600 12px 'Inter';padding:5px 9px;border-radius:8px;cursor:pointer;min-width:30px}html body .cs-wa button:hover:not(:disabled){background:#ffffff4d}html body .cs-wa button:disabled{opacity:.35;cursor:default}
+html body .cs-wc{display:flex;justify-content:flex-end}
+html body .cs-we{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;padding:12px 16px;border-radius:14px;background:#eef4ff;border:1px solid #c7d7fb}html body .cs-we b{display:block;font:700 13.5px 'Inter';color:#0b2a6b}html body .cs-we span{font:400 12.5px 'Inter';color:#5d6e96}html body .cs-wb{display:flex;gap:8px}
+html body .cs-wtray{display:flex;gap:8px;flex-wrap:wrap;align-items:center;padding:10px 14px;border-radius:12px;background:#fff;border:1px dashed #93b4f7}html body .cs-wtray>span{font:600 12px 'Inter';color:#5d6e96;margin-right:4px}
+@media(max-width:1000px){html body .cs-wi{grid-column:span 12}}
 html body .cs-kg{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px}
 html body .cs-k{display:flex;gap:12px;align-items:center;background:#fff;border:1px solid #dbe5fb;border-radius:16px;padding:14px 16px;box-shadow:0 6px 18px #1d4ed811}
 html body .cs-ki{flex:none;width:40px;height:40px;border-radius:12px;display:grid;place-items:center;background:#e6eeff;color:#1d4ed8}html body .cs-ki svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
