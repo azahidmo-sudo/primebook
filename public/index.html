@@ -5526,7 +5526,7 @@ const oc=V.ctx;V.ctx=function(){let h=oc.apply(this,arguments);
  h=h.replace('<button class="plf" onclick="ctOpen()">+ New transaction</button>','<span style="display:flex;gap:8px;flex-wrap:wrap"><button class="plf" onclick="sdOpen()">+ Currency sale deal</button><button class="plo" onclick="ctOpen()">+ Multi-currency entry</button></span>');
  return h};
 /*UPDCHK*/
-(function(){const B='2026-10-19-be';window.PB_BUILD=B;if(location.protocol=='file:')return;let nb=null,tm=0;
+(function(){const B='2026-10-19-bf';window.PB_BUILD=B;if(location.protocol=='file:')return;let nb=null,tm=0;
 const busy=()=>{const a=document.activeElement;return !!(document.querySelector('.ov')||(a&&/^(INPUT|TEXTAREA)$/.test(a.tagName)&&String(a.value||'').length>0))};
 function go2(){try{const k='pb_upd_'+nb,n=+(sessionStorage.getItem(k)||0);sessionStorage.setItem(k,n+1)}catch(e){}location.replace(location.pathname+'?v='+encodeURIComponent(nb))}
 function bar(){let d=document.getElementById('pbupd');if(!d){d=document.createElement('div');d.id='pbupd';d.setAttribute('role','button');d.style.cssText='position:fixed;left:50%;transform:translateX(-50%);top:10px;z-index:100000;background:#0b3d33;color:#fff;padding:11px 18px;border-radius:12px;font:700 13px Inter,system-ui,sans-serif;box-shadow:0 6px 20px rgba(0,0,0,.3);cursor:pointer;text-align:center;max-width:92vw';d.onclick=()=>{d.textContent='Updating…';go2()};document.body.appendChild(d)}d.textContent='A new version of PrimeBook is ready. Tap here to update.'}
@@ -9134,7 +9134,6 @@ html body .dsh-mix{margin-top:14px;display:grid;gap:8px}html body .dsh-mix>b{fon
 })();
 
 /*RPX*/(function(){
-{const rm=MENU.find(m=>m[0]=='rpt');if(rm&&rm[2]){const dup=['r:Multi-currency Balance Sheet','r:Multi-currency Profit and Loss','r:Multi-currency Trial Balance'];const n0=rm[2].length;for(let i=rm[2].length-1;i>=0;i--)if(dup.includes(rm[2][i][0]))rm[2].splice(i,1)}}
 
 const A=x=>String(x==null?'':x).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const CC={'Financial Statements':'#2563eb','Sales and Receivables':'#0891b2','Purchases and Payables':'#7c3aed','Cash and Banking':'#0284c7','Inventory and Stock':'#4f46e5','Currency and FX':'#1d4ed8','Payroll':'#6366f1','Accountant':'#475569'};
