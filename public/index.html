@@ -5581,7 +5581,7 @@ const oc=V.ctx;V.ctx=function(){let h=oc.apply(this,arguments);
  h=h.replace('<button class="plf" onclick="ctOpen()">+ New transaction</button>','<span style="display:flex;gap:8px;flex-wrap:wrap"><button class="plf" onclick="sdOpen()">+ Currency sale deal</button><button class="plo" onclick="ctOpen()">+ Multi-currency entry</button></span>');
  return h};
 /*UPDCHK*/
-(function(){const B='2026-10-19-ch';window.PB_BUILD=B;if(location.protocol=='file:')return;let nb=null,tm=0;
+(function(){const B='2026-10-19-ci';window.PB_BUILD=B;if(location.protocol=='file:')return;let nb=null,tm=0;
 const busy=()=>{const a=document.activeElement;return !!(document.querySelector('.ov')||(a&&/^(INPUT|TEXTAREA)$/.test(a.tagName)&&String(a.value||'').length>0))};
 function go2(){try{const k='pb_upd_'+nb,n=+(sessionStorage.getItem(k)||0);sessionStorage.setItem(k,n+1)}catch(e){}location.replace(location.pathname+'?v='+encodeURIComponent(nb))}
 function bar(){let d=document.getElementById('pbupd');if(!d){d=document.createElement('div');d.id='pbupd';d.setAttribute('role','button');d.style.cssText='position:fixed;left:50%;transform:translateX(-50%);top:10px;z-index:100000;background:#0b3d33;color:#fff;padding:11px 18px;border-radius:12px;font:700 13px Inter,system-ui,sans-serif;box-shadow:0 6px 20px rgba(0,0,0,.3);cursor:pointer;text-align:center;max-width:92vw';d.onclick=()=>{d.textContent='Updating…';go2()};document.body.appendChild(d)}d.textContent='A new version of PrimeBook is ready. Tap here to update.'}
@@ -9863,9 +9863,9 @@ const mf=n=>Number(n||0).toLocaleString(undefined,{minimumFractionDigits:2,maxim
 const nz=v=>Math.abs(v)<.005?0:v,r2=v=>Math.round((+v||0)*100)/100;
 const cmp=v=>Math.abs(v)>=1e6?(v/1e6).toFixed(1)+'M':Math.abs(v)>=1e3?(+(v/1e3).toFixed(1))+'k':String(Math.round(v));
 const ISO=d=>d.toISOString().slice(0,10),addD=(s,n)=>{const d=new Date(s+'T12:00:00Z');d.setUTCDate(d.getUTCDate()+n);return ISO(d)};
-const IC={search:'<circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/>',spark:'<path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/>',dl:'<path d="M12 4v11m0 0l-4-4m4 4l4-4M4 19h16"/>',shield:'<path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/><path d="M9 12l2 2 4-4"/>',bank:'<path d="M3 10l9-6 9 6zM5 10v8M9.5 10v8M14.5 10v8M19 10v8M3 21h18"/>',cash:'<rect x="3" y="6" width="18" height="12" rx="2"/><circle cx="12" cy="12" r="2.5"/>',link:'<path d="M9 15l6-6M10 6h8v8"/>'};
+const IC={search:'<circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/>',spark:'<path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/>',dl:'<path d="M12 4v11m0 0l-4-4m4 4l4-4M4 19h16"/>',shield:'<path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/><path d="M9 12l2 2 4-4"/>',bank:'<path d="M3 10l9-6 9 6zM5 10v8M9.5 10v8M14.5 10v8M19 10v8M3 21h18"/>',cash:'<rect x="3" y="6" width="18" height="12" rx="2"/><circle cx="12" cy="12" r="2.5"/>',link:'<path d="M9 15l6-6M10 6h8v8"/>',filt:'<path d="M3 5h18l-7 8v6l-4 2v-8z"/>',prt:'<path d="M6 9V3h12v6M6 18H4v-7h16v7h-2M7 14h10v7H7z"/>',star:'<path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z"/>'};
 const svg=(p,c)=>`<svg viewBox="0 0 24 24" class="cbm-i ${c||''}" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">${p}</svg>`;
-let tab='ov',sc='all',entry=null,rg=30,lq='',lacc='',ldir='',lper='30',lflag='',lhid=true,lso='date',lpg=0,rvs='pending',cbq='';
+let tab='ov',sc='all',entry=null,rg=30,lq='',lacc='',ldir='',lper='30',lflag='',lhid=true,lso='date',lpg=0,rvs='pending',cbq='',lfrom='',lto='',lmin='',lmax='',ltype='',luser='',lopen='',lvw='',lmore=false;
 const CODES=()=>sc=='cash'?[1000]:sc=='bank'?[1010]:[1000,1010];
 const isAp=()=>{const r=(me()||{}).role;return r=='Owner'||r=='Manager'};
 const brN=id=>typeof bn=='function'?bn(id):id;
@@ -9875,13 +9875,15 @@ const bankName=x=>{const id=x.bank||String(x.acc||'').replace('bank|','');const 
 /* ---- one pass: every cash/bank movement with a running balance ---- */
 function build(){const al=S.j.filter(x=>br=='all'||x.br==br).slice().sort((a,b)=>a.date.localeCompare(b.date)||(+a.id)-(+b.id)),codes=CODES(),rows=[],runBy={};let run=0;
  al.forEach(x=>{const liq=x.lines.filter(y=>+y[0]==1000||+y[0]==1010);if(!liq.length)return;const pure=x.lines.every(y=>+y[0]==1000||+y[0]==1010)&&(sc=='all'||liq.every(y=>codes.includes(+y[0])));
-  liq.forEach(y=>{const c=+y[0];if(!codes.includes(c))return;const i=+y[1]||0,o=+y[2]||0;run+=i-o;rows.push({id:String(x.id),date:x.date,memo:x.memo||'',tt:x.tt||'',acc:c==1010?bankName(x):'Cash – '+brN(x.br),aid:c==1010?'bank|'+(x.bank||String(x.acc||'').replace('bank|','')):'cash|'+x.br,code:c,br:x.br,inn:i,out:o,run:r2(run),xf:pure,by:x.by||'',at:x.at||''})})});
+  liq.forEach(y=>{const c=+y[0];if(!codes.includes(c))return;const i=+y[1]||0,o=+y[2]||0;run+=i-o;rows.push({id:String(x.id),date:x.date,memo:x.memo||'',tt:x.tt||'',acc:c==1010?bankName(x):'Cash – '+brN(x.br),aid:c==1010?'bank|'+(x.bank||String(x.acc||'').replace('bank|','')):'cash|'+x.br,code:c,br:x.br,inn:i,out:o,run:r2(run),xf:pure,by:x.by||'',at:x.at||'',vno:x.vno||'',ref:x.ref||'',cust:x.cust||'',ccy:x.ccy||''})})});
  const dupK={};rows.forEach(r=>{if(r.xf)return;const k=[r.date,r.br,r.aid,r.inn,r.out,r.memo.trim().toLowerCase()].join('|');(dupK[k]=dupK[k]||[]).push(r)});
  const dup=new Set();Object.values(dupK).forEach(g=>{if(g.length>1)g.forEach(r=>dup.add(r.id+'|'+r.aid))});
  /* entry-level size for review */
  const ent={};rows.forEach(r=>{if(r.xf)return;const e=ent[r.id]||(ent[r.id]={id:r.id,date:r.date,memo:r.memo,acc:r.acc,by:r.by,at:r.at,inn:0,out:0,br:r.br});e.inn+=r.inn;e.out+=r.out});
  Object.values(ent).forEach(e=>e.amt=Math.max(e.inn,e.out));
- return{rows,dup,ent:Object.values(ent),bal:r2(run)}}
+ const grp={};rows.forEach(r=>{if(r.xf)return;const k=r.aid+(r.inn>0?'i':'o');(grp[k]=grp[k]||[]).push(Math.max(r.inn,r.out))});
+ const unu=new Set();rows.forEach(r=>{if(r.xf)return;const g=grp[r.aid+(r.inn>0?'i':'o')];if(g.length<6)return;const mu=g.reduce((s,v)=>s+v,0)/g.length,sd=Math.sqrt(g.reduce((s,v)=>s+(v-mu)*(v-mu),0)/g.length),a=Math.max(r.inn,r.out);if(sd>0&&a>mu+2.5*sd)unu.add(r.id+'|'+r.aid)});
+ return{rows,dup,unu,ent:Object.values(ent),bal:r2(run)}}
 const flowOn=(rows,d)=>{let i=0,o=0;rows.forEach(r=>{if(!r.xf&&r.date==d){i+=r.inn;o+=r.out}});return[i,o]};
 const balAt=(rows,d)=>{let b=0;for(const r of rows){if(r.date>d)break;b=r.run}return b};
 function model(){const M=build(),t=today(),rows=M.rows,days=[];for(let i=rg-1;i>=0;i--)days.push(addD(t,-i));
@@ -9930,25 +9932,90 @@ function overview(m,acs,ins){const tot=Math.max(1,acs.reduce((s,a)=>s+Math.max(0
  <div class="cbm-pn"><div class="cbm-ph"><h3>${svg(IC.spark,'pv')} AI insights</h3><span>Worked out from your own records</span></div><div class="cbm-ins">${insH}</div></div></div>
  <div class="cbm-2 b"><div class="cbm-pn"><div class="cbm-ph"><h3>Money by account</h3><span>${acs.length} account${acs.length==1?'':'s'}</span></div>${accH}</div>
  <div class="cbm-pn"><div class="cbm-ph"><h3>Latest transactions</h3><span class="cbm-lk" data-cbmt="led">See all ›</span></div>${recent.length?recent.map(r=>`<div class="cbm-rw"><span class="cbm-rt"><b>${A(r.memo||r.tt||'Entry')}</b><small>${A(r.date)} · ${A(r.acc)}</small></span><b class="${r.inn?'up':'dn'}">${r.inn?'+'+mf(r.inn):'−'+mf(r.out)}</b></div>`).join(''):'<p class="cbm-em">No transactions yet.</p>'}</div></div>`}
-function flagsOf(r,m){const c=STO(),f=[];if(r.xf)f.push(['Own transfer','info']);if(!r.xf&&c.thr>0&&Math.max(r.inn,r.out)>=c.thr)f.push(['Large','warn']);if(m.dup.has(r.id+'|'+r.aid))f.push(['Possible duplicate','bad']);const v=c.rev[r.id];if(v)f.push([v.st=='ok'?'Approved':'Queried',v.st=='ok'?'good':'bad']);return f}
-function filtered(m){const t=m.t,q=lq.trim().toLowerCase(),from=lper=='1'?t:lper=='7'?addD(t,-6):lper=='30'?addD(t,-29):lper=='m'?t.slice(0,8)+'01':'';
- let L=m.rows.filter(r=>(!from||r.date>=from)&&(!lacc||r.aid==lacc)&&(!ldir||(ldir=='in'?r.inn>0:r.out>0))&&(!(lhid&&r.xf))&&(!q||(r.memo+' '+r.acc+' '+r.tt+' '+r.date+' '+mf(r.inn||r.out)).toLowerCase().includes(q)));
- if(lflag)L=L.filter(r=>flagsOf(r,m).some(f=>f[0]==lflag));
- return lso=='amt'?L.slice().sort((a,b)=>Math.max(b.inn,b.out)-Math.max(a.inn,a.out)):lso=='old'?L:L.slice().reverse()}
-const PG=25;
-function ledger(m,acs){const L=filtered(m),pages=Math.max(1,Math.ceil(L.length/PG));if(lpg>=pages)lpg=pages-1;const sl=L.slice(lpg*PG,lpg*PG+PG),ti=L.reduce((s,r)=>s+(r.xf?0:r.inn),0),to=L.reduce((s,r)=>s+(r.xf?0:r.out),0);
- const sel=(v,opts)=>opts.map(([k,t])=>`<option value="${A(k)}" ${v==k?'selected':''}>${A(t)}</option>`).join('');
- return`<div class="cbm-pn"><div class="cbm-af noprint"><div class="cbm-sw">${svg(IC.search)}<input id="cbmq" value="${A(lq)}" placeholder="Search by description, account or amount…" oninput="cbmQ(this.value)" autocomplete="off"></div>
- <select onchange="cbmF('per',this.value)">${sel(lper,[['1','Today'],['7','Last 7 days'],['30','Last 30 days'],['m','This month'],['','All time']])}</select>
- <select onchange="cbmF('acc',this.value)"><option value="">All accounts</option>${sel(lacc,acs.map(a=>[a.id,a.name]))}</select>
- <select onchange="cbmF('dir',this.value)">${sel(ldir,[['','Money in and out'],['in','Money in only'],['out','Money out only']])}</select>
- <select onchange="cbmF('flag',this.value)">${sel(lflag,[['','All transactions'],['Large','Large amounts'],['Possible duplicate','May be entered twice'],['Flagged','Queried'],['Reviewed','Approved']])}</select>
- <select onchange="cbmF('so',this.value)">${sel(lso,[['date','Newest first'],['old','Oldest first'],['amt','Largest first']])}</select>
- <label class="cbm-ck"><input type="checkbox" ${lhid?'checked':''} onchange="cbmF('hid',this.checked)"> Hide moves between my accounts</label>
- <button type="button" class="b s cbm-btn" data-cbma="csv">${svg(IC.dl)} CSV</button></div>
- <div class="cbm-sum"><span><small>Transactions</small><b>${L.length}</b></span><span><small>Money in</small><b class="up">${mf(ti)}</b></span><span><small>Money out</small><b class="dn">${mf(to)}</b></span><span><small>Net</small><b>${mf(ti-to)}</b></span></div>
- ${sl.length?`<div class="w cbm-w"><table class="cbm-t"><tr><th>Date</th><th>Account</th><th>Description</th><th class="n">In</th><th class="n">Out</th><th class="n">Balance</th><th>Flags</th></tr>${sl.map(r=>`<tr><td>${A(r.date)}</td><td>${A(r.acc)}</td><td><b>${A(r.memo||r.tt||'Entry')}</b>${r.tt&&r.memo?`<small>${A(r.tt)}${r.by?' · '+A(r.by):''}</small>`:r.by?`<small>${A(r.by)}</small>`:''}</td><td class="n up">${r.inn?mf(r.inn):''}</td><td class="n dn">${r.out?mf(r.out):''}</td><td class="n">${mf(r.run)}</td><td>${flagsOf(r,m).map(f=>`<span class="cbm-bd ${f[1]}">${f[0]}</span>`).join(' ')}</td></tr>`).join('')}</table></div>
- <div class="cbm-pg noprint"><span>Showing ${lpg*PG+1}–${lpg*PG+sl.length} of ${L.length}</span><span><button type="button" class="b s" data-cbmp="-1" ${lpg==0?'disabled':''}>Previous</button> <button type="button" class="b s" data-cbmp="1" ${lpg>=pages-1?'disabled':''}>Next</button></span></div>`:'<p class="cbm-em">Nothing matches. Try changing the filters.</p>'}</div>`}
+function flagsOf(r,m){const c=STO(),f=[];if(r.xf)f.push(['Own transfer','info']);if(!r.xf&&c.thr>0&&Math.max(r.inn,r.out)>=c.thr)f.push(['Large','warn']);if(m.dup.has(r.id+'|'+r.aid))f.push(['Possible duplicate','bad']);if(m.unu&&m.unu.has(r.id+'|'+r.aid))f.push(['Unusual','warn']);const v=c.rev[r.id];if(v)f.push([v.st=='ok'?'Approved':'Queried',v.st=='ok'?'good':'bad']);return f}
+let PG=25;const amtOf=r=>Math.max(r.inn,r.out);
+const WD=['sun','mon','tue','wed','thu','fri','sat'];
+function aiParse(q0,m){const t=today(),o={dir:'',from:'',to:'',min:'',max:'',flag:'',type:'',acc:'',kind:'',hid:null,text:'',chips:[]};let s=' '+String(q0||'').toLowerCase()+' ';
+ const take=(re,fn)=>{const x=s.match(re);if(x){s=s.replace(re,' ');fn(x)}},num=v=>+String(v).replace(/,/g,'');
+ take(/\bbetween\s+\$?([\d,]+(?:\.\d+)?)\s+and\s+\$?([\d,]+(?:\.\d+)?)/,x=>{o.min=num(x[1]);o.max=num(x[2]);o.chips.push('Between '+mf(o.min)+' and '+mf(o.max))});
+ take(/(?:\b(?:over|above|more than|greater than|at least|bigger than)|>=?)\s*\$?([\d,]+(?:\.\d+)?)/,x=>{o.min=num(x[1]);o.chips.push('At least '+mf(o.min))});
+ take(/(?:\b(?:under|below|less than|at most|smaller than)|<=?)\s*\$?([\d,]+(?:\.\d+)?)/,x=>{o.max=num(x[1]);o.chips.push('At most '+mf(o.max))});
+ const dow=(d)=>new Date(d+'T12:00:00').getDay(),mon=d=>addD(d,-((dow(d)+6)%7));
+ take(/\btoday\b/,()=>{o.from=o.to=t;o.chips.push('Today')});
+ take(/\byesterday\b/,()=>{o.from=o.to=addD(t,-1);o.chips.push('Yesterday')});
+ take(/\bthis week\b/,()=>{o.from=mon(t);o.to=t;o.chips.push('This week')});
+ take(/\blast week\b/,()=>{const m0=mon(t);o.from=addD(m0,-7);o.to=addD(m0,-1);o.chips.push('Last week')});
+ take(/\blast (\d{1,3}) days?\b/,x=>{o.from=addD(t,-(+x[1]-1));o.to=t;o.chips.push('Last '+x[1]+' days')});
+ take(/\bthis month\b/,()=>{o.from=t.slice(0,8)+'01';o.to=t;o.chips.push('This month')});
+ take(/\blast month\b/,()=>{const d=new Date(t.slice(0,8)+'01T12:00:00');d.setMonth(d.getMonth()-1);const f=ld(d.getTime());o.from=f;o.to=addD(t.slice(0,8)+'01',-1);o.chips.push('Last month')});
+ take(/\bthis year\b/,()=>{o.from=t.slice(0,4)+'-01-01';o.to=t;o.chips.push('This year')});
+ take(/\b(money in|cash in|received|receipts?|deposits?|income|inflows?|incoming)\b/,()=>{o.dir='in';o.chips.push('Money in')});
+ take(/\b(money out|cash out|paid|payments?|withdraw(?:al|als|n)?|expenses?|spent|spending|outflows?|outgoing)\b/,()=>{o.dir='out';o.chips.push('Money out')});
+ take(/\b(large|big|biggest)\b/,()=>{o.flag='Large';o.chips.push('Large amounts')});
+ take(/\b(duplicates?|twice|double[- ]entered)\b/,()=>{o.flag='Possible duplicate';o.chips.push('Possible duplicates')});
+ take(/\b(unusual|anomal\w*|suspicious|odd|strange)\b/,()=>{o.flag='Unusual';o.chips.push('Unusual')});
+ take(/\bqueried\b/,()=>{o.flag='Queried';o.chips.push('Queried')});
+ take(/\bapproved\b/,()=>{o.flag='Approved';o.chips.push('Approved')});
+ take(/\b(own transfers?|transfers?)\b/,()=>{o.flag='Own transfer';o.hid=false;o.chips.push('Transfers between my accounts')});
+ const types=[...new Set((m?m.rows:[]).map(r=>r.tt).filter(Boolean))];
+ types.forEach(ty=>{const k=ty.toLowerCase();if(!o.type&&k.length>2&&s.includes(' '+k+' ')){o.type=ty;s=s.replace(' '+k+' ',' ');o.chips.push('Type: '+ty)}});
+ const acs=accounts();
+ acs.forEach(a=>{const k=a.name.toLowerCase();if(!o.acc&&s.includes(k)){o.acc=a.id;s=s.replace(k,' ');o.chips.push(a.name)}});
+ if(!o.acc)acs.filter(a=>a.kind=='bank').forEach(a=>{const w=a.name.toLowerCase().split(/\s+/)[0];if(!o.acc&&w.length>3&&new RegExp('\\b'+w.replace(/[^a-z0-9]/g,'')+'\\b').test(s)){o.acc=a.id;s=s.replace(w,' ');o.chips.push(a.name)}});
+ if(!o.acc){take(/\bbanks?\b/,()=>{o.kind='bank';o.chips.push('Banks only')});take(/\bcash\b/,()=>{o.kind='cash';o.chips.push('Cash only')})}
+ o.text=s.replace(/\b(in|on|for|the|of|from|to|show|me|all|my|and|with|last|this|a|an|transactions?|entries|list|find|any|that|were|was|are|is)\b/g,' ').replace(/\s+/g,' ').trim();
+ if(o.text)o.chips.push('Contains “'+o.text+'”');
+ return o}
+function eff(m){const P=lq.trim()?aiParse(lq,m):{chips:[],text:'',dir:'',from:'',to:'',min:'',max:'',flag:'',type:'',acc:'',kind:'',hid:null},t=m.t,e={};
+ e.dir=P.dir||ldir;e.flag=P.flag||lflag;e.type=P.type||ltype;e.acc=P.acc||lacc;e.kind=P.kind||'';e.user=luser;e.text=P.text;
+ e.min=P.min!==''?P.min:lmin;e.max=P.max!==''?P.max:lmax;
+ if(P.from){e.from=P.from;e.to=P.to}else if(lfrom||lto){e.from=lfrom;e.to=lto}else{e.from=lper=='1'?t:lper=='7'?addD(t,-6):lper=='30'?addD(t,-29):lper=='m'?t.slice(0,8)+'01':lper=='90'?addD(t,-89):lper=='y'?t.slice(0,4)+'-01-01':'';e.to=''}
+ e.hid=P.hid!==null?P.hid:lhid;if(e.flag=='Own transfer')e.hid=false;e.chips=P.chips;return e}
+function sel(m,e){const w=(e.text||'').toLowerCase().split(' ').filter(Boolean);
+ return m.rows.filter(r=>(!e.from||r.date>=e.from)&&(!e.to||r.date<=e.to)&&(!e.acc||r.aid==e.acc)&&(!e.kind||r.code==(e.kind=='bank'?1010:1000))&&(!e.dir||(e.dir=='in'?r.inn>0:r.out>0))&&!(e.hid&&r.xf)&&(e.min===''||amtOf(r)>=+e.min-.0049)&&(e.max===''||amtOf(r)<=+e.max+.0049)&&(!e.type||r.tt==e.type)&&(!e.user||r.by==e.user)&&(!w.length||w.every(x=>(r.memo+' '+r.acc+' '+r.tt+' '+r.date+' '+r.by+' '+r.ref+' '+r.vno+' '+mf(amtOf(r))).toLowerCase().includes(x))))
+  .filter(r=>!e.flag||flagsOf(r,m).some(f=>f[0]==e.flag))}
+function filtered(m){const L=sel(m,eff(m));return lso=='amt'?L.slice().sort((a,b)=>amtOf(b)-amtOf(a)):lso=='old'?L:L.slice().reverse()}
+const dd=(a,b)=>Math.round((new Date(b+'T12:00:00')-new Date(a+'T12:00:00'))/864e5);
+function periodName(e){if(!e.from&&!e.to)return 'all time';if(e.from&&e.to&&e.from==e.to)return 'on '+e.from;return 'from '+(e.from||'the start')+(e.to?' to '+e.to:' to today')}
+function histAI(L,m,e){const o=[],add=(sev,tl,d,k,v,lab)=>o.push({sev,t:tl,d,k,v,lab}),x=L.filter(r=>!r.xf);if(!x.length)return {sum:'No transactions match these filters.',items:[]};
+ const ti=x.reduce((s,r)=>s+r.inn,0),to=x.reduce((s,r)=>s+r.out,0),net=ti-to,S_=S.base;
+ const sum=`${x.length} transaction${x.length==1?'':'s'} ${periodName(e)}: ${S_} ${mf(ti)} came in and ${S_} ${mf(to)} went out, a net ${net>=0?'gain':'loss'} of ${S_} ${mf(Math.abs(net))}.`;
+ const bi=x.filter(r=>r.inn>0).sort((a,b)=>b.inn-a.inn)[0],bo=x.filter(r=>r.out>0).sort((a,b)=>b.out-a.out)[0];
+ if(bi)add('info','Largest money in',`${S_} ${mf(bi.inn)} · ${bi.memo||bi.tt||'Entry'} · ${bi.date}`);
+ if(bo)add('info','Largest money out',`${S_} ${mf(bo.out)} · ${bo.memo||bo.tt||'Entry'} · ${bo.date}`);
+ const days={};x.forEach(r=>{const d=days[r.date]||(days[r.date]={n:0,v:0});d.n++;d.v+=r.inn+r.out});const bd=Object.entries(days).sort((a,b)=>b[1].v-a[1].v)[0];if(bd&&Object.keys(days).length>1)add('info','Busiest day',`${bd[0]} had ${bd[1].n} transaction${bd[1].n==1?'':'s'} worth ${S_} ${mf(bd[1].v)}`);
+ const ac={};x.forEach(r=>{ac[r.acc]=(ac[r.acc]||0)+r.inn+r.out});const ta=Object.entries(ac).sort((a,b)=>b[1]-a[1])[0],tv=Object.values(ac).reduce((s,v)=>s+v,0);if(ta&&Object.keys(ac).length>1)add('info','Most used account',`${ta[0]} carries ${Math.round(ta[1]/tv*100)}% of the activity`);
+ const rec={};x.forEach(r=>{const k=(r.memo||'').trim().toLowerCase();if(k.length>2){(rec[k]=rec[k]||{n:0,v:0,l:r.memo,d:r.out>0?'out':'in'}).n++;rec[k].v+=r.inn+r.out}});const rc=Object.values(rec).filter(g=>g.n>=3).sort((a,b)=>b.n-a.n)[0];
+ if(rc)add('info','Repeating '+(rc.d=='out'?'payment':'receipt'),`“${rc.l}” appears ${rc.n} times, ${S_} ${mf(rc.v)} in total`);
+ const nU=L.filter(r=>m.unu&&m.unu.has(r.id+'|'+r.aid)).length,nD=L.filter(r=>m.dup.has(r.id+'|'+r.aid)).length,c=STO(),nL=c.thr>0?L.filter(r=>!r.xf&&amtOf(r)>=c.thr).length:0;
+ if(nU)add('warn',nU+' unusual amount'+(nU==1?'':'s'),'Far bigger than normal for that account. Worth a check.','flag','Unusual','Show');
+ if(nD)add('crit',nD+' possible duplicate'+(nD==1?'':'s'),'Same date, account, amount and description entered more than once.','flag','Possible duplicate','Show');
+ if(nL)add('warn',nL+' large amount'+(nL==1?'':'s'),'At or above your approval limit.','flag','Large','Show');
+ if(e.from){const days_=dd(e.from,e.to||m.t)+1,pf=addD(e.from,-days_),pt=addD(e.from,-1),P2=sel(m,{...e,from:pf,to:pt}).filter(r=>!r.xf);if(P2.length||x.length){const pn=P2.reduce((s,r)=>s+r.inn-r.out,0),pi=P2.reduce((s,r)=>s+r.inn,0);if(P2.length){const ch=Math.abs(pn)<.005?null:(net-pn)/Math.abs(pn)*100;add(net>=pn?'ok':'warn','Compared with the previous '+days_+' day'+(days_==1?'':'s'),`Net was ${S_} ${mf(pn)} before${ch==null?'':'; now '+(ch>=0?'up ':'down ')+Math.abs(ch).toFixed(0)+'%'}. Money in ${ti>=pi?'rose':'fell'} from ${mf(pi)} to ${mf(ti)}.`)}}}
+ if(!nU&&!nD)add('ok','No problems found','No unusual amounts or double entries in these results.');
+ return {sum,items:o.slice(0,8)}}
+function ledger(m,acs){const e=eff(m),L=filtered(m),pages=Math.max(1,Math.ceil(L.length/PG));if(lpg>=pages)lpg=pages-1;const sl=L.slice(lpg*PG,lpg*PG+PG),X=L.filter(r=>!r.xf),ti=X.reduce((s,r)=>s+r.inn,0),to=X.reduce((s,r)=>s+r.out,0),big=X.length?Math.max(...X.map(amtOf)):0,avg=X.length?(ti+to)/X.length:0,ai=histAI(L,m,e);
+ const sel_=(v,opts)=>opts.map(([k,t])=>`<option value="${A(k)}" ${v==k?'selected':''}>${A(t)}</option>`).join(''),types=[...new Set(m.rows.map(r=>r.tt).filter(Boolean))].sort(),users=[...new Set(m.rows.map(r=>r.by).filter(Boolean))].sort(),myv=((STO().vw||{})[(me()||{}).name])||[];
+ const act=[];if(lq.trim())act.push(['q','Search: '+lq.trim()]);if(lper!='30'||lfrom||lto){}if(ldir)act.push(['dir',ldir=='in'?'Money in':'Money out']);if(lacc){const a=acs.find(z=>z.id==lacc);act.push(['acc',a?a.name:'Account'])}if(ltype)act.push(['type','Type: '+ltype]);if(luser)act.push(['user','By '+luser]);if(lflag)act.push(['flag',lflag]);if(lmin!=='')act.push(['min','From '+mf(+lmin)]);if(lmax!=='')act.push(['max','Up to '+mf(+lmax)]);if(lfrom||lto)act.push(['range',(lfrom||'…')+' → '+(lto||'today')]);if(!lhid)act.push(['hid','Showing own transfers']);
+ const pre=[['','All'],['in','Money in'],['out','Money out'],['Large','Large'],['Unusual','Unusual'],['Possible duplicate','Duplicates'],['Flagged','Queried']];
+ const preOn=k=>k===''?(!ldir&&!lflag):(k=='in'||k=='out')?ldir==k:lflag==k;
+ const detail=r=>{const x=S.j.find(z=>String(z.id)==r.id);if(!x)return '';const lines=x.lines.map(y=>`<tr><td>${A(y[0])} · ${A(typeof CH!=='undefined'&&CH[y[0]]||'')}</td><td class="n">${y[1]?mf(y[1]):''}</td><td class="n">${y[2]?mf(y[2]):''}</td></tr>`).join('');
+  const f=[['Voucher',x.vno||r.vno],['Reference',x.ref||''],['Type',x.tt||''],['Entered by',x.by||''],['Time',(x.at||'').replace('T',' ').slice(0,16)],['Customer / supplier',x.cust&&typeof cn=='function'&&cn(x.cust)!='—'?cn(x.cust):''],['Payment method',x.pm||''],['Currency',x.ccy?x.ccy+(x.rate?' @ '+x.rate:''):S.base],['Note',x.note||'']].filter(z=>z[1]);
+  return`<tr class="cbm-dr"><td colspan="8"><div class="cbm-dt"><div class="cbm-df">${f.map(z=>`<div><small>${A(z[0])}</small><b>${A(z[1])}</b></div>`).join('')}</div><table class="cbm-jl"><tr><th>Ledger account</th><th class="n">Debit</th><th class="n">Credit</th></tr>${lines}</table></div></td></tr>`};
+ return`<div class="cbm-pn cbm-th"><div class="cbm-ph"><h3>${svg(IC.spark,'pv')} Transaction history</h3><span>Smart search understands plain words</span></div>
+ <div class="cbm-af noprint"><div class="cbm-sw big">${svg(IC.search)}<input id="cbmq" value="${A(lq)}" placeholder="Try: money out over 500 last week, unusual bank payments, deposits this month…" oninput="cbmQ(this.value)" autocomplete="off">${lq?'<button type="button" class="cbm-x" onclick="cbmQ(\'\')" aria-label="Clear search">✕</button>':''}</div>
+ <select onchange="cbmF('per',this.value)">${sel_(lfrom||lto?'c':lper,[['1','Today'],['7','Last 7 days'],['30','Last 30 days'],['m','This month'],['90','Last 90 days'],['y','This year'],['','All time'],['c','Custom range']])}</select>
+ <select onchange="cbmF('acc',this.value)"><option value="">All accounts</option>${sel_(lacc,acs.map(a=>[a.id,a.name]))}</select>
+ <select onchange="cbmF('type',this.value)"><option value="">All types</option>${sel_(ltype,types.map(z=>[z,z]))}</select>
+ <button type="button" class="b s cbm-btn" onclick="cbmF('more')">${svg(IC.filt)} More filters</button></div>
+ ${lmore||lfrom||lto||lmin!==''||lmax!==''||luser?`<div class="cbm-af cbm-mf noprint"><label>From<input type="date" value="${A(lfrom)}" onchange="cbmF('from',this.value)"></label><label>To<input type="date" value="${A(lto)}" onchange="cbmF('to',this.value)"></label><label>Smallest amount<input type="number" min="0" step="any" value="${A(lmin)}" onchange="cbmF('min',this.value)" placeholder="0.00"></label><label>Largest amount<input type="number" min="0" step="any" value="${A(lmax)}" onchange="cbmF('max',this.value)" placeholder="No limit"></label><label>Entered by<select onchange="cbmF('user',this.value)"><option value="">Anyone</option>${sel_(luser,users.map(z=>[z,z]))}</select></label><label>Sort<select onchange="cbmF('so',this.value)">${sel_(lso,[['date','Newest first'],['old','Oldest first'],['amt','Largest first']])}</select></label><label>Rows per page<select onchange="cbmF('pgs',this.value)">${sel_(String(PG),[['25','25'],['50','50'],['100','100']])}</select></label><label class="cbm-ck"><input type="checkbox" ${lhid?'checked':''} onchange="cbmF('hid',this.checked)"> Hide moves between my accounts</label></div>`:''}
+ <div class="cbm-pre noprint">${pre.map(([k,t])=>`<button type="button" class="${preOn(k)?'on':''}" data-cbmf="${k==''?'reset:':k=='in'||k=='out'?'dir:'+k:'flag:'+k}">${t}</button>`).join('')}<span class="cbm-vw">${svg(IC.star)}<select onchange="cbmView(this.value)"><option value="">Saved views${myv.length?' ('+myv.length+')':''}</option>${myv.map(v=>`<option value="${A(v.n)}" ${lvw==v.n?'selected':''}>${A(v.n)}</option>`).join('')}</select><button type="button" class="b s" onclick="cbmSaveView()">Save this view</button>${lvw?'<button type="button" class="b s" onclick="cbmDelView()">Delete</button>':''}</span></div>
+ ${e.chips.length?`<div class="cbm-un noprint">${svg(IC.spark,'pv')}<span>Understood:</span>${e.chips.map(c=>`<em>${A(c)}</em>`).join('')}</div>`:''}
+ ${act.length?`<div class="cbm-ch2 noprint">${act.map(([k,t])=>`<button type="button" data-cbmf="clear:${k}">${A(t)} ✕</button>`).join('')}<button type="button" class="clr" data-cbmf="reset:">Clear all</button></div>`:''}</div>
+ <div class="cbm-pn cbm-ai"><div class="cbm-ph"><h3>${svg(IC.spark,'pv')} AI insights</h3><span>Worked out from the transactions shown</span></div><p class="cbm-sm">${A(ai.sum)}</p>${ai.items.length?`<div class="cbm-ins">${ai.items.map(i=>`<div class="cbm-in ${i.sev}" ${i.k?`data-cbmf="${i.k}:${A(i.v)}"`:''}><span class="cbm-ii">${i.sev=='crit'||i.sev=='warn'?'!':i.sev=='ok'?'✓':'i'}</span><span class="cbm-it"><b>${A(i.t)}</b><small>${A(i.d)}</small></span>${i.lab?`<em>${A(i.lab)} ›</em>`:''}</div>`).join('')}</div>`:''}</div>
+ <div class="cbm-pn"><div class="cbm-sum"><span><small>Transactions</small><b>${L.length}</b></span><span><small>Money in</small><b class="up">${mf(ti)}</b></span><span><small>Money out</small><b class="dn">${mf(to)}</b></span><span><small>Net</small><b class="${ti-to<0?'dn':'up'}">${mf(ti-to)}</b></span><span><small>Average size</small><b>${mf(avg)}</b></span><span><small>Largest</small><b>${mf(big)}</b></span><span class="cbm-ex noprint"><button type="button" class="b s cbm-btn" data-cbma="csv">${svg(IC.dl)} Export CSV</button><button type="button" class="b s cbm-btn" onclick="window.print()">${svg(IC.prt)} Print</button></span></div>
+ ${sl.length?`<div class="w cbm-w"><table class="cbm-t"><tr><th>Date</th><th>Description</th><th>Account</th><th>Type</th><th class="n">In</th><th class="n">Out</th><th class="n">Balance</th><th>Flags</th></tr>${sl.map(r=>{const k=r.id+'|'+r.aid,op=lopen==k;return`<tr class="cbm-row ${op?'open':''}" data-cbmx="${A(k)}" tabindex="0"><td>${A(r.date)}</td><td><b>${A(r.memo||r.tt||'Entry')}</b>${r.ref||r.by?`<small>${[r.ref?'Ref '+A(r.ref):'',r.by?A(r.by):''].filter(Boolean).join(' · ')}</small>`:''}</td><td>${A(r.acc)}</td><td>${r.tt?`<span class="cbm-ty">${A(r.tt)}</span>`:''}</td><td class="n up">${r.inn?mf(r.inn):''}</td><td class="n dn">${r.out?mf(r.out):''}</td><td class="n">${mf(r.run)}</td><td>${flagsOf(r,m).map(f=>`<span class="cbm-bd ${f[1]}">${f[0]}</span>`).join(' ')}</td></tr>${op?detail(r):''}`}).join('')}</table></div>
+ <div class="cbm-pg noprint"><span>Showing ${lpg*PG+1}–${lpg*PG+sl.length} of ${L.length} · click a row for details</span><span><button type="button" class="b s" data-cbmp="-1" ${lpg==0?'disabled':''}>Previous</button> <span class="cbm-pn2">Page ${lpg+1} of ${pages}</span> <button type="button" class="b s" data-cbmp="1" ${lpg>=pages-1?'disabled':''}>Next</button></span></div>`:'<p class="cbm-em">Nothing matches. Try different words or clear a filter.</p>'}</div>`}
 function closing(m){const t=m.t,brs=S.br.filter(b=>br=='all'||b.id==br),days=[6,5,4,3,2,1,0].map(i=>addD(t,-i));
  const cards=brs.map(b=>{const cl=(S.closings||[]).filter(c=>c.br==b.id).sort((a,c)=>c.date.localeCompare(a.date)),today_=cl.find(c=>c.date==t),last=cl[0],act=d=>m.rows.some(r=>r.date==d&&r.br==b.id&&r.code==1000&&!r.xf),miss=days.filter(d=>act(d)&&!closedDay(b.id,d)&&d<t).length;
   return`<div class="cbm-bc"><div class="cbm-ph"><h3>${A(b.name)}</h3><span class="cbm-bd ${today_?'good':act(t)?'warn':'info'}">${today_?'Closed today':act(t)?'Needs closing':'No activity'}</span></div>
@@ -9972,8 +10039,8 @@ const isOwner_=()=>(me()||{}).role=='Owner';
 /* ---- page ---- */
 function page(){const m=model(),acs=accounts(),ins=insights(m,acs),c=STO();
  const pend=c.thr>0?m.ent.filter(e=>e.amt>=c.thr&&!c.rev[e.id]).length:0,neg=acs.some(a=>a.bal<-.005);
- const hero=`<div class="cbm-hero"><div class="cbm-hl"><span class="cbm-eye">Cashbook &amp; Banks</span><h1><small>${A(S.base)}</small> ${mf(nz(m.bal))}</h1><p>${sc=='all'?'Total cash and bank money':sc=='cash'?'Cash':'In banks'} · ${br=='all'?'All branches':A(brN(br))}</p><div class="cbm-pills"><span class="cbm-pill"><b>${mf(m.cashB)}</b> cash</span><span class="cbm-pill"><b>${mf(m.bankB)}</b> banks</span><span class="cbm-pill ${neg?'bad':'ok'}">${neg?'An account is below zero':'✓ All accounts have money'}</span><span class="cbm-pill live"><u></u>Live · ${new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})}</span></div></div><div class="cbm-hr noprint"><div class="rx-sw">${svg(IC.search)}<input id="cbq" value="${A(cbq)}" placeholder="Search transactions…" oninput="cbmQ(this.value,1)" autocomplete="off"></div></div></div>`;
- const tabs=[['ov','Overview'],['led','Transactions'],['cl','Daily closing'],['ac','Accounts'],['rev','Approvals',pend||'']],scs=[['all','All'],['cash','Cash'],['bank','Banks']];
+ const hero=`<div class="cbm-hero"><div class="cbm-hl"><span class="cbm-eye">Cashbook &amp; Banks</span><h1><small>${A(S.base)}</small> ${mf(nz(m.bal))}</h1><p>${sc=='all'?'Total cash and bank money':sc=='cash'?'Cash':'In banks'} · ${br=='all'?'All branches':A(brN(br))}</p><div class="cbm-pills"><span class="cbm-pill"><b>${mf(m.cashB)}</b> cash</span><span class="cbm-pill"><b>${mf(m.bankB)}</b> banks</span><span class="cbm-pill ${neg?'bad':'ok'}">${neg?'An account is below zero':'✓ All accounts have money'}</span><span class="cbm-pill live"><u></u>Live · ${new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})}</span></div></div><div class="cbm-hr noprint"><div class="rx-sw">${svg(IC.search)}<input id="cbq" value="${A(cbq)}" placeholder="Search transaction history…" oninput="cbmQ(this.value,1)" autocomplete="off"></div></div></div>`;
+ const tabs=[['ov','Overview'],['led','Transaction history'],['cl','Daily closing'],['ac','Accounts'],['rev','Approvals',pend||'']],scs=[['all','All'],['cash','Cash'],['bank','Banks']];
  const bar=`<div class="cbm-bar2 noprint"><div class="cbm-tabs">${tabs.map(([k,t,n])=>`<button type="button" data-cbmt="${k}" class="${tab==k?'on':''}">${t}${n?`<em>${n}</em>`:''}</button>`).join('')}${canW('cash')&&window.cbxMenu?'<div class="cbx-in">'+window.cbxMenu()+'</div>':''}</div><span class="cbm-seg">${scs.map(([k,t])=>`<button type="button" data-cbms="${k}" class="${sc==k?'on':''}">${t}</button>`).join('')}</span></div>`;
  const body=tab=='led'?ledger(m,acs):tab=='cl'?closing(m):tab=='ac'?accountsTab(m,acs):tab=='rev'?review(m):overview(m,acs,ins);
  return`<div class="cbm"><div class="cx-h prm" style="display:none"></div>${hero}${bar}${body}</div>`}
@@ -9981,11 +10048,16 @@ const _c=V.cbd,_b=V.bkd;
 V.cbd=function(){if(entry!='cbd'){entry='cbd';sc='all';tab='ov'}return page()};
 V.bkd=function(){if(entry!='bkd'){entry='bkd';sc='bank';tab='ov'}return page()};
 window.cbmQ=(v,g)=>{lq=v;cbq=v;if(tab!='led'){tab='led'}lpg=0;go();rf2(g?'cbq':'cbmq')};
-window.cbmF=(k,v)=>{if(k=='per')lper=v;else if(k=='acc')lacc=v;else if(k=='dir')ldir=v;else if(k=='flag')lflag=v;else if(k=='so')lso=v;else if(k=='hid')lhid=!!v;lpg=0;go()};
+const VKEYS=()=>({lq,lper,lacc,ldir,lflag,lso,lhid,lfrom,lto,lmin,lmax,ltype,luser});
+const VSET=f=>{lq=f.lq||'';lper=f.lper==null?'30':f.lper;lacc=f.lacc||'';ldir=f.ldir||'';lflag=f.lflag||'';lso=f.lso||'date';lhid=f.lhid!==false;lfrom=f.lfrom||'';lto=f.lto||'';lmin=f.lmin==null?'':f.lmin;lmax=f.lmax==null?'':f.lmax;ltype=f.ltype||'';luser=f.luser||''};
+window.cbmF=(k,v)=>{if(k=='per'){if(v=='c'){lmore=true}else{lper=v;lfrom='';lto=''}}else if(k=='acc')lacc=v;else if(k=='dir')ldir=v;else if(k=='flag')lflag=v;else if(k=='so')lso=v;else if(k=='hid')lhid=!!v;else if(k=='from'){lfrom=v}else if(k=='to'){lto=v}else if(k=='min')lmin=v;else if(k=='max')lmax=v;else if(k=='type')ltype=v;else if(k=='user')luser=v;else if(k=='pgs')PG=+v||25;else if(k=='more')lmore=!lmore;lvw='';lpg=0;lopen='';go()};
+window.cbmSaveView=()=>{const n=(prompt('Name this view (for example "Large payments this month")')||'').trim();if(!n)return;const c=STO();c.vw=c.vw||{};const u=(me()||{}).name||'';const a=c.vw[u]=c.vw[u]||[],i=a.findIndex(z=>z.n==n);if(i>=0)a[i]={n,f:VKEYS()};else a.push({n,f:VKEYS()});lvw=n;save();go();tt('View saved.')};
+window.cbmView=n=>{if(!n){lvw='';go();return}const v=(((STO().vw||{})[(me()||{}).name])||[]).find(z=>z.n==n);if(v){VSET(v.f);lvw=n;lpg=0;lopen='';go()}};
+window.cbmDelView=()=>{const c=STO(),u=(me()||{}).name||'';if(!lvw||!(c.vw&&c.vw[u]))return;c.vw[u]=c.vw[u].filter(z=>z.n!=lvw);lvw='';save();go()};
 const tt=(m,b)=>{try{window.rpToast?rpToast(m,b):alert(m)}catch(e){}};
 function csv(name,head,lines){const q=v=>'"'+String(v==null?'':v).replace(/"/g,'""')+'"',t='﻿'+[head.join(','),...lines.map(r=>r.map(q).join(','))].join('\r\n');if(window.dlSave)dlSave(name,t,'text/csv');else tt('Download is not available here.',1)}
 function act(a,id){const c=STO(),m=build();
- if(a=='csv'){const m2=model(),L=filtered(m2);csv('cashbook-ledger.csv',['Date','Account','Description','Type','In','Out','Balance','Entered by'],L.map(r=>[r.date,r.acc,r.memo,r.tt,r.inn||'',r.out||'',r.run,r.by]));lg('export','Ledger',L.length+' rows');return}
+ if(a=='csv'){const m2=model(),L=filtered(m2);csv('cashbook-transaction-history.csv',['Date','Account','Description','Type','Voucher','Reference','In','Out','Balance','Entered by','Flags'],L.map(r=>[r.date,r.acc,r.memo,r.tt,r.vno,r.ref,r.inn||'',r.out||'',r.run,r.by,flagsOf(r,m2).map(f=>f[0]).join('; ')]));lg('export','Transaction history',L.length+' rows');return}
  if(a=='csvlog'){csv('cashbook-audit.csv',['Time','Person','Role','Action','Item','Detail'],c.log.map(x=>[x.at,x.by,x.role,x.act,x.item,x.meta]));return}
  if(!isAp()){tt('Only a manager or owner can do this.',1);return}
  if(a=='thr'){const v=+((document.getElementById('cbmth')||{}).value)||0;if(v<0){tt('Enter zero or a positive amount.',1);return}const old=c.thr;c.thr=v;lg('threshold','Amount that needs approval',(old?mf(old):'off')+' → '+(v?mf(v):'off'));tt('Saved.');return}
@@ -10001,6 +10073,8 @@ document.addEventListener('click',e=>{if(view!='cbd'&&view!='bkd')return;const h
  if(el=hit('[data-cbmv]')){e.stopPropagation();rvs=el.dataset.cbmv;go();return}
  if(el=hit('[data-cbmp]')){e.stopPropagation();lpg=Math.max(0,lpg+ +el.dataset.cbmp);go();return}
  if(el=hit('[data-cbma]')){e.stopPropagation();act(el.dataset.cbma,el.dataset.cbmi);go();return}
+ if(el=hit('[data-cbmf]')){e.stopPropagation();const [k,...r]=el.dataset.cbmf.split(':'),v=r.join(':');if(k=='reset'){VSET({});lper='30';lvw=''}else if(k=='dir'){ldir=ldir==v?'':v}else if(k=='flag'){lflag=lflag==v?'':v}else if(k=='clear'){if(v=='q'){lq='';cbq=''}else if(v=='dir')ldir='';else if(v=='acc')lacc='';else if(v=='type')ltype='';else if(v=='user')luser='';else if(v=='flag')lflag='';else if(v=='min')lmin='';else if(v=='max')lmax='';else if(v=='range'){lfrom='';lto=''}else if(v=='hid')lhid=true}lvw='';lpg=0;lopen='';go();return}
+ if(el=hit('[data-cbmx]')){if(e.target.closest('a,button,input,select'))return;e.stopPropagation();lopen=lopen==el.dataset.cbmx?'':el.dataset.cbmx;go();return}
 },true);
 const _g=go;go=function(){if(view!='cbd'&&view!='bkd')entry=null;return _g.apply(this,arguments)};
 setInterval(()=>{try{if((view=='cbd'||view=='bkd')&&!MD&&!document.hidden){const a=document.activeElement;if(!a||a===document.body||!/INPUT|SELECT|TEXTAREA/.test(a.tagName))go()}}catch(e){}},45000);
@@ -10070,6 +10144,23 @@ html[data-theme=dark] body .cbm-pn,html[data-theme=dark] body .cbm-k,html[data-t
 html[data-theme=dark] body .cbm-ph h3,html[data-theme=dark] body .cbm-k>b,html[data-theme=dark] body .cbm-it b,html[data-theme=dark] body .cbm-rt b,html[data-theme=dark] body .cbm-big,html[data-theme=dark] body .cbm-fg b{color:#e2ebff!important}
 html[data-theme=dark] body .cbm-in,html[data-theme=dark] body .cbm-sum span{background:#14264f;border-color:#223a73}
 `;document.head.appendChild(css);
+const css2=document.createElement('style');css2.textContent=`
+html body .cbm-th .cbm-af{margin-top:8px}html body .cbm-sw.big{flex:1 1 420px;min-width:260px;padding:2px 12px}html body .cbm-sw.big input{font-size:14px}
+html body .cbm-x{border:0;background:transparent!important;color:#64748b!important;cursor:pointer;font-size:13px;padding:4px 6px;box-shadow:none!important}
+html body .cbm-mf{padding:12px 14px;border-radius:12px;background:#f3f7ff;border:1px solid #e1eafb}html body .cbm-mf label{display:flex;flex-direction:column;gap:4px;font-size:12px;font-weight:600;color:#475b82}html body .cbm-mf input,html body .cbm-mf select{font-size:13px;padding:7px 9px}html body .cbm-mf .cbm-ck{flex-direction:row;align-items:center;align-self:end;font-weight:500;text-transform:none;letter-spacing:0;font-size:13px}
+html body .cbm-pre{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:10px}html body .cbm-pre>button{border:1px solid #cddcf5;background:#fff!important;color:#1e3a8a!important;border-radius:99px;padding:6px 14px;font-size:13px;font-weight:600;cursor:pointer;box-shadow:none!important}html body .cbm-pre>button:hover{background:#eaf1ff!important}html body .cbm-pre>button.on{background:#1d4ed8!important;border-color:#1d4ed8;color:#fff!important}
+html body .cbm-vw{margin-left:auto;display:flex;gap:8px;align-items:center}html body .cbm-vw select{padding:6px 10px;font-size:13px;max-width:190px}html body .cbm-vw .b{padding:6px 12px;font-size:13px}html body .cbm-vw .cbm-i{color:#d9a21b}
+html body .cbm-un{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:10px;font-size:13px;color:#475b82}html body .cbm-un em{font-style:normal;font-weight:600;background:#e8f0fe;color:#1d4ed8;border-radius:99px;padding:3px 11px}html body .cbm-un .cbm-i{color:#2563eb}
+html body .cbm-ch2{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}html body .cbm-ch2 button{border:0;background:#eef2f9!important;color:#334155!important;border-radius:99px;padding:5px 12px;font-size:12.5px;font-weight:600;cursor:pointer;box-shadow:none!important}html body .cbm-ch2 button:hover{background:#dfe7f6!important}html body .cbm-ch2 .clr{background:transparent!important;color:#1d4ed8!important}
+html body .cbm-ai .cbm-sm{margin:2px 0 12px;font-size:14px;line-height:1.55;color:#1e293b}html body .cbm-ai .cbm-in[data-cbmf]{cursor:pointer}
+html body .cbm-ex{margin-left:auto;flex-direction:row!important;gap:8px;background:transparent!important;border:0!important;align-items:center}
+html body .cbm-row{cursor:pointer}html body .cbm-row:hover td{background:#f3f7ff}html body .cbm-row.open td{background:#eaf1ff}html body .cbm-ty{font-size:11.5px;font-weight:600;background:#eef2f9;color:#475b82;border-radius:6px;padding:2px 8px;white-space:nowrap}
+html body .cbm-dr>td{padding:0!important;background:#f8faff!important}html body .cbm-dt{display:grid;grid-template-columns:1fr minmax(260px,380px);gap:18px;padding:14px 18px}@media(max-width:820px){html body .cbm-dt{grid-template-columns:1fr}}
+html body .cbm-df{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}html body .cbm-df small{display:block;font-size:11.5px;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:.04em}html body .cbm-df b{font-size:13px;font-weight:600;word-break:break-word}
+html body .cbm-jl{width:100%;border-collapse:collapse;font-size:13px;background:#fff;border:1px solid #e1eafb;border-radius:10px}html body .cbm-jl th{font-size:11.5px;text-align:left;padding:7px 10px;background:#eef3fd;color:#475b82}html body .cbm-jl td{padding:7px 10px;border-top:1px solid #edf2fb}html body .cbm-jl .n,html body .cbm-jl th.n{text-align:right}
+html body .cbm-pn2{font-size:13px;color:#64748b;margin:0 6px}
+html[data-theme=dark] body .cbm-mf,html[data-theme=dark] body .cbm-row.open td,html[data-theme=dark] body .cbm-dr>td{background:#14264f!important}html[data-theme=dark] body .cbm-pre>button,html[data-theme=dark] body .cbm-jl{background:#0f1f45!important;color:#dbe7ff!important}
+@media print{html body .cbm-ai,html body .cbm-th{display:none}}`;document.head.appendChild(css2);
 })();
 
 /*STG*/(function(){
