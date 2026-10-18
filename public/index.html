@@ -5581,7 +5581,7 @@ const oc=V.ctx;V.ctx=function(){let h=oc.apply(this,arguments);
  h=h.replace('<button class="plf" onclick="ctOpen()">+ New transaction</button>','<span style="display:flex;gap:8px;flex-wrap:wrap"><button class="plf" onclick="sdOpen()">+ Currency sale deal</button><button class="plo" onclick="ctOpen()">+ Multi-currency entry</button></span>');
  return h};
 /*UPDCHK*/
-(function(){const B='2026-10-19-ci';window.PB_BUILD=B;if(location.protocol=='file:')return;let nb=null,tm=0;
+(function(){const B='2026-10-19-cj';window.PB_BUILD=B;if(location.protocol=='file:')return;let nb=null,tm=0;
 const busy=()=>{const a=document.activeElement;return !!(document.querySelector('.ov')||(a&&/^(INPUT|TEXTAREA)$/.test(a.tagName)&&String(a.value||'').length>0))};
 function go2(){try{const k='pb_upd_'+nb,n=+(sessionStorage.getItem(k)||0);sessionStorage.setItem(k,n+1)}catch(e){}location.replace(location.pathname+'?v='+encodeURIComponent(nb))}
 function bar(){let d=document.getElementById('pbupd');if(!d){d=document.createElement('div');d.id='pbupd';d.setAttribute('role','button');d.style.cssText='position:fixed;left:50%;transform:translateX(-50%);top:10px;z-index:100000;background:#0b3d33;color:#fff;padding:11px 18px;border-radius:12px;font:700 13px Inter,system-ui,sans-serif;box-shadow:0 6px 20px rgba(0,0,0,.3);cursor:pointer;text-align:center;max-width:92vw';d.onclick=()=>{d.textContent='Updating…';go2()};document.body.appendChild(d)}d.textContent='A new version of PrimeBook is ready. Tap here to update.'}
@@ -10254,9 +10254,9 @@ let AQ='';const aq_=()=>AQ;
 /* ---- page ---- */
 V.set=function(){const R=avail(),ch=checks(),pct=Math.round(ch.filter(c=>c[1]).length/ch.length*100),co=S.co||{};
  const hero=`<div class="stg-hero"><div class="stg-hl2"><span class="stg-eye">Settings</span><h1>Settings center</h1><p>${A(co.name||'Your company')} · ${A(S.base)} · ${(S.br||[]).length} branch${(S.br||[]).length==1?'':'es'}</p><div class="stg-pills"><span class="stg-pill ${pct>=80?'ok':'warn'}">Setup health ${pct}%</span><span class="stg-pill">${R.length} settings available</span><span class="stg-pill">Signed in as ${A((me()||{}).name||'')} · ${A((me()||{}).role||'')}</span></div></div><div class="rx-sw noprint">${svg(IC.search)}<input id="stgq" value="${A(lq)}" placeholder="Find a setting, e.g. backup, users, rates…" oninput="stgQ(this.value)" autocomplete="off">${lq?'<button type="button" onclick="stgQ(\'\')">Clear</button>':''}</div></div>`;
- const tabs=[['ov','Overview'],['lib','Library',R.length],['ac','Access & security'],['lg','Activity']];
+ const tabs=[['ov','Overview'],['lib','Library',R.length],['ap','Appearance & Display'],['ac','Access & security'],['lg','Activity']];
  const tb=`<div class="stg-tabs noprint">${tabs.map(([k,t,n])=>`<button type="button" data-stgt="${k}" class="${tab==k?'on':''}">${t}${n?`<em>${n}</em>`:''}</button>`).join('')}</div>`;
- return`<div class="stg">${hero}${tb}${tab=='lib'?library(R):tab=='ac'?access():tab=='lg'?activity():overview(R)}</div>`};
+ return`<div class="stg">${hero}${tb}${tab=='lib'?library(R):tab=='ap'?(window.uixPage?window.uixPage():''):tab=='ac'?access():tab=='lg'?activity():overview(R)}</div>`};
 window.stgQ=v=>{lq=v;if(tab!='lib'){tab='lib';lc='all'}go();rf2('stgq')};window.stgAq=v=>{AQ=v;alim=25;go();rf2('stgaq')};window.stgAf=(k,v)=>{if(k=='u')au=v;else aa=v;alim=25;go()};
 const tt=(m,b)=>{try{window.rpToast?rpToast(m,b):alert(m)}catch(e){}};
 document.addEventListener('click',e=>{const hb=e.target.closest&&e.target.closest('[data-stgback]');if(hb){e.stopPropagation();view='set';ce='';MD=null;go();return}if(view!='set')return;const hit=s=>e.target.closest&&e.target.closest(s);let el;
@@ -10599,6 +10599,69 @@ html body .fi-qa{position:relative}html body .fi-qa .dnd-rs{position:absolute;to
 @media(prefers-reduced-motion:reduce){html body [data-dndi]{transition:none!important}}`;
 document.head.appendChild(css);
 window.__dnd={ROWS};
+})();
+
+/*UIX*/(function(){
+/* Interface scaling and display density. Applies to the whole app, remembered per user and per device. */
+const KEY='pb_ui',DEF={scale:'auto',dens:'std'};
+const rd=()=>{try{return {...DEF,...JSON.parse(localStorage.getItem(KEY)||'{}')}}catch(e){return {...DEF}}};
+const wr=o=>{try{localStorage.setItem(KEY,JSON.stringify(o))}catch(e){}};
+const auto=()=>{const w=window.innerWidth;return w>=2000?100:w>=1700?95:w>=1400?90:w>=1100?85:100};
+const eff=p=>{if(window.innerWidth<900)return 100;const s=p.scale=='auto'?auto():+p.scale;return Math.min(150,Math.max(70,s||100))};
+const user=()=>{try{return (me()||{}).name||''}catch(e){return ''}};
+const cur=()=>{try{const u=S.ui&&S.ui[user()];if(u)return {...DEF,...u}}catch(e){}return rd()};
+let last='';
+function apply(p){const s=eff(p),r=document.documentElement;if(s==100)r.style.removeProperty('zoom');else r.style.zoom=String(s/100);r.style.setProperty('--zs',String(s/100));r.dataset.dens=p.dens||'std';last=JSON.stringify(p)+'|'+s}
+function put(p,rerender){wr(p);try{S.ui=S.ui||{};S.ui[user()]=p;save()}catch(e){}apply(p);if(rerender)go()}
+apply(rd());
+const _g=go;go=function(){try{const p=cur();if(JSON.stringify(p)+'|'+eff(p)!==last)apply(p)}catch(e){}return _g.apply(this,arguments)};
+let rt;window.addEventListener('resize',()=>{clearTimeout(rt);rt=setTimeout(()=>{try{apply(cur())}catch(e){}},150)});
+document.addEventListener('keydown',e=>{if(!(e.ctrlKey&&e.altKey))return;const k=e.key,p={...cur()};const s=eff(p);
+ if(k=='='||k=='+'){p.scale=Math.min(150,s+5)}else if(k=='-'||k=='_'){p.scale=Math.max(70,s-5)}else if(k=='0'){p.scale='auto'}else return;e.preventDefault();put(p,true)});
+const PRE=[['auto','Auto-fit','Matches your screen'],[85,'Compact','85%'],[90,'Standard','90%'],[100,'Comfortable','100%'],[115,'Large','115%']],DN=[['compact','Compact','Most rows on screen. Best for power users and large tables.'],['std','Standard','Balanced spacing. Recommended for most people.'],['comfy','Comfortable','Extra room around rows and buttons. Easier to tap and read.']];
+const A=x=>String(x==null?'':x).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+window.uixPage=function(){const p=cur(),s=eff(p),rec=auto(),w=window.innerWidth,narrow=w<900,isAuto=p.scale=='auto';
+ const card=(on,onclick,h,sub)=>`<button type="button" class="uix-c ${on?'on':''}" onclick="${onclick}"><b>${A(h)}</b><small>${A(sub)}</small></button>`;
+ return `<div class="uix">
+ <div class="uix-top"><div><h3>Appearance &amp; Display</h3><p>Choose how large the interface is and how much space it uses. Changes apply to the whole application straight away and are remembered for you.</p></div><button type="button" class="b s" onclick="uixReset()">Reset to recommended</button></div>
+ <div class="uix-now"><span><small>Interface scale</small><b>${s}%</b></span><span><small>Mode</small><b>${isAuto?'Auto-fit':'Manual'}</b></span><span><small>Density</small><b>${(DN.find(d=>d[0]==p.dens)||DN[1])[1]}</b></span><span><small>Your screen</small><b>${w} px wide</b></span><span><small>Recommended</small><b>${narrow?'100% (phones and small windows are not scaled)':rec+'%'}</b></span></div>
+ <div class="uix-pn"><h4>Interface scale</h4><p class="uix-mu">Makes everything larger or smaller together: text, buttons, tables, menus and charts. If the application looks too big, choose Auto-fit or Compact.</p>
+ <div class="uix-g">${PRE.map(([k,h,sub])=>card(k=='auto'?isAuto:(!isAuto&&+p.scale==k),`uixSc('${k}')`,h,k=='auto'?sub+' · '+rec+'%':sub)).join('')}</div>
+ <div class="uix-sl"><button type="button" class="b s" onclick="uixStep(-5)" aria-label="Smaller">−</button><input id="uixr" type="range" min="70" max="150" step="5" value="${s}" oninput="uixSlide(this.value)" onchange="uixCommit(this.value)" aria-label="Interface scale"><button type="button" class="b s" onclick="uixStep(5)" aria-label="Larger">+</button><output id="uixo">${s}%</output></div>
+ <p class="uix-mu">Shortcuts: <kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>+</kbd> larger · <kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>−</kbd> smaller · <kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>0</kbd> auto-fit.</p></div>
+ <div class="uix-pn"><h4>Display density</h4><p class="uix-mu">Controls the space inside tables, forms, buttons and menus without changing text size.</p>
+ <div class="uix-g d3">${DN.map(([k,h,sub])=>`<button type="button" class="uix-c ${p.dens==k?'on':''}" onclick="uixD('${k}')"><b>${h}</b><small>${sub}</small><span class="uix-mini ${k}"><i></i><i></i><i></i></span></button>`).join('')}</div></div>
+ <div class="uix-pn"><h4>Preview</h4><p class="uix-mu">A sample of how tables, buttons and fields look with your choices.</p>
+ <div class="uix-pv"><div class="uix-pvh"><b>Customer receipts</b><span><button type="button" class="b s">Filter</button> <button type="button" class="b">Add receipt</button></span></div><div class="w"><table><tr><th>Date</th><th>Customer</th><th class="n">Amount</th><th>Status</th></tr><tr><td>2026-10-18</td><td>Sample customer</td><td class="n">1,250.00</td><td>Posted</td></tr><tr><td>2026-10-17</td><td>Another customer</td><td class="n">480.00</td><td>Posted</td></tr><tr><td>2026-10-16</td><td>Third customer</td><td class="n">3,920.00</td><td>Pending</td></tr></table></div><div class="uix-ff"><label>Reference<input value="RV-0001" readonly></label><label>Account<select><option>Cash on Hand</option></select></label></div></div></div>
+ <p class="uix-mu">Saved to your account and to this device. Other users keep their own settings.</p></div>`};
+window.uixSc=k=>{const p={...cur()};p.scale=k=='auto'?'auto':+k;put(p,true)};
+window.uixD=k=>{const p={...cur()};p.dens=k;put(p,true)};
+window.uixReset=()=>put({...DEF},true);
+window.uixStep=d=>{const p={...cur()};p.scale=Math.min(150,Math.max(70,eff(p)+d));put(p,true)};
+window.uixSlide=v=>{const p={...cur(),scale:+v};wr(p);apply(p);const o=document.getElementById('uixo');if(o)o.textContent=v+'%'};
+window.uixCommit=v=>{const p={...cur(),scale:+v};put(p,true)};
+const st=document.createElement('style');st.textContent=`
+html{--zs:1}
+html body{min-height:calc(100vh / var(--zs))!important}html body nav{height:calc(100vh / var(--zs))!important}
+html[data-dens=compact] td{padding-top:5px!important;padding-bottom:5px!important}html[data-dens=compact] th{padding-top:6px!important;padding-bottom:6px!important}
+html[data-dens=compact] button.b,html[data-dens=compact] .plo,html[data-dens=compact] .plf{padding-top:6px!important;padding-bottom:6px!important}
+html[data-dens=compact] input:not([type=checkbox]):not([type=radio]):not([type=range]),html[data-dens=compact] select{padding-top:6px!important;padding-bottom:6px!important}
+html[data-dens=compact] .p,html[data-dens=compact] .cbm-pn,html[data-dens=compact] .stg-pn{padding:14px!important}
+html[data-dens=compact] nav button{padding-top:7px!important;padding-bottom:7px!important}
+html[data-dens=comfy] td{padding-top:14px!important;padding-bottom:14px!important}html[data-dens=comfy] th{padding-top:12px!important;padding-bottom:12px!important}
+html[data-dens=comfy] button.b,html[data-dens=comfy] .plo,html[data-dens=comfy] .plf{padding-top:11px!important;padding-bottom:11px!important}
+html[data-dens=comfy] input:not([type=checkbox]):not([type=radio]):not([type=range]),html[data-dens=comfy] select{padding-top:11px!important;padding-bottom:11px!important}
+html[data-dens=comfy] nav button{padding-top:13px!important;padding-bottom:13px!important}
+html body .uix{display:grid;gap:16px}html body .uix-top{display:flex;justify-content:space-between;gap:16px;align-items:flex-start;flex-wrap:wrap}html body .uix-top h3{margin:0 0 4px;font-size:16px;color:#0b2a6b}html body .uix-top p{margin:0;font-size:13px;color:#475b82;max-width:620px}
+html body .uix-now{display:flex;gap:10px;flex-wrap:wrap}html body .uix-now span{display:flex;flex-direction:column;gap:2px;padding:10px 16px;border-radius:12px;background:#eef3fd;border:1px solid #dbe6fb;min-width:120px}html body .uix-now small{font-size:11.5px;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:.04em}html body .uix-now b{font-size:14px;color:#0b2a6b}
+html body .uix-pn{background:#fff;border:1px solid #dbe6fb;border-radius:16px;padding:18px 20px;box-shadow:0 1px 3px rgba(15,40,100,.06)}html body .uix-pn h4{margin:0 0 4px;font-size:14px;color:#0b2a6b}html body .uix-mu{margin:4px 0 12px;font-size:13px;color:#64748b}
+html body .uix-g{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}html body .uix-g.d3{grid-template-columns:repeat(auto-fill,minmax(210px,1fr))}
+html body .uix-c{display:flex;flex-direction:column;gap:4px;text-align:left;border:1.5px solid #d3def5;border-radius:12px;background:#fff!important;color:#0f172a!important;padding:12px 14px;cursor:pointer;font:inherit;box-shadow:none!important}html body .uix-c:hover{border-color:#8fb0f0}html body .uix-c.on{border-color:#2563eb;background:#eaf1ff!important;box-shadow:0 0 0 3px rgba(37,99,235,.14)!important}html body .uix-c b{font-size:14px}html body .uix-c small{font-size:12px;color:#64748b!important;line-height:1.4}
+html body .uix-mini{display:flex;flex-direction:column;margin-top:8px;border:1px solid #e1eafb;border-radius:8px;overflow:hidden;background:#fff}html body .uix-mini i{display:block;background:#e8eefb;border-top:1px solid #fff}html body .uix-mini.compact i{height:7px}html body .uix-mini.std i{height:11px}html body .uix-mini.comfy i{height:16px}
+html body .uix-sl{display:flex;align-items:center;gap:12px;margin:16px 0 8px}html body .uix-sl input[type=range]{flex:1;max-width:460px;padding:0!important;accent-color:#2563eb}html body .uix-sl output{min-width:48px;font-weight:700;color:#1d4ed8;font-size:14px}html body .uix-sl .b{min-width:36px}
+html body .uix kbd{font:600 12px Inter,sans-serif;background:#eef2f9;border:1px solid #d3def5;border-radius:6px;padding:1px 6px}
+html body .uix-pv{border:1px dashed #b7cbf0;border-radius:12px;padding:14px;background:#f8faff}html body .uix-pvh{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:10px;flex-wrap:wrap}html body .uix-ff{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-top:12px}
+html[data-theme=dark] body .uix-pn,html[data-theme=dark] body .uix-c{background:#0f1f45!important;color:#dbe7ff!important;border-color:#223a73}html[data-theme=dark] body .uix-c.on{background:#14306e!important}html[data-theme=dark] body .uix-now span,html[data-theme=dark] body .uix-pv{background:#14264f;border-color:#223a73}html[data-theme=dark] body .uix-top h3,html[data-theme=dark] body .uix-pn h4,html[data-theme=dark] body .uix-now b{color:#dbe7ff}`;document.head.appendChild(st);
 })();
 
 /*CSK*/(()=>{
