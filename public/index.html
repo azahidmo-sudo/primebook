@@ -5526,7 +5526,7 @@ const oc=V.ctx;V.ctx=function(){let h=oc.apply(this,arguments);
  h=h.replace('<button class="plf" onclick="ctOpen()">+ New transaction</button>','<span style="display:flex;gap:8px;flex-wrap:wrap"><button class="plf" onclick="sdOpen()">+ Currency sale deal</button><button class="plo" onclick="ctOpen()">+ Multi-currency entry</button></span>');
  return h};
 /*UPDCHK*/
-(function(){const B='2026-10-19-bs';window.PB_BUILD=B;if(location.protocol=='file:')return;let nb=null,tm=0;
+(function(){const B='2026-10-19-bt';window.PB_BUILD=B;if(location.protocol=='file:')return;let nb=null,tm=0;
 const busy=()=>{const a=document.activeElement;return !!(document.querySelector('.ov')||(a&&/^(INPUT|TEXTAREA)$/.test(a.tagName)&&String(a.value||'').length>0))};
 function go2(){try{const k='pb_upd_'+nb,n=+(sessionStorage.getItem(k)||0);sessionStorage.setItem(k,n+1)}catch(e){}location.replace(location.pathname+'?v='+encodeURIComponent(nb))}
 function bar(){let d=document.getElementById('pbupd');if(!d){d=document.createElement('div');d.id='pbupd';d.setAttribute('role','button');d.style.cssText='position:fixed;left:50%;transform:translateX(-50%);top:10px;z-index:100000;background:#0b3d33;color:#fff;padding:11px 18px;border-radius:12px;font:700 13px Inter,system-ui,sans-serif;box-shadow:0 6px 20px rgba(0,0,0,.3);cursor:pointer;text-align:center;max-width:92vw';d.onclick=()=>{d.textContent='Updating…';go2()};document.body.appendChild(d)}d.textContent='A new version of PrimeBook is ready. Tap here to update.'}
@@ -9770,11 +9770,11 @@ const isOwner_=()=>(me()||{}).role=='Owner';
 /* ---- page ---- */
 function page(){const m=model(),acs=accounts(),ins=insights(m,acs),c=STO();
  const pend=c.thr>0?m.ent.filter(e=>e.amt>=c.thr&&!c.rev[e.id]).length:0,neg=acs.some(a=>a.bal<-.005);
- const hero=`<div class="cbm-hero"><div class="cbm-hl"><span class="cbm-eye">Cashbook &amp; Banks</span><h1><small>${A(S.base)}</small> ${mf(nz(m.bal))}</h1><p>${sc=='all'?'Total cash and bank money':sc=='cash'?'Cash':'In banks'} · ${br=='all'?'All branches':A(brN(br))}</p><div class="cbm-pills"><span class="cbm-pill"><b>${mf(m.cashB)}</b> cash</span><span class="cbm-pill"><b>${mf(m.bankB)}</b> banks</span><span class="cbm-pill ${neg?'bad':'ok'}">${neg?'An account is below zero':'✓ All accounts have money'}</span><span class="cbm-pill live"><u></u>Live · ${new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})}</span></div></div><div class="cbm-hr noprint"><div class="cbm-add">${canW('cash')&&window.cbxMenu?window.cbxMenu():''}</div><div class="rx-sw">${svg(IC.search)}<input id="cbq" value="${A(cbq)}" placeholder="Search transactions…" oninput="cbmQ(this.value,1)" autocomplete="off"></div></div></div>`;
+ const hero=`<div class="cbm-hero"><div class="cbm-hl"><span class="cbm-eye">Cashbook &amp; Banks</span><h1><small>${A(S.base)}</small> ${mf(nz(m.bal))}</h1><p>${sc=='all'?'Total cash and bank money':sc=='cash'?'Cash':'In banks'} · ${br=='all'?'All branches':A(brN(br))}</p><div class="cbm-pills"><span class="cbm-pill"><b>${mf(m.cashB)}</b> cash</span><span class="cbm-pill"><b>${mf(m.bankB)}</b> banks</span><span class="cbm-pill ${neg?'bad':'ok'}">${neg?'An account is below zero':'✓ All accounts have money'}</span><span class="cbm-pill live"><u></u>Live · ${new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})}</span></div></div><div class="cbm-hr noprint"><div class="rx-sw">${svg(IC.search)}<input id="cbq" value="${A(cbq)}" placeholder="Search transactions…" oninput="cbmQ(this.value,1)" autocomplete="off"></div></div></div>`;
  const tabs=[['ov','Overview'],['led','Transactions'],['cl','Daily closing'],['ac','Accounts'],['rev','Approvals',pend||'']],scs=[['all','All'],['cash','Cash'],['bank','Banks']];
  const bar=`<div class="cbm-bar2 noprint"><div class="cbm-tabs">${tabs.map(([k,t,n])=>`<button type="button" data-cbmt="${k}" class="${tab==k?'on':''}">${t}${n?`<em>${n}</em>`:''}</button>`).join('')}</div><span class="cbm-seg">${scs.map(([k,t])=>`<button type="button" data-cbms="${k}" class="${sc==k?'on':''}">${t}</button>`).join('')}</span></div>`;
  const body=tab=='led'?ledger(m,acs):tab=='cl'?closing(m):tab=='ac'?accountsTab(m,acs):tab=='rev'?review(m):overview(m,acs,ins);
- return`<div class="cbm"><div class="cx-h prm" style="display:none"></div>${hero}${bar}${body}</div>`}
+ return`<div class="cbm"><div class="cx-h prm" style="display:none"></div>${canW('cash')&&window.cbxMenu?'<div class="cbx-top noprint">'+window.cbxMenu()+'</div>':''}${hero}${bar}${body}</div>`}
 const _c=V.cbd,_b=V.bkd;
 V.cbd=function(){if(entry!='cbd'){entry='cbd';sc='all';tab='ov'}return page()};
 V.bkd=function(){if(entry!='bkd'){entry='bkd';sc='bank';tab='ov'}return page()};
@@ -10172,7 +10172,7 @@ document.addEventListener('keydown',e=>{
  if(e.key=='Enter'){const h=m.querySelector('.cbx-it.hl');if(h){e.preventDefault();act(h.dataset.cbxa)}}},true);
 /* ---- styles ---- */
 const css=document.createElement('style');css.textContent=`
-html body .cbx-dd{position:relative;display:flex;justify-content:flex-end}
+html body .cbx-dd{position:relative;display:flex;justify-content:flex-end}html body .cbx-top{display:flex;justify-content:flex-end;margin:0 0 -4px}html body .cbx-top .cbx-btn{background:#1d4ed8!important;color:#fff!important;box-shadow:0 8px 20px #1d4ed84d}html body .cbx-top .cbx-btn:hover{background:#1e40af!important}html body .cbx-top .cbx-plus{background:#fff;color:#1d4ed8}
 html body .cbx-btn{display:inline-flex;align-items:center;gap:8px;border:0;border-radius:12px;padding:11px 18px;font:700 14px/1 Inter,system-ui,sans-serif;cursor:pointer;background:#fff!important;color:#1d4ed8!important;box-shadow:0 6px 16px #0a1f4d44;transition:transform .15s}
 html body .cbx-btn:hover{transform:translateY(-1px)}html body .cbx-btn:focus-visible{outline:3px solid #93c5fd;outline-offset:2px}
 html body .cbx-plus{display:inline-grid;place-items:center;width:20px;height:20px;border-radius:6px;background:#1d4ed8;color:#fff;font-size:16px;line-height:1}
