@@ -5526,7 +5526,7 @@ const oc=V.ctx;V.ctx=function(){let h=oc.apply(this,arguments);
  h=h.replace('<button class="plf" onclick="ctOpen()">+ New transaction</button>','<span style="display:flex;gap:8px;flex-wrap:wrap"><button class="plf" onclick="sdOpen()">+ Currency sale deal</button><button class="plo" onclick="ctOpen()">+ Multi-currency entry</button></span>');
  return h};
 /*UPDCHK*/
-(function(){const B='2026-10-19-bi';window.PB_BUILD=B;if(location.protocol=='file:')return;let nb=null,tm=0;
+(function(){const B='2026-10-19-bj';window.PB_BUILD=B;if(location.protocol=='file:')return;let nb=null,tm=0;
 const busy=()=>{const a=document.activeElement;return !!(document.querySelector('.ov')||(a&&/^(INPUT|TEXTAREA)$/.test(a.tagName)&&String(a.value||'').length>0))};
 function go2(){try{const k='pb_upd_'+nb,n=+(sessionStorage.getItem(k)||0);sessionStorage.setItem(k,n+1)}catch(e){}location.replace(location.pathname+'?v='+encodeURIComponent(nb))}
 function bar(){let d=document.getElementById('pbupd');if(!d){d=document.createElement('div');d.id='pbupd';d.setAttribute('role','button');d.style.cssText='position:fixed;left:50%;transform:translateX(-50%);top:10px;z-index:100000;background:#0b3d33;color:#fff;padding:11px 18px;border-radius:12px;font:700 13px Inter,system-ui,sans-serif;box-shadow:0 6px 20px rgba(0,0,0,.3);cursor:pointer;text-align:center;max-width:92vw';d.onclick=()=>{d.textContent='Updating…';go2()};document.body.appendChild(d)}d.textContent='A new version of PrimeBook is ready. Tap here to update.'}
@@ -6450,6 +6450,7 @@ let tmr=0,busy=0,again=0,state='ok',rt=0,pollT=0,remoteNewer=null;
 let lastOk=0;const pill=(s,msg)=>{state=s;if(s=='ok')lastOk=Date.now();let p=document.getElementById('pbpill');if(!p){p=document.createElement('div');p.id='pbpill';p.setAttribute('role','button');p.setAttribute('tabindex','0');p.style.cursor='pointer';p.style.webkitTapHighlightColor='transparent';p.onclick=()=>pillClick();p.addEventListener('touchend',function(e){e.preventDefault();pillClick()},{passive:false});document.body.appendChild(p)}const M={ok:'Saved online',sav:'Saving…',off:'Offline. Will retry',err:msg||'Sync problem',new:'New data from another device. Tap to refresh',con:'Sync conflict. Tap to fix',na:msg||'Not synced'};p.className='pbp '+s;p.textContent=M[s]||s;p.title=M[s]};
 const css=document.createElement('style');css.textContent='#pbpill{position:fixed;left:12px;bottom:12px;z-index:9000;font:600 12px Inter,system-ui,sans-serif;padding:6px 11px;border-radius:99px;background:#E7F5EE;color:#0A4A39;border:1px solid #BFE3D3;cursor:pointer;touch-action:manipulation;box-shadow:0 2px 8px rgba(0,0,0,.12)}#pbpill.sav{background:#FFF7E0;color:#7A5B00;border-color:#F0DFA0}#pbpill.off,#pbpill.err,#pbpill.con,#pbpill.new{background:#FDECEA;color:#B42318;border-color:#F5C2BD;cursor:pointer}#pbpill.new{background:#E8F0FE;color:#1D4ED8;border-color:#C3D5FB}#pbpill.na{background:#F1F3F4;color:#555;border-color:#DDD}@media print{#pbpill{display:none}}#pbm{position:fixed;inset:0;z-index:9500;background:rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;padding:16px}#pbm .bx{background:#fff;color:#1b2b26;border-radius:14px;max-width:440px;width:100%;padding:22px;font:14px/1.5 Inter,system-ui,sans-serif;max-height:90vh;overflow:auto}#pbm h3{margin:0 0 8px;font-size:17px;text-transform:none!important}#pbm button{margin:6px 6px 0 0}#pbm input{width:100%;box-sizing:border-box;padding:10px;font-size:16px;border:1px solid #cfd8d4;border-radius:8px;margin-top:8px}';document.head.appendChild(css);
 const hasEnt=()=>SESS&&SESS.ent;
+window.pbRest=rest;window.pbUid=()=>SB&&SB.user?SB.user.id:null;
 window.pbDirty=function(){if(!SB||hasEnt())return;const m=meta();m.dirty=1;setMeta(m);pill('sav');clearTimeout(tmr);tmr=setTimeout(push,1500)};
 async function push(){if(busy){again=1;return}if(!SB)return;busy=1;try{await ensure();const m=meta(),snap=JSON.stringify(S);
 if(!m.id){let r;try{r=await rest('books',{method:'POST',prefer:'return=representation',body:{name:(S.co&&S.co.name)||'My books',data:JSON.parse(snap),version:1}})}catch(e){if(e.status==409||/duplicate|unique/i.test(e.message||'')){return conflict()}throw e}
@@ -8896,7 +8897,7 @@ const logMsg=(cid,kind,ch,subj)=>arr('msgs').push({id:uid('g'),cust:cid,date:tod
 const note=(cid,kind,title,body)=>arr('notif').push({id:uid('n'),cust:cid,date:today(),kind,title,body,read:0});
 const msgKey=(k,id)=>(S.msgs||[]).some(m=>m.key==k+id);
 /* ---------- templates ---------- */
-const DT={invite:['Portal login details','Your {company} client portal','Hello {client},\n\nYour client portal is ready. You can view appointments, invoices and your balance, and tell us when you have paid.\n\nPortal: {portal}\nUser: {email}\nAccess code: {code}\n\nKeep this code private. Reply to this message if you need help.\n\nKind regards,\n{company}'],
+const DT={invite:['Portal login details','Your {company} client portal','Hello {client},\n\nYour client portal is ready. You can view appointments, invoices and your balance, and tell us when you have paid.\n\nPortal: {portal}\nYour email: {email}\nAccess code: {code}\n\nTo start, open the portal, tap “First time here?”, enter this email and code, and choose your own password. The code works once and expires in 30 days. Keep it private. Reply to this message if you need help.\n\nKind regards,\n{company}'],
 invoice:['New invoice','Invoice {invoice} from {company}','Hello {client},\n\nInvoice {invoice} for {amount} is ready. It is due on {date}.\n\nYou can see it in your portal: {portal}\n\nThank you,\n{company}'],
 payconf:['Payment confirmation','Payment received, thank you','Hello {client},\n\nWe received your payment of {amount}. Your balance is now {balance}.\n\nThank you,\n{company}'],
 appt:['Appointment reminder','Reminder: your appointment on {date} at {time}','Hello {client},\n\nThis is a reminder of your appointment on {date} at {time} with {staff}.\n\nIf you need to change it, please contact us.\n\nKind regards,\n{company}'],
@@ -9618,6 +9619,94 @@ html body #cs-modal .cs-up{color:#15803d}html body #cs-modal .cs-dn{color:#b91c1
 @media(max-width:640px){html body .cs-hr{grid-template-columns:1fr 1fr;width:100%}html body .cs-big{font-size:28px}html body .cs-fg .cs-w2{grid-column:auto}html body .cs-br{grid-template-columns:1fr;gap:4px}html body #cs-modal .cs-mk,html body #cs-modal .cs-mt{grid-template-columns:1fr 1fr}}
 @media print{.noprint{display:none!important}}
 `;document.head.appendChild(st);
+})();
+
+/*PTL*/(function(){
+const A=aesc,R2=v=>Math.round((+v||0)*100)/100;
+const rest=(p,o)=>window.pbRest(p,o);
+const cloud=()=>!!(window.PB_CLOUD&&window.pbRest&&window.pbUid&&window.pbUid());
+const toastM=(m,bad)=>{try{window.rpToast?rpToast(m,bad):alert(m)}catch(e){alert(m)}};
+const ALPHA='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+const gen=()=>{const b=new Uint32Array(10);crypto.getRandomValues(b);let s='';for(let i=0;i<10;i++){s+=ALPHA[b[i]%32];if(i==4)s+='-'}return s};
+const norm=c=>String(c||'').toUpperCase().replace(/[^A-Z0-9]/g,'');
+const sha=async t=>{const h=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(t));return[...new Uint8Array(h)].map(x=>x.toString(16).padStart(2,'0')).join('')};
+const addD=(s,n)=>{const d=new Date(s+'T12:00:00Z');d.setUTCDate(d.getUTCDate()+n);return d.toISOString().slice(0,10)};
+const clients=()=>(S.cust||[]).filter(c=>c.portal&&c.portal.on);
+const regd=()=>(S.cust||[]).filter(c=>c.portal&&c.portal.srv);
+const dperm={notif:1,appt:1,book:0,inv:1,stmt:1,pay:1,member:1};
+const perms=c=>Object.assign({},dperm,(c.portal&&c.portal.perms)||{});
+const SQLMSG='The portal tables are not installed yet. In Supabase open SQL Editor, paste supabase/client-portal.sql and press Run, then try again.';
+const errMsg=e=>{const m=String(e&&e.message||e);if(e&&(e.status==404||/portal_(clients|data|inbox)|schema cache|does not exist/i.test(m)))return SQLMSG;if(e instanceof TypeError)return'Cannot reach the server. Check your internet connection.';return m};
+let stat={},statAt=0,lastErr='',pubAt='',hashes={},busy=false,pulling=false,tmr=0;
+
+/* ---------- snapshot a client's own records (only what the business allowed) ---------- */
+function snap(c){const pm=perms(c),t=today(),TDm=(typeof TD!=='undefined'&&TD[c.terms])||0,a=invAlloc(c.id,S.j);
+ const o={v:1,company:coName(),base:S.base,name:c.name,perms:pm,balance:R2(cbalance(c.id,S.j)),credit:+c.credit||0};
+ if(pm.inv)o.invoices=a.inv.map(i=>{const no=(/^(INV-[\w-]+)/.exec(i.memo)||[])[1]||String(i.memo).split(' ')[0],left=R2(i.amt-i.paid),due=addD(i.date,TDm),st=left<=.004?'Paid':i.paid>.004?(due<t?'Partly paid, overdue':'Partly paid'):(due<t?'Overdue':'Open');return{no,date:i.date,due,amt:R2(i.amt),left,st}}).slice(-200);
+ if(pm.stmt){let run=0;o.statement=cled(c.id,S.j).slice().sort((x,y)=>x.date.localeCompare(y.date)||x.id-y.id).map(x=>{const[d,cr]=cdc(x);run+=d-cr;return{date:x.date,memo:String(x.memo||'').slice(0,120),debit:R2(d),credit:R2(cr),bal:R2(run)}}).filter(r=>r.debit||r.credit).slice(-300)}
+ if(pm.appt)o.appts=(S.appts||[]).filter(x=>x.cust==c.id).sort((x,y)=>(y.date+y.time).localeCompare(x.date+x.time)).slice(0,60).map(x=>({id:x.id,title:x.title,date:x.date,time:x.time,staff:x.staff||'',status:x.status}));
+ if(pm.notif)o.notif=(S.notif||[]).filter(x=>x.cust==c.id).slice(-30).reverse().map(x=>({title:x.title,body:x.body,date:x.date}));
+ if(pm.member)o.subs=(S.subs||[]).filter(x=>x.cust==c.id).map(s=>{const used=(s.use||[]).reduce((q,u)=>q+(+u.qty||0),0),st=s.status=='Cancelled'?'Cancelled':s.frozen?'Suspended':s.end<t?'Expired':'Active';return{name:s.name,start:s.start,end:s.end,status:st,total:+s.total||0,left:(+s.total||0)-used,unit:s.unit||''}});
+ return o}
+
+/* ---------- server status of each client ---------- */
+async function fetchStatus(){if(!cloud())return;try{const r=await rest('portal_clients?select=client_ref,status,last_login,auth_user,invite_expires&order=created_at.asc');const m={};(r||[]).forEach(x=>m[x.client_ref]=x);const j=JSON.stringify(m);lastErr='';statAt=Date.now();if(j!==JSON.stringify(stat)){stat=m;if(view=='cpt')go()}else stat=m}catch(e){lastErr=errMsg(e);if(view=='cpt')go()}}
+
+/* ---------- publish ---------- */
+async function publish(force){if(!cloud()||busy)return;const L=clients().filter(c=>c.portal.srv);if(!L.length)return;busy=true;
+ try{const rows=[];for(const c of L){const d=snap(c),h=JSON.stringify(d);if(force||hashes[c.id]!==h){rows.push({owner_id:window.pbUid(),client_ref:c.id,data:d,updated_at:new Date().toISOString()});hashes[c.id]=h}}
+  if(rows.length){await rest('portal_data?on_conflict=owner_id,client_ref',{method:'POST',prefer:'resolution=merge-duplicates,return=minimal',body:rows});pubAt=new Date().toLocaleTimeString()}
+  lastErr=''}catch(e){lastErr=errMsg(e);hashes={}}finally{busy=false}
+ if(view=='cpt')go()}
+const sched=()=>{clearTimeout(tmr);tmr=setTimeout(()=>publish(false),6000)};
+{const d=window.pbDirty;if(typeof d=='function')window.pbDirty=function(){const r=d.apply(this,arguments);try{sched()}catch(e){}return r}}
+
+/* ---------- invite ---------- */
+window.ptlInv=async id=>{const c=S.cust.find(x=>x.id==id);if(!c)return;
+ if(!cloud())return toastM('Sign in to your PrimeBook cloud account first. Client logins need the online service.',1);
+ if(!c.portal||!c.portal.on)return toastM('Enable the portal for this client first (Permissions).',1);
+ const em=String(c.email||'').trim().toLowerCase();if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(em))return toastM('This client needs a valid email address first. Add it on the customer record.',1);
+ const s=stat[c.id];if(s&&s.status=='active'&&!confirm(c.name+' already has a working login. A new code means they must enter it once to link again. Continue?'))return;
+ try{const code=gen(),hash=await sha(norm(code));
+  await rest('portal_clients?on_conflict=owner_id,client_ref',{method:'POST',prefer:'resolution=merge-duplicates,return=minimal',body:{owner_id:window.pbUid(),client_ref:c.id,name:c.name,email:em,company:coName(),status:'invited',perms:perms(c),auth_user:null,invite_hash:hash,invite_expires:new Date(Date.now()+30*864e5).toISOString(),updated_at:new Date().toISOString()}});
+  c.portal.code=code;c.portal.srv=1;c.portal.invAt=today();save();hashes[c.id]='';await publish(true);await fetchStatus();
+  toastM('Invite ready for '+c.name+'. Send them the email, access code and portal address.');go()}catch(e){toastM(errMsg(e),1)}};
+{const o=H.cphacc;H.cphacc=function(f){const r=o.apply(this,arguments);try{const c=S.cust.find(x=>x.id==f.id);if(c&&c.portal&&c.portal.srv&&cloud()){const s=stat[c.id],st=!c.portal.on?'suspended':(s&&s.auth_user?'active':'invited');
+  rest('portal_clients?owner_id=eq.'+window.pbUid()+'&client_ref=eq.'+encodeURIComponent(c.id),{method:'PATCH',prefer:'return=minimal',body:{status:st,perms:perms(c),updated_at:new Date().toISOString()}}).then(()=>{hashes[c.id]='';publish(true);fetchStatus()}).catch(e=>toastM(errMsg(e),1))}}catch(e){}return r}}
+
+/* ---------- inbox from clients ---------- */
+async function pull(){if(!cloud()||pulling||!regd().length)return;pulling=true;
+ try{const rows=await rest('portal_inbox?select=id,client_ref,kind,body,created_at&handled=eq.false&order=created_at.asc&limit=100');if(!rows||!rows.length){lastErr='';return}
+  S.preq=S.preq||[];S.pinbox=S.pinbox||[];const done=[];
+  rows.forEach(r=>{const c=S.cust.find(x=>x.id==r.client_ref);done.push(r.id);if(!c)return;const b=r.body||{};
+   if(r.kind=='payment'){if(S.preq.some(q=>q.srv==r.id))return;const amt=+b.amt;if(!(amt>0))return;S.preq.push({id:uid('q'),cust:c.id,inv:String(b.inv||'').slice(0,40),amt,method:String(b.method||'').slice(0,30),ref:String(b.ref||'').slice(0,60),date:/^\d{4}-\d{2}-\d{2}$/.test(b.date||'')?b.date:today(),st:'Pending',srv:r.id,via:'portal'})}
+   else{if(S.pinbox.some(q=>q.id==r.id))return;S.pinbox.push({id:r.id,cust:c.id,kind:r.kind,title:String(b.title||b.subject||'').slice(0,100),date:String(b.date||'').slice(0,10),time:String(b.time||'').slice(0,5),text:String(b.note||b.text||'').slice(0,1500),at:String(r.created_at||'').slice(0,10),st:'new'})}});
+  save();await rest('portal_inbox?id=in.('+done.join(',')+')',{method:'PATCH',prefer:'return=minimal',body:{handled:true}});lastErr='';
+  toastM(rows.length+' new item'+(rows.length==1?'':'s')+' from clients.');if(view=='cpt')go()}
+ catch(e){lastErr=errMsg(e)}finally{pulling=false}}
+window.ptlDone=id=>{const q=(S.pinbox||[]).find(x=>x.id==id);if(q){q.st='done';save();go()}};
+window.ptlBook=id=>{const q=(S.pinbox||[]).find(x=>x.id==id);if(!q)return;if(!q.date||q.date<today())return toastM('The requested date is missing or in the past. Book it manually in Appointments.',1);
+ const r=H.apnew({cust:q.cust,title:q.title||'Appointment',date:q.date,time:q.time||'09:00',dur:30,staff:'',note:q.text});if(r===false)return;q.st='done';save();toastM('Appointment booked.');go()};
+
+/* ---------- Clients and access screen ---------- */
+function enh(){const root=document.getElementById('m');if(!root)return;
+ const w=[...root.querySelectorAll('.cap-w')].find(x=>/Client login is not live yet/.test(x.textContent));
+ if(w){const n=regd().length,live=cloud();w.className='ptl-b';w.innerHTML=live?`<div><b>Client login is live.</b> Clients sign in at <b>${A(location.origin+'/portal')}</b>.${n?` ${n} client${n==1?'':'s'} invited.`:' Enable a client, then press <b>Send invite</b>.'}${pubAt?' Last published '+A(pubAt)+'.':''}</div><div class="ptl-bt"><button type="button" class="b s" onclick="ptlRefresh()">Refresh status</button><button type="button" class="b s" onclick="ptlPub()">Publish now</button></div>${lastErr?`<div class="ptl-e">${A(lastErr)}</div>`:''}`:`<div><b>Sign in to your PrimeBook cloud account to switch client logins on.</b> They need the online service. You can still prepare access and use “Client preview”.</div>`}
+ const tb=[...root.querySelectorAll('table.cph-t')].find(t=>/Access code/.test(t.rows[0]&&t.rows[0].textContent));
+ if(tb){const h=tb.rows[0],th=document.createElement('th');th.textContent='Login';h.insertBefore(th,h.lastElementChild);
+  [...tb.rows].slice(1).forEach(r=>{const m=/cphEdit\('([^']+)'\)/.exec(r.innerHTML);if(!m){const td=document.createElement('td');r.insertBefore(td,r.lastElementChild);return}const c=S.cust.find(x=>x.id==m[1]),td=document.createElement('td');
+   if(c&&c.portal&&c.portal.on){const s=stat[c.id],ex=s&&s.status=='invited'&&s.invite_expires&&new Date(s.invite_expires)<new Date();
+    td.innerHTML=(!s?'<em class="pln-b pln-up">Not invited</em>':s.status=='active'?'<em class="pln-b pln-ok">Active</em>':s.status=='suspended'?'<em class="pln-b pln-od">Suspended</em>':ex?'<em class="pln-b pln-od">Invite expired</em>':'<em class="pln-b pln-du">Invited</em>')+(s&&s.last_login?`<br><small class="mu">Last sign-in ${A(String(s.last_login).slice(0,10))}</small>`:'')+`<br><button type="button" class="b s" onclick="ptlInv('${c.id}')">${!s?'Send invite':s.status=='active'?'New code':'Resend code'}</button>`}else td.textContent='—';
+   r.insertBefore(td,r.lastElementChild)})}
+ const inb=(S.pinbox||[]).filter(x=>x.st=='new');
+ if(inb.length&&tb){const card=document.createElement('div');card.className='p';card.innerHTML=`<h3>Requests from clients (${inb.length})</h3><div class="w"><table class="cph-t"><tr><th>Received</th><th>Client</th><th>Request</th><th class="noprint"></th></tr>${inb.map(x=>{const c=S.cust.find(k=>k.id==x.cust)||{name:'(removed)'};return`<tr><td>${A(x.at)}</td><td><b>${A(c.name)}</b></td><td>${x.kind=='appointment'?`<b>Appointment request</b>: ${A(x.title)}${x.date?' on '+A(x.date):''}${x.time?' at '+A(x.time):''}`:`<b>${A(x.title||'Message')}</b>`}${x.text?`<br><span class="mu">${A(x.text)}</span>`:''}</td><td class="noprint">${x.kind=='appointment'?`<button type="button" class="b s" onclick="ptlBook('${A(x.id)}')">Book as requested</button> `:''}<button type="button" class="b s" onclick="ptlDone('${A(x.id)}')">Done</button></td></tr>`}).join('')}</table></div>`;const first=tb.closest('.p');first.parentNode.insertBefore(card,first)}}
+window.ptlRefresh=async()=>{await fetchStatus();await pull();toastM('Status updated.')};
+window.ptlPub=async()=>{if(!regd().length)return toastM('No client has been invited yet.',1);await publish(true);toastM(lastErr||'Published to the portal.',!!lastErr)};
+{const g=go;go=function(){g.apply(this,arguments);if(view=='cpt'){try{enh()}catch(e){}if(cloud()&&Date.now()-statAt>20000){statAt=Date.now();fetchStatus();pull()}}}}
+setInterval(()=>{if(document.hidden||!cloud()||!regd().length)return;pull()},45000);
+setInterval(()=>{if(document.hidden||!cloud()||!regd().length)return;publish(false)},300000);
+setTimeout(()=>{if(cloud()&&regd().length){fetchStatus();pull();publish(false)}},5000);
+const css=document.createElement('style');css.textContent='html body .ptl-b{display:flex;gap:12px;justify-content:space-between;align-items:center;flex-wrap:wrap;margin:0 0 12px;padding:13px 16px;border-radius:14px;background:#eef4ff;border:1px solid #c7d7fb;color:#12306e;font:500 13.5px/1.5 Inter,system-ui,sans-serif}html body .ptl-bt{display:flex;gap:8px}html body .ptl-e{flex-basis:100%;background:#fee2e2;color:#991b1b;border-radius:9px;padding:8px 11px;font-size:13px}';document.head.appendChild(css);
 })();
 
 </script></body></html>

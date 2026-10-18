@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; connect-src 'self' https://htrlqotaetdwccervhmd.supabase.co; img-src 'self' data:; base-uri 'none'; form-action 'none'; frame-ancestors 'none'">
+<title>Client Portal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#0f1f46;--mu:#5d6e96;--ln:#dbe5fb;--bl:#1d4ed8;--bl2:#3b82f6;--bg:#eef3ff;--ok:#15803d;--bad:#b91c1c;--warn:#b45309}
+*{box-sizing:border-box}html,body{margin:0}
+body{font:400 14px/1.5 'Inter',system-ui,-apple-system,Segoe UI,sans-serif;color:var(--ink);background:radial-gradient(900px 420px at 85% -10%,#bfd3ff,transparent 60%),linear-gradient(180deg,#e8f0ff,#f6f9ff 50%,#eef3ff);min-height:100vh;-webkit-font-smoothing:antialiased}
+h1,h2,h3,h4{margin:0;font-family:inherit}
+.wrap{max-width:1040px;margin:0 auto;padding:20px 16px 60px}
+.card{background:#fff;border:1px solid var(--ln);border-radius:18px;padding:20px;box-shadow:0 8px 24px #1d4ed812}
+.auth{min-height:100vh;display:grid;place-items:center;padding:20px 16px}
+.ab{width:100%;max-width:430px}
+.brand{display:flex;align-items:center;gap:10px;margin:0 0 18px;font:800 22px 'Inter';color:#0a2766}.brand i{width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,#1d4ed8,#60a5fa);display:grid;place-items:center;color:#fff;font-style:normal;font-size:16px}
+.ab h2{font:700 22px 'Inter';color:#0a2766;margin-bottom:4px}.ab p.s{margin:0 0 16px;color:var(--mu)}
+label{display:block;font:600 12.5px 'Inter';color:#4a5d8c;margin:0 0 12px}
+input,select,textarea{width:100%;font:500 14px 'Inter';color:var(--ink);border:1px solid #cbd8f5;background:#fff;border-radius:11px;padding:11px 12px;margin-top:5px;outline:none;min-height:42px}
+input:focus,select:focus,textarea:focus{border-color:var(--bl2);box-shadow:0 0 0 3px #3b82f633}
+.btn{border:0;cursor:pointer;font:600 14px 'Inter';padding:11px 18px;border-radius:11px;background:linear-gradient(135deg,var(--bl),var(--bl2));color:#fff;box-shadow:0 6px 16px #2563eb44;min-height:42px}
+.btn.full{width:100%}.btn.alt{background:#fff;color:var(--bl);border:1px solid #c7d7fb;box-shadow:none}.btn:disabled{opacity:.6;cursor:default}
+.lnk{background:none;border:0;color:var(--bl);font:600 13px 'Inter';cursor:pointer;padding:4px 0}
+.err{background:#fee2e2;color:#991b1b;border-radius:10px;padding:10px 12px;margin:0 0 12px;font-size:13px}.okm{background:#dcfce7;color:#166534;border-radius:10px;padding:10px 12px;margin:0 0 12px;font-size:13px}
+.row{display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.top{display:flex;justify-content:space-between;align-items:center;gap:12px;margin:0 0 14px;flex-wrap:wrap}
+.hero{padding:26px 28px;border-radius:22px;color:#fff;background:radial-gradient(800px 300px at 92% -30%,#60a5fa77,transparent 60%),linear-gradient(135deg,#0a2766,#1347b8 58%,#2563eb);box-shadow:0 18px 40px #1d4ed84d;display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;align-items:flex-end}
+.hero small{display:block;font:700 11px 'Inter';letter-spacing:.14em;color:#f2c14e;text-transform:uppercase}.hero h1{font:700 26px/1.2 'Inter';margin:6px 0 0;color:#fff}
+.hero .bal small{color:#c3d4fb;letter-spacing:.06em}.hero .bal b{display:block;font:700 30px 'Inter';margin-top:2px}.hero .bal b.due{color:#fecaca}
+.tabs{display:flex;gap:4px;flex-wrap:wrap;background:#fff;border:1px solid var(--ln);border-radius:12px;padding:4px;margin:16px 0;box-shadow:0 4px 14px #1d4ed814;overflow:auto}
+.tabs button{border:0;background:none;padding:9px 14px;border-radius:9px;font:600 13px 'Inter';color:#4a5d8c;cursor:pointer;white-space:nowrap}.tabs button.on{background:linear-gradient(135deg,var(--bl),var(--bl2));color:#fff}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:14px}@media(max-width:760px){.g2{grid-template-columns:1fr}.hero{padding:20px}}
+.card h3{font:700 16px 'Inter';color:#0a2766;margin:0 0 12px}
+.item{padding:10px 0;border-top:1px solid #edf2fd}.item:first-of-type{border-top:0}.item b{display:block;font-weight:600}.item span,.item small{color:var(--mu);font-size:12.5px}
+table{width:100%;border-collapse:collapse;font-size:13.5px}th{background:#12399c;color:#fff;text-align:left;padding:9px 11px;font:600 11.5px 'Inter';letter-spacing:.04em;text-transform:uppercase;white-space:nowrap}td{padding:10px 11px;border-top:1px solid #edf2fd}th.n,td.n{text-align:right;font-variant-numeric:tabular-nums}
+.w{overflow:auto;border:1px solid #e3ebfa;border-radius:12px}
+.bd{display:inline-block;padding:3px 9px;border-radius:99px;font:600 11.5px 'Inter';white-space:nowrap}.bd.ok{background:#dcfce7;color:#166534}.bd.bad{background:#fee2e2;color:#991b1b}.bd.ac{background:#dbeafe;color:#1e40af}.bd.warn{background:#fef3c7;color:#92400e}
+.mu{color:var(--mu)}.empty{padding:22px;text-align:center;color:var(--mu)}
+.bar{height:8px;background:#e6eeff;border-radius:99px;overflow:hidden;margin-top:6px}.bar i{display:block;height:100%;background:linear-gradient(90deg,#1d4ed8,#60a5fa)}
+.fg{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:0 12px}
+.note{font-size:12px;color:var(--mu);margin-top:14px;text-align:center}
+@media print{body{background:#fff}.noprint{display:none!important}.card,.hero{box-shadow:none}.hero{color:#000;background:#fff;border:1px solid #999}.hero h1,.hero .bal b{color:#000}}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+(()=>{
+'use strict';
+const URL_='https://htrlqotaetdwccervhmd.supabase.co',KEY='sb_publishable_GjGlB8yDm7Rdg7WjB5uPAQ_Y1KwrDWB';
+const SKEY='pb_portal_sb',CKEY='pb_portal_code';
+const $=s=>document.querySelector(s),app=$('#app');
+const E=x=>String(x==null?'':x).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const ls={g:k=>{try{return localStorage.getItem(k)}catch(e){return null}},s:(k,v)=>{try{localStorage.setItem(k,v)}catch(e){}},d:k=>{try{localStorage.removeItem(k)}catch(e){}}};
+const money=n=>(+n||0).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2});
+let SB=null;try{SB=JSON.parse(ls.g(SKEY))}catch(e){}
+let st={screen:'login',err:'',ok:'',email:'',links:[],cur:0,data:null,tab:'ov',inbox:[],busy:false},idleT=0,lastTouch=0,hb=null;
+const IDLE=15*60*1000;
+
+/* ---------- API ---------- */
+async function api(path,o){o=o||{};const h={apikey:KEY,'Content-Type':'application/json'};if(SB&&SB.access_token&&!o.anon)h.Authorization='Bearer '+SB.access_token;if(o.prefer)h.Prefer=o.prefer;
+ const r=await fetch(URL_+path,{method:o.method||'GET',headers:h,body:o.body?JSON.stringify(o.body):undefined});let j=null;try{j=await r.json()}catch(e){}
+ if(!r.ok){const er=new Error((j&&(j.msg||j.message||j.error_description||j.error))||('Request failed ('+r.status+')'));er.status=r.status;er.code=j&&(j.error_code||j.code);throw er}return j}
+const fix=j=>({access_token:j.access_token,refresh_token:j.refresh_token,expires_at:j.expires_at||Math.floor(Date.now()/1000)+(j.expires_in||3600),user:j.user||(SB&&SB.user)});
+const save=s=>{SB=s;s?ls.s(SKEY,JSON.stringify(s)):ls.d(SKEY)};
+async function refresh(){if(!SB||!SB.refresh_token)throw Object.assign(new Error('Signed out'),{status:401});try{save(fix(await api('/auth/v1/token?grant_type=refresh_token',{method:'POST',body:{refresh_token:SB.refresh_token},anon:1})))}catch(e){if(e.status>=400&&e.status<500)save(null);throw e}}
+async function rest(p,o){if(!SB)throw Object.assign(new Error('Signed out'),{status:401});if(SB.expires_at-60<Date.now()/1000)await refresh();
+ try{return await api('/rest/v1/'+p,o)}catch(e){if(e.status==401&&/PB_SESSION/.test(e.message||'')){expired();throw e}if(e.status==401){await refresh();return await api('/rest/v1/'+p,o)}throw e}}
+const friendly=e=>{const m=String(e&&e.message||'');if(e instanceof TypeError)return'Cannot reach the server. Check your internet connection and try again.';if(/invalid login/i.test(m))return'Email or password is incorrect.';if(/not confirmed/i.test(m))return'Confirm your email first. Open the message we sent you and tap the link.';if(e&&e.status==429||/rate limit|too many/i.test(m))return'Too many attempts. Wait a few minutes and try again.';if(/already registered|already been registered/i.test(m))return'That email already has an account. Sign in, then enter your access code.';if(/password/i.test(m)&&/(short|least|weak|characters)/i.test(m))return'Choose a stronger password of at least 10 characters.';if(/PB_SESSION/.test(m))return'Your session ended. Please sign in again.';return m||'Something went wrong. Please try again.'};
+
+/* ---------- session ---------- */
+function expired(msg){save(null);clearInterval(hb);st={screen:'login',err:msg||'Your session ended for security. Please sign in again.',ok:'',email:st.email,links:[],cur:0,data:null,tab:'ov',inbox:[],busy:false};draw()}
+function activity(){idleT=Date.now()}
+function startSession(){activity();clearInterval(hb);hb=setInterval(async()=>{if(!SB)return;if(Date.now()-idleT>IDLE){signOut('You were signed out after 15 minutes without activity.');return}
+ if(Date.now()-lastTouch>60000){lastTouch=Date.now();const mins=Math.min(15,Math.max(5,Math.round((IDLE-(Date.now()-idleT))/60000)||15));try{await rest('rpc/pb_session_touch',{method:'POST',body:{p_idle_min:15,p_idle_s:Math.min(900,Math.round((Date.now()-idleT)/1000))}})}catch(e){if(e.status==404)lastTouch=Date.now()+3600e3}}},15000)}
+['click','keydown','touchstart','mousemove','scroll'].forEach(ev=>document.addEventListener(ev,()=>{if(SB)activity()},{passive:true}));
+async function signOut(msg){try{if(SB)await api('/auth/v1/logout',{method:'POST'})}catch(e){}save(null);clearInterval(hb);st={screen:'login',err:'',ok:msg||'You have been signed out.',email:'',links:[],cur:0,data:null,tab:'ov',inbox:[],busy:false};draw()}
+
+/* ---------- auth flows ---------- */
+const norm=c=>String(c||'').toUpperCase().replace(/[^A-Z0-9]/g,'');
+async function afterSignIn(){
+ const pend=ls.g(CKEY);if(pend){try{const r=await rest('rpc/portal_claim',{method:'POST',body:{p_code:pend}});if(r&&r.ok){ls.d(CKEY);st.ok='Welcome! Your access is ready.'}else if(r&&r.error=='locked'){ls.d(CKEY);st.err='Too many wrong codes. Try again in 15 minutes.'}else if(r&&r.error=='invalid'){ls.d(CKEY);st.err='That access code is not valid or has expired. Ask the business for a new one.'}}catch(e){}}
+ await load();}
+async function load(){
+ try{st.links=await rest('portal_clients?select=owner_id,client_ref,name,company,status,perms&status=eq.active&order=created_at.asc')||[]}catch(e){if(SB)st.err=friendly(e);st.links=[]}
+ if(!st.links.length){st.screen='code';draw();return}
+ st.cur=Math.min(st.cur,st.links.length-1);st.screen='home';startSession();rest('rpc/portal_seen',{method:'POST',body:{}}).catch(()=>{});await loadData();}
+async function loadData(){const L=st.links[st.cur];st.data=null;st.inbox=[];draw();
+ try{const d=await rest('portal_data?select=data,updated_at&owner_id=eq.'+encodeURIComponent(L.owner_id)+'&client_ref=eq.'+encodeURIComponent(L.client_ref));st.data=d&&d[0]?Object.assign({},d[0].data,{_u:d[0].updated_at}):{empty:1};
+  const ib=await rest('portal_inbox?select=id,kind,body,created_at,handled&owner_id=eq.'+encodeURIComponent(L.owner_id)+'&client_ref=eq.'+encodeURIComponent(L.client_ref)+'&order=created_at.desc&limit=20');st.inbox=ib||[]}catch(e){st.err=friendly(e);st.data={empty:1}}
+ draw()}
+async function doLogin(f){const em=f.em.value.trim().toLowerCase(),p=f.p.value;st.email=em;if(!em||!p){st.err='Enter your email and password.';return draw()}
+ busy(1);try{const j=await api('/auth/v1/token?grant_type=password',{method:'POST',body:{email:em,password:p},anon:1});save(fix(j));st.err='';st.ok='';await afterSignIn()}catch(e){st.err=friendly(e);busy(0);draw()}}
+async function doActivate(f){const em=f.em.value.trim().toLowerCase(),p=f.p.value,p2=f.p2.value,code=norm(f.code.value);st.email=em;
+ if(!em||!code){st.err='Enter your email and the access code you were given.';return draw()}
+ if(p.length<10){st.err='Use at least 10 characters for the password.';return draw()}if(p!==p2){st.err='The two passwords do not match.';return draw()}
+ busy(1);try{const j=await api('/auth/v1/signup?redirect_to='+encodeURIComponent(location.origin+'/portal'),{method:'POST',body:{email:em,password:p},anon:1});
+  ls.s(CKEY,code);
+  if(j&&j.access_token){save(fix(j));st.err='';await afterSignIn()}else{st.screen='check';st.err='';busy(0);draw()}}
+ catch(e){if(/already/i.test(e.message||'')){st.err='That email already has an account. Sign in below, then enter your access code.';st.screen='login';ls.s(CKEY,code)}else st.err=friendly(e);busy(0);draw()}}
+async function doCode(f){const code=norm(f.code.value);if(!code){st.err='Enter your access code.';return draw()}busy(1);
+ try{const r=await rest('rpc/portal_claim',{method:'POST',body:{p_code:code}});if(r&&r.ok){st.err='';st.ok='Access added.';await load()}else{st.err=r&&r.error=='locked'?'Too many wrong codes. Try again in 15 minutes.':'That access code is not valid or has expired. Ask the business for a new one.';busy(0);draw()}}catch(e){st.err=friendly(e);busy(0);draw()}}
+async function doForgot(f){const em=f.em.value.trim().toLowerCase();st.email=em;if(!em){st.err='Enter your email.';return draw()}busy(1);
+ try{await api('/auth/v1/recover?redirect_to='+encodeURIComponent(location.origin+'/portal'),{method:'POST',body:{email:em},anon:1})}catch(e){}
+ st.err='';st.ok='If that email has an account, a reset link is on its way.';st.screen='login';busy(0);draw()}
+async function doReset(f){const p=f.p.value,p2=f.p2.value;if(p.length<10){st.err='Use at least 10 characters.';return draw()}if(p!==p2){st.err='The two passwords do not match.';return draw()}busy(1);
+ try{await api('/auth/v1/user',{method:'PUT',body:{password:p}});st.err='';st.ok='Password saved.';history.replaceState(null,'',location.pathname);await afterSignIn()}catch(e){st.err=friendly(e);busy(0);draw()}}
+const busy=b=>{st.busy=!!b;document.querySelectorAll('button.btn').forEach(x=>x.disabled=!!b)};
+
+/* ---------- requests from the client ---------- */
+async function send(kind,body){const L=st.links[st.cur];try{await rest('portal_inbox',{method:'POST',prefer:'return=minimal',body:{owner_id:L.owner_id,client_ref:L.client_ref,kind,body}});st.ok='Sent. The business will review it.';st.err='';await loadData()}catch(e){st.err=/row-level|policy|violat/i.test(e.message||'')?'This is not available for your account.':friendly(e);draw()}}
+
+/* ---------- views ---------- */
+const hero=(d,L)=>`<div class="hero"><div><small>${E(L.company||'Client portal')}</small><h1>Welcome, ${E(L.name||'')}</h1></div><div class="bal"><small>Your balance</small><b class="${(+d.balance||0)>0.004?'due':''}">${E(d.base||'')} ${money(d.balance)}</b>${(+d.credit||0)>0?`<small>Credit limit ${money(d.credit)}</small>`:''}</div></div>`;
+const bdg=s=>{s=String(s||'');const k=/paid$/i.test(s)&&!/partly/i.test(s)||/completed|active|confirmed|accepted/i.test(s)?'ok':/overdue|cancel|no-show|expired|rejected/i.test(s)?'bad':/partly|pending|suspend/i.test(s)?'warn':'ac';return`<span class="bd ${k}">${E(s)}</span>`};
+const hidden=t=>`<div class="empty">${t} is not shown for your account.</div>`;
+function vOv(d){const p=d.perms||{},inv=(d.invoices||[]).filter(i=>(+i.left||0)>0.004),ap=(d.appts||[]).filter(a=>a.date>=new Date().toISOString().slice(0,10)).slice(0,4),N=(d.notif||[]).slice(0,5);
+ return`<div class="g2"><div class="card"><h3>Notifications</h3>${p.notif?(N.map(n=>`<div class="item"><b>${E(n.title)}</b><span>${E(n.body)}</span> <small>${E(n.date)}</small></div>`).join('')||'<div class="empty">No notifications.</div>'):hidden('Notifications')}</div>
+ <div class="card"><h3>Upcoming appointments</h3>${p.appt?(ap.map(a=>`<div class="item"><b>${E(a.title)}</b><span>${E(a.date)} at ${E(a.time)}${a.staff?' with '+E(a.staff):''}</span> ${bdg(a.status)}</div>`).join('')||'<div class="empty">No upcoming appointments.</div>'):hidden('Appointments')}</div></div>
+ <div class="card" style="margin-top:14px"><h3>Open invoices</h3>${p.inv?(inv.length?`<div class="w"><table><tr><th>Invoice</th><th>Due</th><th class="n">Balance</th><th>Status</th></tr>${inv.map(i=>`<tr><td>${E(i.no)}</td><td>${E(i.due)}</td><td class="n">${money(i.left)}</td><td>${bdg(i.st)}</td></tr>`).join('')}</table></div>`:'<div class="empty">Nothing to pay. Thank you!</div>'):hidden('Invoices')}</div>`}
+function vInv(d){const p=d.perms||{};if(!p.inv)return`<div class="card">${hidden('Invoices')}</div>`;const I=d.invoices||[];
+ return`<div class="card"><h3>Invoices</h3>${I.length?`<div class="w"><table><tr><th>Date</th><th>Invoice</th><th>Due</th><th class="n">Amount</th><th class="n">Balance</th><th>Status</th></tr>${I.map(i=>`<tr><td>${E(i.date)}</td><td>${E(i.no)}</td><td>${E(i.due)}</td><td class="n">${money(i.amt)}</td><td class="n">${money(i.left)}</td><td>${bdg(i.st)}</td></tr>`).join('')}</table></div>`:'<div class="empty">No invoices yet.</div>'}</div>`+
+ (p.pay&&I.some(i=>(+i.left||0)>0.004)?`<div class="card" style="margin-top:14px"><h3>I have paid</h3><p class="mu" style="margin:-6px 0 12px">Tell the business about your payment. It shows as pending until they confirm it.</p><form id="fpay"><div class="fg"><label>Invoice<select name="inv">${I.filter(i=>(+i.left||0)>0.004).map(i=>`<option value="${E(i.no)}">${E(i.no)} · ${money(i.left)}</option>`).join('')}</select></label><label>Amount<input name="amt" type="number" step="any" min="0" required></label><label>Method<select name="method"><option>Bank transfer</option><option>E-transfer</option><option>Cash</option><option>Card</option></select></label><label>Reference<input name="ref" maxlength="60"></label><label>Date<input name="date" type="date" value="${new Date().toISOString().slice(0,10)}"></label></div><button class="btn">Send payment notice</button></form></div>`:'')}
+function vAp(d){const p=d.perms||{};if(!p.appt)return`<div class="card">${hidden('Appointments')}</div>`;const A=d.appts||[];
+ return`<div class="card"><h3>Appointments</h3>${A.length?`<div class="w"><table><tr><th>When</th><th>For</th><th>Staff</th><th>Status</th></tr>${A.map(a=>`<tr><td>${E(a.date)} ${E(a.time)}</td><td>${E(a.title)}</td><td>${E(a.staff||'—')}</td><td>${bdg(a.status)}</td></tr>`).join('')}</table></div>`:'<div class="empty">No appointments.</div>'}</div>`+
+ (p.book?`<div class="card" style="margin-top:14px"><h3>Request or change an appointment</h3><form id="fap"><div class="fg"><label>What for<input name="title" maxlength="80" required></label><label>Preferred date<input name="date" type="date" required></label><label>Preferred time<input name="time" type="time"></label></div><label>Note<textarea name="note" rows="2" maxlength="300"></textarea></label><button class="btn">Send request</button></form></div>`:'')}
+function vMem(d){const p=d.perms||{};if(!p.member)return`<div class="card">${hidden('Memberships')}</div>`;const M=d.subs||[];
+ return`<div class="card"><h3>Memberships</h3>${M.map(s=>`<div class="item"><b>${E(s.name)} ${bdg(s.status)}</b><span>${E(s.start)} to ${E(s.end)}</span>${s.total?`<div class="bar"><i style="width:${Math.min(100,Math.max(0,(s.total-s.left)/s.total*100))}%"></i></div><small>${E(s.left)} of ${E(s.total)} ${E(s.unit)} left</small>`:''}</div>`).join('')||'<div class="empty">No memberships.</div>'}</div>`}
+function vSt(d){const p=d.perms||{};if(!p.stmt)return`<div class="card">${hidden('The statement')}</div>`;const S_=d.statement||[];
+ return`<div class="card"><div class="row" style="margin-bottom:10px"><h3 style="margin:0">Statement</h3><button class="btn alt noprint" id="prt">Print</button></div>${S_.length?`<div class="w"><table><tr><th>Date</th><th>Description</th><th class="n">Charges</th><th class="n">Payments</th><th class="n">Balance</th></tr>${S_.map(r=>`<tr><td>${E(r.date)}</td><td>${E(r.memo)}</td><td class="n">${r.debit?money(r.debit):''}</td><td class="n">${r.credit?money(r.credit):''}</td><td class="n">${money(r.bal)}</td></tr>`).join('')}</table></div>`:'<div class="empty">No activity yet.</div>'}</div>`}
+function vMsg(d){const hist=st.inbox.map(x=>`<div class="item"><b>${x.kind=='payment'?'Payment notice':x.kind=='appointment'?'Appointment request':'Message'}</b><span>${E(x.kind=='payment'?(x.body.inv||'')+' · '+money(x.body.amt):x.kind=='appointment'?(x.body.title||'')+' · '+(x.body.date||''):(x.body.subject||''))}</span> <small>${E(x.created_at.slice(0,10))}</small> ${x.handled?'<span class="bd ok">Received</span>':'<span class="bd warn">Waiting</span>'}</div>`).join('');
+ return`<div class="card"><h3>Send a message</h3><form id="fmsg"><label>Subject<input name="subject" maxlength="100" required></label><label>Message<textarea name="text" rows="4" maxlength="1500" required></textarea></label><button class="btn">Send message</button></form></div><div class="card" style="margin-top:14px"><h3>Your recent requests</h3>${hist||'<div class="empty">Nothing sent yet.</div>'}</div>`}
+function home(){const L=st.links[st.cur],d=st.data;const sw=st.links.length>1?`<label style="margin:0;min-width:200px">Business<select id="biz">${st.links.map((l,i)=>`<option value="${i}" ${i==st.cur?'selected':''}>${E(l.company||'Business')}</option>`).join('')}</select></label>`:'';
+ const alerts=(st.err?`<div class="err" role="alert">${E(st.err)}</div>`:'')+(st.ok?`<div class="okm">${E(st.ok)}</div>`:'');
+ if(!d)return`<div class="wrap"><div class="empty">Loading your account…</div></div>`;
+ const T=[['ov','Overview'],['inv','Invoices'],['ap','Appointments'],['mem','Memberships'],['st','Statement'],['msg','Messages']];
+ const body=d.empty?`<div class="card"><div class="empty">${E(L.company||'The business')} has not published your records yet. Please check back soon.</div></div>`:({ov:vOv,inv:vInv,ap:vAp,mem:vMem,st:vSt,msg:vMsg}[st.tab]||vOv)(d);
+ return`<div class="wrap"><div class="top noprint"><div class="brand" style="margin:0"><i>P</i>Client Portal</div><div class="row" style="gap:10px">${sw}<button class="btn alt" id="addb">Add a business</button><button class="btn alt" id="out">Sign out</button></div></div>${alerts}${hero(d.empty?{base:'',balance:0}:d,L)}<div class="tabs noprint">${T.map(([k,t])=>`<button data-t="${k}" class="${st.tab==k?'on':''}">${t}</button>`).join('')}</div>${body}<div class="note">${d._u?'Last updated '+E(String(d._u).slice(0,16).replace('T',' '))+' UTC · ':''}You are signed out automatically after 15 minutes of inactivity.</div></div>`}
+const msgs=()=>(st.err?`<div class="err" role="alert">${E(st.err)}</div>`:'')+(st.ok?`<div class="okm">${E(st.ok)}</div>`:'');
+const shell=h=>`<div class="auth"><div class="ab"><div class="brand"><i>P</i>Client Portal</div><div class="card">${h}</div><div class="note">Secure sign-in. Your records are visible only to you.</div></div></div>`;
+function draw(){st.busy=false;const s=st.screen;
+ if(s=='home'){app.innerHTML=home();bindHome();return}
+ const em=E(st.email||'');
+ const V={
+ login:`<h2>Sign in</h2><p class="s">Use the email and password you chose for your portal.</p>${msgs()}<form id="fl"><label>Email<input name="em" type="email" autocomplete="username" value="${em}" required></label><label>Password<input name="p" type="password" autocomplete="current-password" required></label><button class="btn full">Sign in</button></form><div class="row" style="margin-top:12px"><button class="lnk" data-s="forgot">Forgot password?</button><button class="lnk" data-s="activate">First time here?</button></div>`,
+ activate:`<h2>Activate your access</h2><p class="s">Enter the email the business has on file for you, choose a password, and type the access code they gave you.</p>${msgs()}<form id="fa"><label>Email<input name="em" type="email" autocomplete="username" value="${em}" required></label><label>Access code<input name="code" autocomplete="off" autocapitalize="characters" placeholder="e.g. K7M2P-9XQ4R" required></label><label>Password (at least 10 characters)<input name="p" type="password" autocomplete="new-password" minlength="10" required></label><label>Repeat password<input name="p2" type="password" autocomplete="new-password" required></label><button class="btn full">Create my access</button></form><div style="margin-top:12px"><button class="lnk" data-s="login">I already have a login</button></div>`,
+ check:`<h2>Check your email</h2><p class="s">We sent a confirmation link to <b>${em}</b>. Open it on this device. You will come straight back here and your access code is applied automatically.</p><div style="margin-top:12px"><button class="lnk" data-s="login">Back to sign in</button></div>`,
+ forgot:`<h2>Reset password</h2><p class="s">Enter your email and we will send a reset link.</p>${msgs()}<form id="ff"><label>Email<input name="em" type="email" value="${em}" required></label><button class="btn full">Send reset link</button></form><div style="margin-top:12px"><button class="lnk" data-s="login">Back to sign in</button></div>`,
+ reset:`<h2>Choose a new password</h2><p class="s">At least 10 characters.</p>${msgs()}<form id="fr"><label>New password<input name="p" type="password" autocomplete="new-password" minlength="10" required></label><label>Repeat password<input name="p2" type="password" autocomplete="new-password" required></label><button class="btn full">Save password</button></form>`,
+ code:`<h2>Enter your access code</h2><p class="s">${st.links.length?'Add another business to this login.':'Your login is ready, but no business is linked yet. Enter the access code the business gave you.'}</p>${msgs()}<form id="fc"><label>Access code<input name="code" autocomplete="off" autocapitalize="characters" placeholder="e.g. K7M2P-9XQ4R" required></label><button class="btn full">Link my account</button></form><div class="row" style="margin-top:12px">${st.links.length?'<button class="lnk" data-s="home">Back</button>':'<span></span>'}<button class="lnk" id="out2">Sign out</button></div>`};
+ app.innerHTML=shell(V[s]||V.login);
+ const bf=(id,fn)=>{const f=$(id);if(f)f.addEventListener('submit',e=>{e.preventDefault();if(!st.busy)fn(f.elements)})};
+ bf('#fl',doLogin);bf('#fa',doActivate);bf('#ff',doForgot);bf('#fr',doReset);bf('#fc',doCode);
+ app.querySelectorAll('[data-s]').forEach(b=>b.onclick=()=>{st.screen=b.dataset.s;st.err='';st.ok='';draw()});
+ const o2=$('#out2');if(o2)o2.onclick=()=>signOut()}
+function bindHome(){
+ app.querySelectorAll('[data-t]').forEach(b=>b.onclick=()=>{st.tab=b.dataset.t;st.err='';st.ok='';draw()});
+ const o=$('#out');if(o)o.onclick=()=>signOut();const a=$('#addb');if(a)a.onclick=()=>{st.screen='code';st.err='';st.ok='';draw()};
+ const b=$('#biz');if(b)b.onchange=()=>{st.cur=+b.value;st.tab='ov';st.err='';st.ok='';loadData()};
+ const pr=$('#prt');if(pr)pr.onclick=()=>window.print();
+ const fp=$('#fpay');if(fp)fp.addEventListener('submit',e=>{e.preventDefault();const f=fp.elements;const amt=+f.amt.value;if(!(amt>0)){st.err='Enter the amount you paid.';return draw()}send('payment',{inv:f.inv.value,amt,method:f.method.value,ref:f.ref.value.trim().slice(0,60),date:f.date.value})});
+ const fa=$('#fap');if(fa)fa.addEventListener('submit',e=>{e.preventDefault();const f=fa.elements;send('appointment',{title:f.title.value.trim().slice(0,80),date:f.date.value,time:f.time.value,note:f.note.value.trim().slice(0,300)})});
+ const fm=$('#fmsg');if(fm)fm.addEventListener('submit',e=>{e.preventDefault();const f=fm.elements;send('message',{subject:f.subject.value.trim().slice(0,100),text:f.text.value.trim().slice(0,1500)})})}
+
+/* ---------- boot ---------- */
+async function boot(){
+ const h=location.hash.replace(/^#/,'');
+ if(h&&/access_token=|error_description=/.test(h)){const q=new URLSearchParams(h);history.replaceState(null,'',location.pathname);
+  if(q.get('error_description')){st.err=q.get('error_description').replace(/\+/g,' ');st.screen='login';return draw()}
+  if(q.get('access_token')){save(fix({access_token:q.get('access_token'),refresh_token:q.get('refresh_token'),expires_at:+q.get('expires_at')||0,expires_in:+q.get('expires_in')||3600}));
+   try{const u=await api('/auth/v1/user');SB.user=u;save(SB)}catch(e){}
+   if(q.get('type')=='recovery'){st.screen='reset';return draw()}
+   await afterSignIn();return}}
+ if(SB&&SB.refresh_token){try{if(SB.expires_at-60<Date.now()/1000)await refresh();await afterSignIn();return}catch(e){save(null)}}
+ st.screen='login';draw()}
+boot();
+})();
+</script>
+</body>
+</html>
