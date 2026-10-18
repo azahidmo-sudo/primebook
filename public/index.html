@@ -5526,7 +5526,7 @@ const oc=V.ctx;V.ctx=function(){let h=oc.apply(this,arguments);
  h=h.replace('<button class="plf" onclick="ctOpen()">+ New transaction</button>','<span style="display:flex;gap:8px;flex-wrap:wrap"><button class="plf" onclick="sdOpen()">+ Currency sale deal</button><button class="plo" onclick="ctOpen()">+ Multi-currency entry</button></span>');
  return h};
 /*UPDCHK*/
-(function(){const B='2026-10-19-bd';window.PB_BUILD=B;if(location.protocol=='file:')return;let nb=null,tm=0;
+(function(){const B='2026-10-19-be';window.PB_BUILD=B;if(location.protocol=='file:')return;let nb=null,tm=0;
 const busy=()=>{const a=document.activeElement;return !!(document.querySelector('.ov')||(a&&/^(INPUT|TEXTAREA)$/.test(a.tagName)&&String(a.value||'').length>0))};
 function go2(){try{const k='pb_upd_'+nb,n=+(sessionStorage.getItem(k)||0);sessionStorage.setItem(k,n+1)}catch(e){}location.replace(location.pathname+'?v='+encodeURIComponent(nb))}
 function bar(){let d=document.getElementById('pbupd');if(!d){d=document.createElement('div');d.id='pbupd';d.setAttribute('role','button');d.style.cssText='position:fixed;left:50%;transform:translateX(-50%);top:10px;z-index:100000;background:#0b3d33;color:#fff;padding:11px 18px;border-radius:12px;font:700 13px Inter,system-ui,sans-serif;box-shadow:0 6px 20px rgba(0,0,0,.3);cursor:pointer;text-align:center;max-width:92vw';d.onclick=()=>{d.textContent='Updating…';go2()};document.body.appendChild(d)}d.textContent='A new version of PrimeBook is ready. Tap here to update.'}
@@ -9130,6 +9130,86 @@ html body .dsh-mix{margin-top:14px;display:grid;gap:8px}html body .dsh-mix>b{fon
 @media(max-width:1000px){html body .dsh-r{grid-template-columns:1fr}}
 @media(max-width:640px){html body .dsh-kp{grid-template-columns:repeat(2,minmax(0,1fr))}html body .dsh-hero{padding:20px}html body .dsh-hero h1{font-size:24px}html body .dsh-fl{grid-template-columns:repeat(2,1fr)}html body .dsh-in{grid-template-columns:34px 1fr}html body .dsh-ia{grid-column:2}html body .dsh-pop{right:auto;left:0;width:min(340px,86vw)}}
 @media(prefers-color-scheme:dark){}
+`;document.head.appendChild(css);
+})();
+
+/*RPX*/(function(){
+{const rm=MENU.find(m=>m[0]=='rpt');if(rm&&rm[2]){const dup=['r:Multi-currency Balance Sheet','r:Multi-currency Profit and Loss','r:Multi-currency Trial Balance'];const n0=rm[2].length;for(let i=rm[2].length-1;i>=0;i--)if(dup.includes(rm[2][i][0]))rm[2].splice(i,1)}}
+
+const A=x=>String(x==null?'':x).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const CC={'Financial Statements':'#2563eb','Sales and Receivables':'#0891b2','Purchases and Payables':'#7c3aed','Cash and Banking':'#0284c7','Inventory and Stock':'#4f46e5','Currency and FX':'#1d4ed8','Payroll':'#6366f1','Accountant':'#475569'};
+const CI={'Financial Statements':'<path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/>','Sales and Receivables':'<path d="M12 4v10m0 0l-4-4m4 4l4-4M4 15v4a1 1 0 001 1h14a1 1 0 001-1v-4"/>','Purchases and Payables':'<path d="M12 14V4m0 0L8 8m4-4l4 4M4 15v4a1 1 0 001 1h14a1 1 0 001-1v-4"/>','Cash and Banking':'<path d="M3 10l9-6 9 6zM5 10v8M9.5 10v8M14.5 10v8M19 10v8M3 21h18"/>','Inventory and Stock':'<path d="M21 8l-9-5-9 5 9 5zM3 8v8l9 5 9-5V8M12 13v8"/>','Currency and FX':'<circle cx="12" cy="12" r="9"/><path d="M8 10h8l-2.5-2.5M16 14H8l2.5 2.5"/>','Payroll':'<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0113 0M16 11a3 3 0 100-6M18 20a5 5 0 00-3-4.6"/>','Accountant':'<path d="M6 3h9l4 4v14H6zM14 3v5h5M9 13h7M9 17h5"/>'};
+const svg=(p,c)=>`<svg viewBox="0 0 24 24" class="rx-i ${c||''}" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">${p}</svg>`;
+const allowed=()=>RC.filter(x=>typeof rpaAllowed!='function'||rpaAllowed(x[0]));
+const ld_=d=>d.toISOString().slice(0,10);
+function suggest(){const L=S.j.filter(x=>br=='all'||x.br==br),S_=[],has=n=>allowed().some(x=>x[0]==n),add=(n,why)=>{if(has(n)&&!S_.some(s=>s[0]==n))S_.push([n,why])};
+ const ar=bal(1200,L),ap=-bal(2000,L);let unb=0;L.forEach(x=>{if(Math.abs(x.lines.reduce((s,y)=>s+y[1]-y[2],0))>.005)unb++});
+ if(unb)add('Integrity Check',unb+' unbalanced entr'+(unb==1?'y':'ies')+' need review');
+ const m=today().slice(0,7);if(L.some(x=>x.date.slice(0,7)==m))add('Profit and Loss','You have activity this month');
+ if(ar>.004)add('Receivables Ageing',S.base+' '+fmt(ar)+' is owed to you');
+ if(ap>.004)add('Payables Ageing',S.base+' '+fmt(ap)+' is owed to suppliers');
+ if(Object.keys(S.pos||{}).some(k=>(S.pos[k]||{}).q>0)||Object.keys(S.pos||{}).length)add('Currency Exposure','You hold foreign currency stock');
+ if((S.pay||[]).length)add('Payroll Summary',(S.pay||[]).length+' paycheque'+((S.pay||[]).length==1?'':'s')+' on record');
+ if(L.length>1)add('Balance Sheet','Check your financial position');add('Cash by Currency','See cash held in each currency');add('Trial Balance','Debits and credits by account');
+ return S_.slice(0,4)}
+const periodBar=()=>{const P=rpPre(),pk=Object.keys(P).find(k=>F==P[k][1]&&T==P[k][2])||'';
+ return`<div class="rx-bar noprint"><div class="rx-chips">${Object.entries(P).map(([k,v])=>`<button type="button" class="${k==pk?'on':''}" data-rper="${k}">${v[0]}</button>`).join('')}</div><div class="rx-cur"><label>Currency</label><select onchange="window.__one=this.value!=='*';rcur=this.value;window.__all=false;go()"><option value="*" ${window.__all?'selected':''}>All currencies</option>${rcodes().map((c,i)=>`<option value="${i?c:''}" ${!window.__all&&(rcur||'')==(i?c:'')?'selected':''}>${cLab(c)}${i?'':' (base)'}</option>`).join('')}${typeof cMore=='function'?cMore():''}</select></div><div class="rx-rng"><input type="date" id="rF" value="${F||''}" title="From"><span>to</span><input type="date" id="rT" value="${T||''}" title="To"><button type="button" onclick="F=document.getElementById('rF').value;T=document.getElementById('rT').value;go()">Apply</button></div></div>`};
+const card=(x,why)=>{const c=CC[x[1]]||'#2563eb',fav=(S.fav||[]).includes(x[0]),last=(S.rv||{})[x[0]];return`<div class="rx-card" ${x[3]?`data-rlk="${x[3].v}"`:`data-rx="${A(x[0])}"`} style="--c:${c}"><span class="rx-ic">${svg(CI[x[1]]||CI.Accountant)}</span><span class="star ${fav?'on':''}" data-st="${A(x[0])}">★</span><b>${A(x[0])}</b><p>${A(why||x[2])}</p><div class="rx-ft"><span>${A(x[1])}</span><i>${last&&!why?'Opened '+A(String(last).split(',')[0]):x[3]?'Open page ↗':'Open ›'}</i></div></div>`};
+const _o=V.rpt;V.rpt=function(){if(ro)return _o.apply(this,arguments);
+ const R=allowed(),cats=[...new Set(R.map(x=>x[1]))],q=(rpq||'').trim().toLowerCase(),match=x=>!q||(x[0]+' '+x[1]+' '+x[2]).toLowerCase().includes(q),fav=R.filter(x=>(S.fav||[]).includes(x[0])),list=R.filter(x=>match(x)&&(q||rc=='all'?true:rc=='fav'?(S.fav||[]).includes(x[0]):x[1]==rc)),
+  rec=Object.entries(S.rv||{}).sort((a,b)=>new Date(b[1])-new Date(a[1])).map(e=>R.find(x=>x[0]==e[0])).filter(Boolean).slice(0,4);
+ const groups=(rc=='all'||q)?cats.map(c=>[c,list.filter(x=>x[1]==c)]).filter(g=>g[1].length):[[rc=='fav'?'Favourites':rc,list]];
+ const sug=!q?suggest():[];
+ const hero=`<div class="rx-hero"><div><span class="rx-eye">Report Center</span><h1>${R.length} reports, one place</h1><p>${cats.length} categories · ${rcodes().length} currencies · ${fav.length} favourite${fav.length==1?'':'s'}</p></div><div class="rx-sw noprint">${svg('<circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/>')}<input id="rpq" value="${A(rpq)}" placeholder="Search reports: cash, ageing, profit, currency…" oninput="rpq=this.value;go();rf2('rpq')">${rpq?`<button type="button" onclick="rpq='';go()">Clear</button>`:''}</div></div>`;
+ const catBar=`<div class="rx-cats noprint">${[['fav','★ Favourites',fav.length],['all','All reports',R.length],...cats.map(c=>[c,c,R.filter(x=>x[1]==c).length])].map(([k,t,n])=>`<button type="button" data-rc="${A(k)}" class="${k==rc?'on':''}">${A(t)} <em>${n}</em></button>`).join('')}</div>`;
+ const sec=(t,sub,body)=>`<div class="rx-sec"><div class="rx-sh"><h3>${t}</h3><span>${sub||''}</span></div><div class="rx-grid">${body}</div></div>`;
+ let out=hero+periodBar()+catBar;
+ if(sug.length)out+=sec(svg('<path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/>','pv')+' Suggested for you','Picked from what is in your books',sug.map(([n,w])=>card(R.find(x=>x[0]==n),w)).join(''));
+ if(rec.length&&!q&&rc!='fav')out+=sec('Recently opened','',rec.map(x=>card(x)).join(''));
+ out+=groups.map(([t,l])=>sec(A(t),l.length+' report'+(l.length==1?'':'s'),l.map(x=>card(x)).join(''))).join('')||`<div class="p"><p class="mu" style="margin:0">${rc=='fav'?'No favourites yet. Tap the star on any report to pin it here.':'No reports match your search.'}</p></div>`;
+ return`<div class="rx">${out}</div>`};
+/* report pages: modern filter bar, table search, sort and CSV */
+function enhance(){const rb=document.querySelector('#m .rpb');if(!rb||rb.dataset.rx)return;rb.dataset.rx='1';
+ const old=rb.querySelector('.rpbar');if(old){const t=document.createElement('div');t.innerHTML=periodBar();old.replaceWith(t.firstChild)}
+ const tb=rb.querySelector('table');if(!tb)return;const rows=[...tb.querySelectorAll('tr')].filter(r=>r.querySelector('td')&&!r.querySelector('th'));
+ const bar=document.createElement('div');bar.className='rx-tools noprint';bar.innerHTML=`<div class="rx-sw sm">${svg('<circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/>')}<input type="search" placeholder="Filter rows in this report…"></div><span class="rx-cnt"></span><button type="button" class="b s rx-csv">Download CSV</button>`;
+ tb.parentElement.insertBefore(bar,tb);const cnt=bar.querySelector('.rx-cnt'),inp=bar.querySelector('input');
+ const upd=()=>{const q=inp.value.trim().toLowerCase();let n=0;rows.forEach(r=>{const hit=!q||r.textContent.toLowerCase().includes(q);r.style.display=hit?'':'none';if(hit)n++});cnt.textContent=q?n+' of '+rows.length+' rows':rows.length+' rows'};inp.addEventListener('input',upd);upd();
+ bar.querySelector('.rx-csv').onclick=()=>{const c=x=>'"'+x.replace(/\s+/g,' ').trim().replace(/"/g,'""')+'"',L=[...tb.querySelectorAll('tr')].filter(r=>r.style.display!='none').map(r=>[...r.children].map(td=>c(td.textContent)).join(','));const b=new Blob(['﻿'+L.join('\r\n')],{type:'text/csv'}),u=URL.createObjectURL(b),a=document.createElement('a');a.href=u;a.download=((rb.querySelector('h2')||{}).textContent||'report').trim().replace(/\W+/g,'-').toLowerCase()+'.csv';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),2000)};
+ const hd=tb.querySelector('tr th')&&tb.querySelector('tr th').parentElement;if(hd&&rows.length>2){const num=s=>{const v=parseFloat(String(s).replace(/[^0-9.\-]/g,''));return isNaN(v)?null:v};[...hd.children].forEach((th,i)=>{th.classList.add('rx-sort');th.title='Click to sort';let dir=0;th.addEventListener('click',()=>{dir=dir==1?-1:1;const body=rows.slice(),tot=body.filter(r=>/total|net|balance|grand/i.test(r.className)||r.querySelector('b')&&/^total/i.test(r.textContent.trim())),mv=body.filter(r=>!tot.includes(r));mv.sort((a,b)=>{const x=a.children[i]?a.children[i].textContent:'',y=b.children[i]?b.children[i].textContent:'',nx=num(x),ny=num(y);return(nx!=null&&ny!=null?nx-ny:x.localeCompare(y))*dir});const par=mv[0].parentElement;mv.forEach(r=>par.appendChild(r));tot.forEach(r=>par.appendChild(r));[...hd.children].forEach(h=>h.classList.remove('asc','desc'));th.classList.add(dir==1?'asc':'desc')})})}}
+const _g=go;go=function(){_g.apply(this,arguments);if(view=='rpt'&&ro)setTimeout(enhance,0)};
+const css=document.createElement('style');css.textContent=`
+html body .rx{display:grid;gap:16px}
+html body .rx-hero{display:flex;justify-content:space-between;align-items:center;gap:22px;flex-wrap:wrap;padding:26px 30px;border-radius:22px;color:#fff;background:radial-gradient(800px 300px at 90% -30%,#60a5fa77,transparent 60%),radial-gradient(500px 260px at 0 130%,#38bdf855,transparent 60%),linear-gradient(135deg,#0a2766,#1347b8 58%,#2563eb);box-shadow:0 18px 40px #1d4ed84d}
+html body .rx-eye{font:700 11.5px Inter,system-ui,sans-serif;letter-spacing:.12em;text-transform:uppercase;color:#f2c14e}html body .rx-hero h1{margin:6px 0 2px;font:700 29px/1.15 Inter,system-ui,sans-serif;color:#fff!important;text-transform:none!important;letter-spacing:-.02em}html body .rx-hero p{margin:0;color:#c3d4fb;font-size:14px}
+html body .rx-sw{display:flex;align-items:center;gap:10px;background:#ffffff;border-radius:14px;padding:0 14px;min-width:min(420px,100%);box-shadow:0 10px 26px #0a1f4d40}html body .rx-sw .rx-i{width:19px;height:19px;color:#2563eb;flex:none}html body .rx-sw input{border:0!important;outline:0;background:transparent!important;font:500 15px Inter,system-ui,sans-serif;padding:14px 0!important;flex:1;min-width:0;box-shadow:none!important;color:#0f1d3a!important}html body .rx-sw button{border:0;background:#e6eeff!important;color:#1d4ed8!important;border-radius:8px;padding:5px 10px;font-weight:600;cursor:pointer;box-shadow:none!important}
+html body .rx-sw.sm{min-width:260px;box-shadow:none;border:1px solid #d3e0f5}html body .rx-sw.sm input{padding:9px 0!important;font-size:14px}
+html body .rx-bar{display:flex;flex-wrap:wrap;gap:12px 18px;align-items:center;padding:12px 16px;border-radius:16px;background:linear-gradient(180deg,#ffffffee,#f2f7ffee);border:1px solid #d3e0f5;box-shadow:0 6px 20px #1d4ed812}
+html body .rx-chips{display:flex;gap:6px;flex-wrap:wrap}html body .rx-chips button,html body .rx-cats button{border:1px solid #cddcf5;background:#fff;color:#1e3a8a;border-radius:99px;padding:7px 14px;font:600 13px Inter,system-ui,sans-serif;cursor:pointer;box-shadow:none;transition:all .15s}html body .rx-chips button:hover,html body .rx-cats button:hover{background:#eaf1ff;border-color:#93b4f5}
+html body .rx-chips button.on,html body .rx-cats button.on{background:linear-gradient(135deg,#1d4ed8,#3b82f6)!important;color:#fff!important;border-color:#1d4ed8;box-shadow:0 6px 16px #2563eb55}
+html body .rx-cur{display:flex;align-items:center;gap:8px;margin-left:auto}html body .rx-cur label{font:700 11px Inter,system-ui,sans-serif;letter-spacing:.07em;text-transform:uppercase;color:#64748b}html body .rx-cur select,html body .rx-rng input{padding:8px 10px;border-radius:10px;border:1px solid #cddcf5;background:#fff;font:500 13.5px Inter,system-ui,sans-serif;color:#0f1d3a;min-width:0}
+html body .rx-rng{display:flex;align-items:center;gap:8px;color:#64748b;font-size:13px}html body .rx-rng button{border:0;background:linear-gradient(135deg,#1d4ed8,#3b82f6)!important;color:#fff!important;border-radius:10px;padding:9px 16px;font:600 13px Inter,system-ui,sans-serif;cursor:pointer;box-shadow:0 6px 14px #2563eb44}
+html body .rx-cats{display:flex;gap:8px;flex-wrap:wrap}html body .rx-cats em{font-style:normal;opacity:.7;font-size:11.5px;margin-left:3px}
+html body .rx-sec{display:grid;gap:10px}html body .rx-sh{display:flex;justify-content:space-between;align-items:baseline;gap:10px}html body .rx-sh h3{margin:0;display:flex;align-items:center;gap:8px;font:700 17px Inter,system-ui,sans-serif;color:#0b2a6b}html body .rx-sh span{color:#64748b;font-size:13px}html body .rx-sh .rx-i.pv{width:18px;height:18px;color:#7c3aed}
+html body .rx-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px}
+html body .rx-card{position:relative;display:flex;flex-direction:column;gap:6px;padding:16px 16px 12px;border-radius:18px;background:linear-gradient(180deg,#fff,#f6f9ff);border:1px solid #d9e5f8;box-shadow:0 1px 2px #0a1f4d0d,0 8px 22px #1d4ed812;cursor:pointer;transition:transform .15s,box-shadow .15s,border-color .15s;overflow:hidden}
+html body .rx-card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--c)}html body .rx-card:hover{transform:translateY(-3px);box-shadow:0 14px 30px #1d4ed82e;border-color:#9dbcf4}
+html body .rx-ic{width:38px;height:38px;border-radius:12px;display:grid;place-items:center;color:#fff;background:linear-gradient(135deg,var(--c),#60a5fa);box-shadow:0 6px 14px #1d4ed84a}html body .rx-ic .rx-i{width:20px;height:20px}
+html body .rx-card .star{position:absolute;right:12px;top:10px;font-size:18px;color:#cbd5e1;cursor:pointer}html body .rx-card .star.on{color:#f59e0b}
+html body .rx-card>b{font:700 15px Inter,system-ui,sans-serif;color:#0f1d3a;margin-top:4px}html body .rx-card>p{margin:0;font-size:12.8px;line-height:1.4;color:#64748b;min-height:36px}
+html body .rx-ft{display:flex;justify-content:space-between;align-items:center;margin-top:4px;font:700 10.5px Inter,system-ui,sans-serif;letter-spacing:.06em;text-transform:uppercase;color:var(--c)}html body .rx-ft i{font:600 12px Inter,system-ui,sans-serif;font-style:normal;letter-spacing:0;text-transform:none;color:#1d4ed8}
+/* report page shell */
+html body .rpb.p{border-radius:20px;border:1px solid #d3e0f5;box-shadow:0 10px 30px #1d4ed81a!important}
+html body .rpb .rp-h{padding:20px 24px;margin:-2px -2px 14px;border-radius:16px;background:radial-gradient(600px 220px at 95% -30%,#60a5fa66,transparent 60%),linear-gradient(135deg,#0a2766,#1347b8 60%,#2563eb);color:#fff}
+html body .rpb .rp-h h2{color:#fff!important;font:700 26px Inter,system-ui,sans-serif;text-transform:none!important;margin:6px 0 2px}html body .rpb .rp-h .mu,html body .rpb .rp-h p{color:#c3d4fb!important}html body .rpb .rp-h .rpc{background:#ffffff26!important;border:1px solid #ffffff40}
+html body .rpb .rp-a{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:0 0 12px}
+html body .rpb .rp-a button.b:not(.s){background:linear-gradient(135deg,#1d4ed8,#3b82f6)!important;color:#fff!important;border:0}html body .rpb .rp-a button.s{background:#fff!important;color:#1d4ed8!important;border:1px solid #cddcf5!important}
+html body .rpb .rx-bar{margin:0 0 14px}
+html body .rpb table th,html body .rpb .stm th,html body .rpb .zt th{background:linear-gradient(180deg,#123a91,#0d2b70)!important;color:#fff!important;letter-spacing:.04em}
+html body .rpb table tr:nth-child(even) td{background:#f6f9ff}html body .rpb table tr:hover td{background:#eaf1ff}
+html body .rx-tools{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin:0 0 10px}html body .rx-cnt{color:#64748b;font-size:13px}html body .rx-csv{margin-left:auto;background:#fff!important;color:#1d4ed8!important;border:1px solid #cddcf5!important;border-radius:10px!important}
+html body th.rx-sort{cursor:pointer;user-select:none}html body th.rx-sort.asc::after{content:" ▲";font-size:9px}html body th.rx-sort.desc::after{content:" ▼";font-size:9px}
+@media(max-width:700px){html body .rx-cur{margin-left:0}html body .rx-hero{padding:20px}html body .rx-hero h1{font-size:23px}}
 `;document.head.appendChild(css);
 })();
 
