@@ -4160,7 +4160,7 @@ if(!/^\d{4}$/.test(c))msg='<b style="color:#b42318">Enter a 4-digit code.</b>';e
 else msg='Will be created as <b>'+c+'</b> ('+t+')'+(p?' under <b>'+p+' &ndash; '+esc(CH[p])+'</b>, level '+(depth(p)+2):' as a top-level account')+'.';pv.innerHTML=msg};
 window.coaAddOk=()=>{if(!canAdd())return deny('rep');const p=document.getElementById('coapp').value,t=document.getElementById('coaty').value,c=document.getElementById('coaco').value.trim(),n=document.getElementById('coanm').value.trim();
 if(!/^\d{4}$/.test(c))return toast('The account code must be 4 digits.',true);if(CH[c])return toast(c+' is already used by '+CH[c]+'.',true);if(!PFX[t].includes(c[0]))return toast(t+' codes must start with '+PFX[t].split('').join(' or ')+'.',true);
-if(n.length<2)return toast('Enter an account name of at least 2 characters.',true);const dup=Object.keys(CH).find(k=>String(CH[k]).toLowerCase()==n.toLowerCase());if(dup)return toast('"'+CH[dup]+'" already exists as account '+dup+'.',true);
+if(n.length<2)return toast('Enter an account name of at least 2 characters.',true);const dm=window.coaDup?window.coaDup(n,p,'',(document.getElementById('cx2c')||{}).value):((k=>k?'"'+CH[k]+'" already exists as account '+k+'.':'')(Object.keys(CH).find(k=>String(CH[k]).toLowerCase()==n.toLowerCase())));if(dm)return toast(dm,true);
 if(p&&acType(p)!=t)return toast('A sub-account must be the same type as its parent.',true);
 S.coa=S.coa||{};S.coa[c]=n;CH[c]=n;S.par=S.par||{};if(p)S.par[c]=p;if(window.alog)alog('Chart of accounts','Account '+c+' "'+n+'" added'+(p?' under '+p:''));save();coaClose();go();toast((p?'Sub-account ':'Account ')+c+' added.')};
 window.coaEdit=c=>{if(!canEdit())return deny('adm');const t=acType(c),ks=kids(c),isSys=SYS.includes(String(c)),n=uses(c),cur=par(c)||'';
@@ -4172,7 +4172,7 @@ md(`<h3>Edit account ${esc(c)}</h3><p class="s">${esc(t)} account${isSys?' &midd
 <div class="rpx-ft"><button class="b s" onclick="coaClose()">Cancel</button><button class="b" onclick="coaSave('${c}')">Save changes</button></div>`)};
 window.coaSave=c=>{if(!canEdit())return deny('adm');const n=document.getElementById('coan').value.trim(),pe=document.getElementById('coap'),p=pe.disabled?(par(c)||''):pe.value;
 if(n.length<2)return toast('Enter an account name of at least 2 characters.',true);
-const dup=Object.keys(CH).find(k=>k!=c&&String(CH[k]).toLowerCase()==n.toLowerCase());if(dup)return toast('"'+CH[dup]+'" already exists as account '+dup+'.',true);
+const dm=window.coaDup?window.coaDup(n,p,c,(document.getElementById('cx2c')||{}).value):((k=>k?'"'+CH[k]+'" already exists as account '+k+'.':'')(Object.keys(CH).find(k=>k!=c&&String(CH[k]).toLowerCase()==n.toLowerCase())));if(dm)return toast(dm,true);
 if(p&&(acType(p)!=acType(c)||desc(c).map(String).includes(String(p))||String(p)==String(c)))return toast('That parent is not allowed for this account.',true);
 const old=CH[c];S.coa=S.coa||{};S.coa[c]=n;CH[c]=n;S.par=S.par||{};if(p)S.par[c]=p;else if(PAR[c])S.par[c]=p;else delete S.par[c];
 if(window.alog)alog('Chart of accounts','Account '+c+(old!=n?' renamed from "'+old+'" to "'+n+'"':' updated'));save();coaClose();go();toast('Account '+c+' saved.')};
@@ -5526,7 +5526,7 @@ const oc=V.ctx;V.ctx=function(){let h=oc.apply(this,arguments);
  h=h.replace('<button class="plf" onclick="ctOpen()">+ New transaction</button>','<span style="display:flex;gap:8px;flex-wrap:wrap"><button class="plf" onclick="sdOpen()">+ Currency sale deal</button><button class="plo" onclick="ctOpen()">+ Multi-currency entry</button></span>');
  return h};
 /*UPDCHK*/
-(function(){const B='2026-10-19-bo';window.PB_BUILD=B;if(location.protocol=='file:')return;let nb=null,tm=0;
+(function(){const B='2026-10-19-bp';window.PB_BUILD=B;if(location.protocol=='file:')return;let nb=null,tm=0;
 const busy=()=>{const a=document.activeElement;return !!(document.querySelector('.ov')||(a&&/^(INPUT|TEXTAREA)$/.test(a.tagName)&&String(a.value||'').length>0))};
 function go2(){try{const k='pb_upd_'+nb,n=+(sessionStorage.getItem(k)||0);sessionStorage.setItem(k,n+1)}catch(e){}location.replace(location.pathname+'?v='+encodeURIComponent(nb))}
 function bar(){let d=document.getElementById('pbupd');if(!d){d=document.createElement('div');d.id='pbupd';d.setAttribute('role','button');d.style.cssText='position:fixed;left:50%;transform:translateX(-50%);top:10px;z-index:100000;background:#0b3d33;color:#fff;padding:11px 18px;border-radius:12px;font:700 13px Inter,system-ui,sans-serif;box-shadow:0 6px 20px rgba(0,0,0,.3);cursor:pointer;text-align:center;max-width:92vw';d.onclick=()=>{d.textContent='Updating…';go2()};document.body.appendChild(d)}d.textContent='A new version of PrimeBook is ready. Tap here to update.'}
@@ -6622,10 +6622,22 @@ const curOpts=sel=>['base','*',...Object.keys(S.rates||{})].map(v=>`<option valu
 const grpOpts=(t,sel)=>GR.filter(g=>g[1]==t).map(g=>`<option ${g[0]==sel?'selected':''}>${A(g[0])}</option>`).join('');
 const fields=(c,t)=>`<div class="cx2f"><label>Account group<select id="cx2g">${grpOpts(t,c?grp(c):gDef(c||'1000'))}</select></label><label>Currency<select id="cx2c">${curOpts(c?cur(c):'base')}</select></label><div class="rpx-tip" style="margin-top:10px">Currency tells reports which currency this account holds. Multi-currency accounts show the amount held in each foreign currency next to the base value.</div></div>`;
 const setAx=(c,g,u)=>{S.acx=S.acx||{};S.acx[c]={grp:g,cur:u}};
+/* Duplicate rule: a sub-account may share a name with another sub-account under the same parent when the currency differs.
+   Same name + same currency + same parent is refused. Top-level accounts keep unique names. */
+const DUPMSG='A sub-account with this name and currency already exists under this parent account.';
+window.coaDup=(name,parent,self,curVal)=>{const nn=String(name||'').trim().toLowerCase();if(!nn)return'';self=String(self||'');parent=String(parent||'');
+ if(!parent){const k=Object.keys(CH).find(k=>String(k)!=self&&String(CH[k]).toLowerCase()==nn);return k?'"'+CH[k]+'" already exists as account '+k+'.':''}
+ const cv=curVal||(self?cur(self):'base');
+ const d=Object.keys(CH).find(k=>String(k)!=self&&String(par(k)||'')==parent&&String(CH[k]).toLowerCase()==nn&&cur(k)==cv);
+ return d?DUPMSG:''};
+const liveDup=()=>{const m=document.getElementById('coam');if(!m)return;const nm=m.querySelector('#coanm')||m.querySelector('#coan'),pp=m.querySelector('#coapp')||m.querySelector('#coap'),cs=m.querySelector('#cx2c');if(!nm)return;
+ let box=m.querySelector('#coadp');if(!box){box=document.createElement('div');box.id='coadp';box.style.cssText='color:#b42318;font-size:13px;font-weight:600;margin-top:8px';const f=m.querySelector('.rpx-ft');if(f)f.insertAdjacentElement('beforebegin',box)}
+ const self=(m.querySelector('h3')||{}).textContent&&/Edit account (\d{4})/.exec(m.querySelector('h3').textContent);const msg=window.coaDup(nm.value,pp?pp.value:'',self?self[1]:'',cs?cs.value:'');box.textContent=msg;const ok=m.querySelector('.rpx-ft .b:not(.s)');if(ok){ok.disabled=!!msg;ok.style.opacity=msg?'.5':''}};
+const wireDup=()=>{const m=document.getElementById('coam');if(!m)return;['#coanm','#coan'].forEach(q=>{const e=m.querySelector(q);if(e)e.addEventListener('input',liveDup)});['#cx2c','#coapp','#coap'].forEach(q=>{const e=m.querySelector(q);if(e)e.addEventListener('change',liveDup)});liveDup()};
 /* edit / add dialogs get the extra fields */
-const _e=window.coaEdit;if(_e)window.coaEdit=c=>{_e(c);const m=document.getElementById('coam');if(!m)return;const f=m.querySelector('.rpx-ft');if(f)f.insertAdjacentHTML('beforebegin',fields(c,acType(c)))};
+const _e=window.coaEdit;if(_e)window.coaEdit=c=>{_e(c);const m=document.getElementById('coam');if(!m)return;const f=m.querySelector('.rpx-ft');if(f)f.insertAdjacentHTML('beforebegin',fields(c,acType(c)));wireDup()};
 const _s=window.coaSave;if(_s)window.coaSave=c=>{const g=(document.getElementById('cx2g')||{}).value,u=(document.getElementById('cx2c')||{}).value;_s(c);if(!document.getElementById('coam')&&g){setAx(c,g,u);save();go()}};
-const _a=window.coaAdd;if(_a)window.coaAdd=p=>{_a(p);const m=document.getElementById('coam');if(!m)return;const f=m.querySelector('.rpx-ft');if(f){f.insertAdjacentHTML('beforebegin',fields(null,m.querySelector('#coaty')?m.querySelector('#coaty').value:'Assets'));const t=m.querySelector('#coaty'),sy=()=>{const g=document.getElementById('cx2g');if(g)g.innerHTML=grpOpts(t.value,gDef(document.getElementById('coaco').value||({Assets:1000,Liabilities:2000,Equity:3000,Income:4000,Expenses:6000})[t.value]))};sy();t.addEventListener('change',sy);const pp=m.querySelector('#coapp');if(pp)pp.addEventListener('change',()=>setTimeout(sy,0))}};
+const _a=window.coaAdd;if(_a)window.coaAdd=p=>{_a(p);const m=document.getElementById('coam');if(!m)return;const f=m.querySelector('.rpx-ft');if(f){f.insertAdjacentHTML('beforebegin',fields(null,m.querySelector('#coaty')?m.querySelector('#coaty').value:'Assets'));const t=m.querySelector('#coaty'),sy=()=>{const g=document.getElementById('cx2g');if(g)g.innerHTML=grpOpts(t.value,gDef(document.getElementById('coaco').value||({Assets:1000,Liabilities:2000,Equity:3000,Income:4000,Expenses:6000})[t.value]))};sy();t.addEventListener('change',sy);const pp=m.querySelector('#coapp');if(pp)pp.addEventListener('change',()=>setTimeout(sy,0));wireDup()}};
 const _ao=window.coaAddOk;if(_ao)window.coaAddOk=()=>{const g=(document.getElementById('cx2g')||{}).value,u=(document.getElementById('cx2c')||{}).value,c=(document.getElementById('coaco')||{}).value;const had=!!CH[c];_ao();if(!had&&CH[c]&&g){setAx(c,g,u);save();go()}};
 /* filters */
 window.__coaF=window.__coaF||{q:'',cur:'',grp:''};
