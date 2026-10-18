@@ -5526,7 +5526,7 @@ const oc=V.ctx;V.ctx=function(){let h=oc.apply(this,arguments);
  h=h.replace('<button class="plf" onclick="ctOpen()">+ New transaction</button>','<span style="display:flex;gap:8px;flex-wrap:wrap"><button class="plf" onclick="sdOpen()">+ Currency sale deal</button><button class="plo" onclick="ctOpen()">+ Multi-currency entry</button></span>');
  return h};
 /*UPDCHK*/
-(function(){const B='2026-10-19-bk';window.PB_BUILD=B;if(location.protocol=='file:')return;let nb=null,tm=0;
+(function(){const B='2026-10-19-bl';window.PB_BUILD=B;if(location.protocol=='file:')return;let nb=null,tm=0;
 const busy=()=>{const a=document.activeElement;return !!(document.querySelector('.ov')||(a&&/^(INPUT|TEXTAREA)$/.test(a.tagName)&&String(a.value||'').length>0))};
 function go2(){try{const k='pb_upd_'+nb,n=+(sessionStorage.getItem(k)||0);sessionStorage.setItem(k,n+1)}catch(e){}location.replace(location.pathname+'?v='+encodeURIComponent(nb))}
 function bar(){let d=document.getElementById('pbupd');if(!d){d=document.createElement('div');d.id='pbupd';d.setAttribute('role','button');d.style.cssText='position:fixed;left:50%;transform:translateX(-50%);top:10px;z-index:100000;background:#0b3d33;color:#fff;padding:11px 18px;border-radius:12px;font:700 13px Inter,system-ui,sans-serif;box-shadow:0 6px 20px rgba(0,0,0,.3);cursor:pointer;text-align:center;max-width:92vw';d.onclick=()=>{d.textContent='Updating…';go2()};document.body.appendChild(d)}d.textContent='A new version of PrimeBook is ready. Tap here to update.'}
@@ -9309,6 +9309,268 @@ html body #m .fi-qa.qg button:not(.bk):not(.on) .fiic,html body #m .fi-qa button
 html body #m .fi-qa.qg button:not(.bk):not(.on) .fiic svg,html body #m .fi-qa button:not(.bk):not(.on) .fiic svg{stroke:#1d4ed8!important}
 html body #m .fi-qa.qg button:not(.bk):not(.on):hover .fiic{background:#1d4ed8!important}html body #m .fi-qa.qg button:not(.bk):not(.on):hover .fiic svg{stroke:#fff!important}
 `;document.head.appendChild(st)})();
+/*RCD*/(function(){
+/* Report Center dashboard: Overview, Library, Sign-off, Activity.
+   Type scale used everywhere in this module: 11.5 label, 13 secondary, 14 body, 16 section, 24 figure, 28 page title. */
+const A=x=>String(x==null?'':x).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const mf=n=>Number(n||0).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2});
+const r2=n=>Math.round((+n||0)*100)/100;
+const CC={'Financial Statements':'#2563eb','Sales and Receivables':'#0891b2','Purchases and Payables':'#7c3aed','Cash and Banking':'#0284c7','Inventory and Stock':'#4f46e5','Currency and FX':'#1d4ed8','Payroll':'#6366f1','Accountant':'#475569'};
+const CI={'Financial Statements':'<path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/>','Sales and Receivables':'<path d="M12 4v10m0 0l-4-4m4 4l4-4M4 15v4a1 1 0 001 1h14a1 1 0 001-1v-4"/>','Purchases and Payables':'<path d="M12 14V4m0 0L8 8m4-4l4 4M4 15v4a1 1 0 001 1h14a1 1 0 001-1v-4"/>','Cash and Banking':'<path d="M3 10l9-6 9 6zM5 10v8M9.5 10v8M14.5 10v8M19 10v8M3 21h18"/>','Inventory and Stock':'<path d="M21 8l-9-5-9 5 9 5zM3 8v8l9 5 9-5V8M12 13v8"/>','Currency and FX':'<circle cx="12" cy="12" r="9"/><path d="M8 10h8l-2.5-2.5M16 14H8l2.5 2.5"/>','Payroll':'<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0113 0M16 11a3 3 0 100-6M18 20a5 5 0 00-3-4.6"/>','Accountant':'<path d="M6 3h9l4 4v14H6zM14 3v5h5M9 13h7M9 17h5"/>'};
+const IC={search:'<circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/>',spark:'<path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/>',shield:'<path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/><path d="M9 12l2 2 4-4"/>',clock:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',grid:'<rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/>',list:'<path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/>',dots:'<circle cx="5" cy="12" r="1.2"/><circle cx="12" cy="12" r="1.2"/><circle cx="19" cy="12" r="1.2"/>',dl:'<path d="M12 4v11m0 0l-4-4m4 4l4-4M4 19h16"/>',lock:'<rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 018 0v3"/>',folder:'<path d="M3 7a2 2 0 012-2h4l2 2h8a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z"/>',star:'<path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z"/>'};
+const svg=(p,c)=>`<svg viewBox="0 0 24 24" class="rd-i ${c||''}" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">${p}</svg>`;
+let tab='ov',lc='all',lq='',lv='grid',ls='name',cm=null,newCol=false,aq='',au='',aa='',alim=25,msg=null;
+const allowed=()=>RC.filter(x=>typeof rpaAllowed!='function'||rpaAllowed(x[0]));
+const has=n=>allowed().some(x=>x[0]==n);
+const at=x=>x[3]?`data-rlk="${x[3].v}"`:`data-rx="${A(x[0])}"`;
+const isApprover=()=>{const r=(me()||{}).role;return r=='Owner'||r=='Manager'};
+const isOwner=()=>(me()||{}).role=='Owner';
+const brName=()=>br=='all'?'All branches':(typeof bn=='function'?bn(br):br);
+const dd=s=>new Date(s+'T00:00:00Z'),iso=d=>d.toISOString().slice(0,10);
+const prior=(f,t)=>{if(!f||!t)return null;const a=dd(f),b=dd(t),n=Math.round((b-a)/864e5)+1;return[iso(new Date(a-n*864e5)),iso(new Date(a-864e5))]};
+/* ---- figures: one pass over the ledger, same account ranges the statements use ---- */
+function fig(f,t,b){const inB=x=>b=='all'||x.br==b,L=S.j.filter(x=>inB(x)&&(!f||x.date>=f)&&(!t||x.date<=t)),U=S.j.filter(x=>inB(x)&&(!t||x.date<=t));
+ let rev=0,exp=0,dr=0,cr=0,unb=0;
+ L.forEach(x=>{let s=0;x.lines.forEach(y=>{const c=+y[0];dr+=+y[1]||0;cr+=+y[2]||0;s+=(+y[1]||0)-(+y[2]||0);if(c>=4000&&c<=4999)rev+=(+y[2]||0)-(+y[1]||0);else if(c>=5000&&c<=6999)exp+=(+y[1]||0)-(+y[2]||0)});if(Math.abs(s)>.005)unb++});
+ const bl=c=>U.reduce((s,x)=>s+x.lines.filter(y=>+y[0]==c).reduce((a,y)=>a+(+y[1]||0)-(+y[2]||0),0),0);
+ const c1=bl(1000),c2=bl(1010);
+ return{rev:r2(rev),exp:r2(exp),np:r2(rev-exp),cash:r2(c1+c2),neg:(c1<-.004||c2<-.004),ar:r2(bl(1200)),ap:r2(-bl(2000)),n:L.length,dr:r2(dr),cr:r2(cr),unb,fut:L.filter(x=>x.date>today()).length}}
+const sig=c=>[c.rev,c.exp,c.cash,c.ar,c.ap,c.n,c.dr,c.cr].map(v=>(+v).toFixed(2)).join('|');
+const LBL={rev:'Revenue',exp:'Expenses',cash:'Cash & bank',ar:'Receivables',ap:'Payables',n:'Entries',dr:'Total debits',cr:'Total credits'};
+const diffs=(s,c)=>Object.keys(LBL).filter(k=>(+s[k]).toFixed(2)!=(+c[k]).toFixed(2)).map(k=>LBL[k]+': '+(k=='n'?s[k]+' → '+c[k]:mf(s[k])+' → '+mf(c[k])));
+/* ---- audit log ---- */
+function lg(act,item,meta){const L=S.rlog=S.rlog||[];const m=me()||{};L.push({at:new Date().toISOString(),by:m.name||'',role:m.role||'',act,item:item||'',meta:meta||'',br:br=='all'?'All':brName()});if(L.length>600)L.splice(0,L.length-600);save()}
+let lastK=null;
+function track(){const nm=view=='rpt'?ro:(RC.find(x=>x[3]&&x[3].v==view)||[])[0],k=nm||null;if(k&&k!==lastK){lg('open',k);S.rvc=S.rvc||{};S.rvc[k]=(S.rvc[k]||0)+1;save()}lastK=k}
+/* ---- search with plain-language matching ---- */
+const SYN=[[/owe|debt|unpaid|outstanding|overdue|collect|customer.*pay|receiv/,['Receivables Ageing','Customer Balance Summary','Receivable Details','Customer Account Statement']],[/supplier|vendor|bills?\b|payable|i owe|pay.*later/,['Payables Ageing','Supplier Balance Summary','Payable Details']],[/profit|income|earn|loss|margin|result/,['Profit and Loss','Classified Profit and Loss','Financial Ratios']],[/cash|bank|liquid|money/,['Cash Flow Statement','Bank Account Balances','Cash by Currency','Daily Cash Report']],[/stock|inventory|item|reorder/,['Inventory Summary','Low Stock Report']],[/fx|forex|exchange|rate|currenc|dollar|foreign/,['Currency Exposure','FX Trading by Currency','Board Rate History','Exchange Gain / Loss','Multi-currency Report','Cash by Currency']],[/salary|wage|payroll|employee|staff|paycheque|paycheck/,['Payroll Summary']],[/audit|check|error|mismatch|balanc|verify|control/,['Integrity Check','Trial Balance','Journal']],[/sales|revenue|sold|turnover/,['Sales Summary','Sales Analysis','Profit and Loss','Revenue Trend']],[/expense|spend|cost/,['Expense Details','Purchase Analysis','Profit and Loss']],[/tax|gst|hst|vat/,['Payroll Summary','Trial Balance']],[/position|worth|asset|liabilit|equity/,['Balance Sheet','Classified Balance Sheet','Financial Ratios']]];
+function score(x,q){const toks=q.toLowerCase().split(/\s+/).filter(t=>t&&!/^(who|me|my|the|is|are|what|how|much|do|does|i|to|of|a|an|show|in|for|and)$/.test(t));if(!toks.length)return 1;const nm=x[0].toLowerCase(),cat=x[1].toLowerCase(),ds=(x[2]||'').toLowerCase();let tot=0;for(const t of toks){let s=0;if(nm.includes(t))s+=4;if(cat.includes(t))s+=2;if(ds.includes(t))s+=1;SYN.forEach(([re,L])=>{if(re.test(t)&&L.includes(x[0]))s+=3});if(!s)return 0;tot+=s}return tot}
+/* ---- period bar (same hooks the report pages use) ---- */
+const bar=()=>{const P=rpPre(),pk=Object.keys(P).find(k=>F==P[k][1]&&T==P[k][2])||'';return`<div class="rx-bar rd-bar noprint"><div class="rx-chips">${Object.entries(P).map(([k,v])=>`<button type="button" class="${k==pk?'on':''}" data-rper="${k}">${v[0]}</button>`).join('')}</div><div class="rx-cur"><label>Currency</label><select onchange="window.__one=this.value!=='*';rcur=this.value;window.__all=false;go()"><option value="*" ${window.__all?'selected':''}>All currencies</option>${rcodes().map((c,i)=>`<option value="${i?c:''}" ${!window.__all&&(rcur||'')==(i?c:'')?'selected':''}>${cLab(c)}${i?'':' (base)'}</option>`).join('')}${typeof cMore=='function'?cMore():''}</select></div><div class="rx-rng"><input type="date" id="rF" value="${F||''}" title="From"><span>to</span><input type="date" id="rT" value="${T||''}" title="To"><button type="button" onclick="F=document.getElementById('rF').value;T=document.getElementById('rT').value;go()">Apply</button></div></div>`};
+const perLabel=()=>{const P=rpPre(),pk=Object.keys(P).find(k=>F==P[k][1]&&T==P[k][2]);return pk?P[pk][0]:(F||T)?(F||'start')+' to '+(T||'today'):'All time'};
+/* ---- small builders ---- */
+const row=(x,sub)=>{const c=CC[x[1]]||'#2563eb';return`<div class="rd-row" ${at(x)} style="--c:${c}"><span class="rd-ic">${svg(CI[x[1]]||CI.Accountant)}</span><span class="rd-rt"><b>${A(x[0])}</b><small>${A(sub||x[1])}</small></span><i>›</i></div>`};
+const cols=()=>S.rpcol=S.rpcol||[];
+const menu=x=>{if(cm!=x[0])return'';const C=cols();return`<div class="rd-pop" onclick="event.stopPropagation()"><div class="rd-pt">Add to collection</div>${C.length?C.map(c=>`<button type="button" data-rdtg="${A(x[0])}" data-rdcid="${c.id}" class="${c.items.includes(x[0])?'on':''}"><span class="rd-ck">${c.items.includes(x[0])?'✓':''}</span>${A(c.name)}</button>`).join(''):'<p>No collections yet. Create one in the left panel.</p>'}</div>`};
+const card=x=>{const c=CC[x[1]]||'#2563eb',fav=(S.fav||[]).includes(x[0]),last=(S.rv||{})[x[0]],n=(S.rvc||{})[x[0]]||0;return`<div class="rd-card" ${at(x)} style="--c:${c}"><div class="rd-ct"><span class="rd-ic">${svg(CI[x[1]]||CI.Accountant)}</span><span class="rd-act"><button type="button" class="rd-ib" data-rdm="${A(x[0])}" title="Add to collection">${svg(IC.folder)}</button><span class="star ${fav?'on':''}" data-st="${A(x[0])}">★</span></span></div><b>${A(x[0])}</b><p>${A(x[2])}</p><div class="rd-cf"><span>${A(x[1])}</span><i>${last?'Opened '+A(String(last).split(',')[0]):'Not opened yet'}${n?' · '+n+'×':''}</i></div>${menu(x)}</div>`};
+const lrow=x=>{const c=CC[x[1]]||'#2563eb',fav=(S.fav||[]).includes(x[0]),last=(S.rv||{})[x[0]],n=(S.rvc||{})[x[0]]||0;return`<div class="rd-lr" ${at(x)} style="--c:${c}"><span class="rd-ic">${svg(CI[x[1]]||CI.Accountant)}</span><span class="rd-lt"><b>${A(x[0])}</b><small>${A(x[2])}</small></span><span class="rd-lc">${A(x[1])}</span><span class="rd-ll">${last?A(String(last).split(',')[0]):'—'}</span><span class="rd-ln">${n}</span><span class="rd-act"><button type="button" class="rd-ib" data-rdm="${A(x[0])}" title="Add to collection">${svg(IC.folder)}</button><span class="star ${fav?'on':''}" data-st="${A(x[0])}">★</span></span>${menu(x)}</div>`};
+/* ---- insights ---- */
+function insights(c,p){const out=[],add=(sev,t,d,r,a)=>out.push({sev,t,d,r,a});
+ if(c.unb&&has('Integrity Check'))add('crit',c.unb+' journal entr'+(c.unb==1?'y does':'ies do')+' not balance','Debits and credits differ on these entries, so the statements can be wrong. Review them first.','Integrity Check');
+ if(c.neg&&has('Bank Account Balances'))add('crit','A cash or bank account is below zero','Check for a missing deposit or a payment posted to the wrong account.','Bank Account Balances');
+ if(c.fut&&has('Journal'))add('warn',c.fut+' entr'+(c.fut==1?'y is':'ies are')+' dated in the future','Future-dated entries are included in this period but may be typing mistakes.','Journal');
+ if(p&&has('Profit and Loss')){if(p.np!=0){const pc=(c.np-p.np)/Math.abs(p.np)*100;if(pc<=-15)add('warn','Net profit is down '+Math.abs(pc).toFixed(0)+'% on the previous period',S.base+' '+mf(c.np)+' now, '+S.base+' '+mf(p.np)+' before.','Profit and Loss');else if(pc>=15)add('good','Net profit is up '+pc.toFixed(0)+'% on the previous period',S.base+' '+mf(c.np)+' now, '+S.base+' '+mf(p.np)+' before.','Profit and Loss')}
+  else if(c.np!=0)add('info','First profit figure for this comparison',S.base+' '+mf(c.np)+' this period, nothing in the previous one.','Profit and Loss')}
+ if(p&&p.exp>0&&c.exp>p.exp*1.2&&has('Expense Details'))add('warn','Expenses grew '+((c.exp/p.exp-1)*100).toFixed(0)+'% on the previous period',S.base+' '+mf(c.exp)+' against '+S.base+' '+mf(p.exp)+'. Look at the largest lines.','Expense Details');
+ if(c.rev>0&&c.ar>c.rev*.5&&has('Receivables Ageing'))add('warn','Customers owe '+(c.ar/c.rev*100).toFixed(0)+'% of this period’s revenue',S.base+' '+mf(c.ar)+' is outstanding. The ageing report shows who is late.','Receivables Ageing');
+ else if(c.ar>.004&&has('Receivables Ageing'))add('info','Customers owe you '+S.base+' '+mf(c.ar),'Open the ageing report to see how old each balance is.','Receivables Ageing');
+ if(c.ap>.004&&has('Payables Ageing'))add('info','You owe suppliers '+S.base+' '+mf(c.ap),'Check due dates before the next payment run.','Payables Ageing');
+ const t=today(),pm=new Date(Date.UTC(+t.slice(0,4),+t.slice(5,7)-2,1)),pf=iso(pm),pt=iso(new Date(Date.UTC(pm.getUTCFullYear(),pm.getUTCMonth()+1,0)));
+ const ps=sgFor(pf,pt,br);if((!ps||ps.st!='approved')&&S.j.some(x=>(br=='all'||x.br==br)&&x.date>=pf&&x.date<=pt))add('info','Last month is not signed off yet','Ask a manager to approve '+pf.slice(0,7)+' so the figures can be relied on.',null,'sg');
+ const pend=SG().filter(x=>x.st=='pending');if(isApprover()&&pend.length)add('info',pend.length+' sign-off request'+(pend.length==1?'':'s')+' waiting for you','Review the figures and approve or reject.',null,'sg');
+ if(!out.length)out.push({sev:'ok',t:'Everything looks consistent',d:'No unbalanced entries, no negative cash and no large swings were found for this period.',r:null});
+ const ord={crit:0,warn:1,info:2,good:3,ok:4};return out.sort((a,b)=>ord[a.sev]-ord[b.sev]).slice(0,6)}
+const INS={crit:'!',warn:'!',info:'i',good:'↑',ok:'✓'};
+/* ---- sign-off store ---- */
+const SG=()=>S.rsign=S.rsign||[];
+function sgFor(f,t,b){return SG().filter(x=>x.f==f&&x.t==t&&x.b==b).sort((a,c)=>c.at.localeCompare(a.at))[0]}
+const ST={pending:['Awaiting approval','warn'],approved:['Approved','good'],rejected:['Rejected','bad'],reopened:['Reopened','info'],changed:['Changed since approval','bad']};
+function liveSt(s){if(s.st!='approved')return s.st;const c=fig(s.f,s.t,s.b);return sig(c)==sig(s.snap)?'approved':'changed'}
+/* ---- tabs ---- */
+function overview(R){const c=fig(F,T,br),pr=prior(F,T),p=pr?fig(pr[0],pr[1],br):null,ins=insights(c,p);
+ const k=(t,v,pv,rep,dir)=>{const ok_=has(rep);if(!ok_)return`<div class="rd-kpi lock"><span>${t}</span><b>${svg(IC.lock)} Restricted</b><small>Ask an owner for access to ${A(rep)}</small></div>`;
+  let dl='';if(p!=null&&pv!=null){if(pv==0&&v==0)dl='<em class="flat">No change</em>';else if(pv==0)dl='<em class="flat">New</em>';else{const pc=(v-pv)/Math.abs(pv)*100,good=dir==0?null:(pc>=0)==(dir>0);dl=`<em class="${Math.abs(pc)<.05?'flat':good==null?'flat':good?'good':'bad'}">${pc>=0?'▲':'▼'} ${Math.abs(pc).toFixed(1)}%</em>`}}
+  const r=RC.find(x=>x[0]==rep);return`<div class="rd-kpi" ${at(r)}><span>${t}</span><b>${mf(v)}</b><div class="rd-kf">${dl}<small>${S.base}</small></div></div>`};
+ const kp=[k('Revenue',c.rev,p&&p.rev,'Profit and Loss',1),k('Expenses',c.exp,p&&p.exp,'Expense Details',-1),k('Net profit',c.np,p&&p.np,'Profit and Loss',1),k('Cash & bank',c.cash,p&&p.cash,'Bank Account Balances',1),k('Receivables',c.ar,p&&p.ar,'Receivables Ageing',0),k('Payables',c.ap,p&&p.ap,'Payables Ageing',0)].join('');
+ const mons=[];{const t=today();for(let i=5;i>=0;i--){const d=new Date(Date.UTC(+t.slice(0,4),+t.slice(5,7)-1-i,1));mons.push([d.toISOString().slice(0,7),iso(d),iso(new Date(Date.UTC(d.getUTCFullYear(),d.getUTCMonth()+1,0)))])}}
+ const M=mons.map(m=>{const f=fig(m[1],m[2],br);return{m:m[0],rev:f.rev,exp:f.exp}}),mx=Math.max(1,...M.flatMap(m=>[m.rev,m.exp]));
+ const trend=has('Profit and Loss')?`<div class="rd-pn"><div class="rd-ph"><h3>Revenue and expenses</h3><span>Last 6 months · ${S.base}</span></div><div class="rd-bars">${M.map(m=>`<div class="rd-bc" title="${m.m}: revenue ${mf(m.rev)}, expenses ${mf(m.exp)}"><div class="rd-bb"><i class="rv" style="height:${Math.max(2,m.rev/mx*100)}%"></i><i class="ex" style="height:${Math.max(2,m.exp/mx*100)}%"></i></div><small>${m.m.slice(5)}/${m.m.slice(2,4)}</small></div>`).join('')}</div><div class="rd-lg"><span><u class="rv"></u>Revenue</span><span><u class="ex"></u>Expenses</span></div></div>`:'';
+ const favs=R.filter(x=>(S.fav||[]).includes(x[0])).slice(0,6),rec=Object.entries(S.rv||{}).sort((a,b)=>new Date(b[1])-new Date(a[1])).map(e=>R.find(x=>x[0]==e[0])).filter(Boolean).slice(0,6);
+ const cats=[...new Set(R.map(x=>x[1]))];
+ const iHtml=ins.map(i=>`<div class="rd-in ${i.sev}" ${i.r?at(RC.find(x=>x[0]==i.r)):i.a?`data-rdt="${i.a}"`:''}><span class="rd-ii">${INS[i.sev]}</span><span class="rd-it"><b>${A(i.t)}</b><small>${A(i.d)}</small></span>${i.r||i.a?'<i>›</i>':''}</div>`).join('');
+ const pend=SG().filter(x=>x.st=='pending').length,cur=F&&T?sgFor(F,T,br):null,cs=cur?liveSt(cur):null;
+ return`${bar()}<div class="rd-kg">${kp}</div>
+ <div class="rd-2">${trend||'<div></div>'}<div class="rd-pn"><div class="rd-ph"><h3>${svg(IC.spark,'pv')} AI insights</h3><span>Calculated locally from your ledger</span></div><div class="rd-ins">${iHtml}</div></div></div>
+ <div class="rd-3"><div class="rd-pn"><div class="rd-ph"><h3>${svg(IC.star)} Favourites</h3><span data-rdt="lib" class="rd-lk" data-rdc="fav">Manage ›</span></div>${favs.length?favs.map(x=>row(x)).join(''):'<p class="rd-em">Star a report to pin it here.</p>'}</div>
+ <div class="rd-pn"><div class="rd-ph"><h3>${svg(IC.clock)} Recently opened</h3><span class="rd-lk" data-rdt="ac">Activity ›</span></div>${rec.length?rec.map(x=>row(x,String(S.rv[x[0]]).split(',')[0])).join(''):'<p class="rd-em">Reports you open will appear here.</p>'}</div>
+ <div class="rd-pn"><div class="rd-ph"><h3>${svg(IC.shield)} Sign-off</h3><span class="rd-lk" data-rdt="sg">Open ›</span></div><div class="rd-sgs"><b>${F&&T?A(perLabel()):'Choose a period'}</b><span class="rd-badge ${cs?ST[cs][1]:'flat'}">${cs?ST[cs][0]:F&&T?'Not requested':'Needs start and end dates'}</span><small>${pend} request${pend==1?'':'s'} awaiting approval · ${SG().filter(x=>x.st=='approved').length} approved in total</small></div></div></div>
+ <div class="rd-pn"><div class="rd-ph"><h3>Browse by area</h3><span>${R.length} reports in ${cats.length} categories</span></div><div class="rd-tiles">${cats.map(ct=>{const L=R.filter(x=>x[1]==ct),c2=CC[ct]||'#2563eb';return`<button type="button" class="rd-tile" data-rdc="cat:${A(ct)}" style="--c:${c2}"><span class="rd-ic">${svg(CI[ct]||CI.Accountant)}</span><b>${A(ct)}</b><small>${L.length} report${L.length==1?'':'s'}</small></button>`}).join('')}</div></div>`}
+function library(R){const q=lq.trim(),C=cols(),cats=[...new Set(R.map(x=>x[1]))],recNames=Object.entries(S.rv||{}).sort((a,b)=>new Date(b[1])-new Date(a[1])).map(e=>e[0]);
+ let L=R.filter(x=>score(x,q)>0);
+ if(lc=='fav')L=L.filter(x=>(S.fav||[]).includes(x[0]));else if(lc=='rec')L=L.filter(x=>recNames.includes(x[0]));else if(lc.slice(0,4)=='cat:')L=L.filter(x=>x[1]==lc.slice(4));else if(lc.slice(0,4)=='col:'){const co=C.find(c=>c.id==lc.slice(4));L=L.filter(x=>co&&co.items.includes(x[0]))}
+ if(q)L.sort((a,b)=>score(b,q)-score(a,q));else if(ls=='used')L.sort((a,b)=>((S.rvc||{})[b[0]]||0)-((S.rvc||{})[a[0]]||0)||a[0].localeCompare(b[0]));else if(ls=='recent')L.sort((a,b)=>(recNames.indexOf(a[0])+1||999)-(recNames.indexOf(b[0])+1||999));else L.sort((a,b)=>a[0].localeCompare(b[0]));
+ const it=(k,t,n,ic)=>`<button type="button" class="${lc==k?'on':''}" data-rdc="${A(k)}">${ic?svg(ic):''}<span>${A(t)}</span><em>${n}</em></button>`;
+ const rail=`<div class="rd-rail noprint"><div class="rd-rg">${it('all','All reports',R.length,IC.grid)}${it('fav','Favourites',R.filter(x=>(S.fav||[]).includes(x[0])).length,IC.star)}${it('rec','Recently opened',R.filter(x=>recNames.includes(x[0])).length,IC.clock)}</div><div class="rd-rh">Categories</div><div class="rd-rg">${cats.map(c=>it('cat:'+c,c,R.filter(x=>x[1]==c).length)).join('')}</div><div class="rd-rh">Collections<button type="button" class="rd-ib" data-rdcol="new" title="New collection">+</button></div><div class="rd-rg">${C.map(c=>it('col:'+c.id,c.name,R.filter(x=>c.items.includes(x[0])).length,IC.folder)).join('')||'<p class="rd-em">Group reports your own way, for example “Month-end pack”.</p>'}${newCol?'<div class="rd-nc"><input id="rdcn" placeholder="Collection name" maxlength="40"><button type="button" class="b" data-rdcol="ok">Add</button></div>':''}</div></div>`;
+ const co=lc.slice(0,4)=='col:'?C.find(c=>c.id==lc.slice(4)):null;
+ const title=lc=='all'?'All reports':lc=='fav'?'Favourites':lc=='rec'?'Recently opened':co?co.name:lc.slice(4);
+ const body=!L.length?`<div class="rd-pn"><p class="rd-em">${q?'No report matches “'+A(q)+'”. Try a plain word like cash, owe, profit or stock.':lc=='fav'?'No favourites yet. Tap the star on any report.':co?'This collection is empty. Use the folder icon on a report to add it.':'Nothing here yet.'}</p></div>`:lv=='grid'?`<div class="rd-grid">${L.map(card).join('')}</div>`:`<div class="rd-list"><div class="rd-lh"><span></span><span>Report</span><span>Category</span><span>Last opened</span><span>Opens</span><span></span></div>${L.map(lrow).join('')}</div>`;
+ return`<div class="rd-lib">${rail}<div class="rd-main"><div class="rd-tb noprint"><div><h3>${A(title)}</h3><small>${L.length} report${L.length==1?'':'s'}${q?' · smart match':''}</small></div><div class="rd-tc">${!q?`<select id="rdso" onchange="rdSort(this.value)"><option value="name" ${ls=='name'?'selected':''}>Sort: Name</option><option value="used" ${ls=='used'?'selected':''}>Sort: Most used</option><option value="recent" ${ls=='recent'?'selected':''}>Sort: Recently opened</option></select>`:''}<span class="rd-seg"><button type="button" class="${lv=='grid'?'on':''}" data-rdv="grid" title="Cards">${svg(IC.grid)}</button><button type="button" class="${lv=='list'?'on':''}" data-rdv="list" title="List">${svg(IC.list)}</button></span>${co?`<button type="button" class="b s" data-rdcol="del" data-rdcid="${co.id}">Delete collection</button>`:''}</div></div>${body}</div></div>`}
+function signoff(){const can=F&&T,cur=can?sgFor(F,T,br):null,cs=cur?liveSt(cur):null,c=can?fig(F,T,br):null,L=SG().slice().sort((a,b)=>b.at.localeCompare(a.at));
+ const fl=c=>`<div class="rd-fg">${[['Revenue',c.rev],['Expenses',c.exp],['Net profit',c.np],['Cash & bank',c.cash],['Receivables',c.ar],['Payables',c.ap]].map(([t,v])=>`<div><span>${t}</span><b>${mf(v)}</b></div>`).join('')}<div><span>Entries</span><b>${c.n}</b></div></div>`;
+ let act='';
+ if(!can)act='<p class="rd-em">Pick a period with a start and end date above (for example “Last month”) to request a sign-off.</p>';
+ else{
+  if(!cur||cur.st=='rejected'||cur.st=='reopened'||cs=='changed')act=`<button type="button" class="b" data-rdsg="req">${cs=='changed'?'Request a new sign-off':'Request sign-off'}</button><span class="rd-hint">A manager or owner reviews these figures and approves them.</span>`;
+  else if(cur.st=='pending'){act=isApprover()?`<textarea id="rdsn" rows="2" placeholder="Note (required to reject)"></textarea><div class="rd-btns"><button type="button" class="b" data-rdsg="appr" data-rdid="${cur.id}">Approve</button><button type="button" class="b s" data-rdsg="rej" data-rdid="${cur.id}">Reject</button></div>`:`<span class="rd-hint">Requested by ${A(cur.by)}. Waiting for a manager or owner.</span>`}
+  else if(cs=='approved')act=`<span class="rd-hint">Approved by ${A(cur.by2)} on ${A(cur.at2.slice(0,10))}. These figures are unchanged since then.</span>${isOwner()?`<button type="button" class="b s" data-rdsg="reopen" data-rdid="${cur.id}">Reopen period</button>`:''}`}
+ const chg=cur&&cs=='changed'?`<div class="rd-warn"><b>The books changed after approval.</b><ul>${diffs(cur.snap,c).map(d=>`<li>${A(d)}</li>`).join('')}</ul></div>`:'';
+ const hist=L.length?`<div class="rd-list rd-sgl"><div class="rd-lh"><span></span><span>Period</span><span>Branch</span><span>Requested</span><span>Reviewed</span><span>Status</span></div>${L.map(s=>{const st=liveSt(s),bb=s.b=='all'?'All branches':(typeof bn=='function'?bn(s.b):s.b);return`<div class="rd-lr"><span class="rd-ic" style="--c:#1d4ed8">${svg(IC.shield)}</span><span class="rd-lt"><b>${A(s.label)}</b><small>${A(s.note||'')}</small></span><span class="rd-lc">${A(bb)}</span><span class="rd-ll">${A(s.by)}<br><small>${A(s.at.slice(0,10))}</small></span><span class="rd-ll">${s.by2?A(s.by2)+'<br><small>'+A(s.at2.slice(0,10))+'</small>':'—'}</span><span><span class="rd-badge ${ST[st][1]}">${ST[st][0]}</span></span></div>`}).join('')}</div>`:'<p class="rd-em">No sign-offs yet.</p>';
+ return`${bar()}${msg?`<div class="rd-msg ${msg[1]?'bad':''}">${A(msg[0])}</div>`:''}<div class="rd-2"><div class="rd-pn"><div class="rd-ph"><h3>${svg(IC.shield)} Period sign-off</h3><span>${can?A(perLabel())+' · '+A(brName()):'No period selected'}</span></div>${can?`<div class="rd-sst"><span class="rd-badge ${cs?ST[cs][1]:'flat'}">${cs?ST[cs][0]:'Not requested'}</span></div>${fl(c)}${chg}`:''}<div class="rd-sact">${act}</div></div>
+ <div class="rd-pn"><div class="rd-ph"><h3>How it works</h3></div><ol class="rd-how"><li>Someone requests sign-off for a period. The key figures are saved with the request.</li><li>A manager or owner other than the requester approves or rejects it. Rejections need a note.</li><li>If anything in that period changes after approval, it is flagged “Changed since approval” with the exact differences.</li><li>Every step is written to the Activity log.</li></ol><p class="rd-em">Sign-off records and detects changes. It does not stop new entries from being posted.</p></div></div>
+ <div class="rd-pn"><div class="rd-ph"><h3>History</h3><span>${L.length} record${L.length==1?'':'s'}</span></div>${hist}</div>`}
+function activity(){const own=isApprover(),m=me()||{},all=(S.rlog||[]).filter(x=>own||x.by==m.name).slice().reverse(),q=aq.trim().toLowerCase();
+ const L=all.filter(x=>(!au||x.by==au)&&(!aa||x.act==aa)&&(!q||(x.item+' '+x.meta+' '+x.by).toLowerCase().includes(q))),users=[...new Set(all.map(x=>x.by))],acts=[...new Set(all.map(x=>x.act))];
+ const d30=Date.now()-30*864e5,rec=all.filter(x=>new Date(x.at)>d30),opens=rec.filter(x=>x.act=='open'),cnt={};opens.forEach(x=>cnt[x.item]=(cnt[x.item]||0)+1);const top=Object.entries(cnt).sort((a,b)=>b[1]-a[1]).slice(0,5),mxn=top.length?top[0][1]:1;
+ const AL={open:'Opened',export:'Exported CSV',signoff:'Sign-off',collection:'Collection'};
+ const tile=(t,v)=>`<div class="rd-kpi"><span>${t}</span><b>${v}</b></div>`;
+ return`<div class="rd-kg k4">${tile('Reports opened · 30 days',opens.length)}${tile('Active people',new Set(rec.map(x=>x.by)).size)}${tile('Exports',rec.filter(x=>x.act=='export').length)}${tile('Sign-off actions',rec.filter(x=>x.act=='signoff').length)}</div>
+ <div class="rd-2"><div class="rd-pn"><div class="rd-ph"><h3>Most used reports</h3><span>Last 30 days</span></div>${top.length?top.map(([n,v])=>`<div class="rd-us"><span>${A(n)}</span><i><u style="width:${v/mxn*100}%"></u></i><b>${v}</b></div>`).join(''):'<p class="rd-em">No usage recorded yet.</p>'}</div>
+ <div class="rd-pn"><div class="rd-ph"><h3>${svg(IC.lock)} Access and audit</h3></div><p class="rd-em" style="text-align:left">${own?'You can see everyone’s activity.':'You can see your own activity. Managers and owners see everyone’s.'} Every report open, CSV export, sign-off and collection change is recorded with the person, role, branch and time. Report access is set per user and branch in Report settings.</p></div></div>
+ <div class="rd-pn"><div class="rd-ph"><h3>Audit log</h3><span>${L.length} of ${all.length} events</span></div><div class="rd-af noprint"><div class="rx-sw sm">${svg(IC.search)}<input id="rdaq" value="${A(aq)}" placeholder="Search the log…" oninput="rdAq(this.value)"></div><select onchange="rdAf('u',this.value)"><option value="">Everyone</option>${users.map(u=>`<option ${u==au?'selected':''}>${A(u)}</option>`).join('')}</select><select onchange="rdAf('a',this.value)"><option value="">All actions</option>${acts.map(u=>`<option value="${A(u)}" ${u==aa?'selected':''}>${A(AL[u]||u)}</option>`).join('')}</select><button type="button" class="b s" data-rdcsv="1">${svg(IC.dl)} Download CSV</button></div>
+ ${L.length?`<div class="rd-list rd-al"><div class="rd-lh"><span>Time</span><span>Person</span><span>Action</span><span>Report / item</span><span>Detail</span></div>${L.slice(0,alim).map(x=>`<div class="rd-lr"><span class="rd-ll">${A(x.at.slice(0,10))}<br><small>${A(new Date(x.at).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'}))}</small></span><span class="rd-ll">${A(x.by)}<br><small>${A(x.role)}</small></span><span><span class="rd-badge ${x.act=='signoff'?'warn':x.act=='export'?'info':'flat'}">${A(AL[x.act]||x.act)}</span></span><span class="rd-lt"><b>${A(x.item)}</b></span><span class="rd-ll">${A(x.meta)}${x.meta?'<br>':''}<small>${A(x.br)}</small></span></div>`).join('')}</div>${L.length>alim?`<p style="text-align:center;margin:12px 0 0"><button type="button" class="b s" data-rdmore="1">Show more</button></p>`:''}`:'<p class="rd-em">No activity matches.</p>'}</div>`}
+/* ---- page ---- */
+const _o=V.rpt;
+V.rpt=function(){if(ro)return _o.apply(this,arguments);
+ const R=allowed(),c0=fig(F,T,br),pend=SG().filter(x=>x.st=='pending').length;
+ const tabs=[['ov','Overview'],['lib','Library',R.length],['sg','Sign-off',pend||''],['ac','Activity','']];
+ const hero=`<div class="rd-hero"><div class="rd-hl"><span class="rd-eye">Report Center</span><h1>Reports and insights</h1><p>${A(perLabel())} · ${A(brName())} · ${A(S.base)}</p><div class="rd-pills"><span class="rd-pill ${c0.unb?'bad':'ok'}">${c0.unb?c0.unb+' unbalanced':'✓ Books balanced'}</span><span class="rd-pill">${R.length} reports available</span><span class="rd-pill live"><u></u>Live · updated ${new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})}</span></div></div><div class="rx-sw noprint">${svg(IC.search)}<input id="rdq" value="${A(lq)}" placeholder="Search reports, e.g. who owes me, cash, profit…" oninput="rdQ(this.value)" autocomplete="off">${lq?'<button type="button" onclick="rdQ(\'\')">Clear</button>':''}</div></div>`;
+ const tb=`<div class="rd-tabs noprint">${tabs.map(([k,t,n])=>`<button type="button" data-rdt="${k}" class="${tab==k?'on':''}">${t}${n?`<em>${n}</em>`:''}</button>`).join('')}</div>`;
+ let body=tab=='lib'?library(R):tab=='sg'?signoff():tab=='ac'?activity():overview(R);
+ return`<div class="rd">${hero}${tb}${body}</div>`};
+/* ---- actions ---- */
+window.rdQ=v=>{lq=v;if(tab!='lib'){tab='lib';lc='all'}go();rf2('rdq')};
+window.rdSort=v=>{ls=v;go()};window.rdAq=v=>{aq=v;alim=25;go();rf2('rdaq')};window.rdAf=(k,v)=>{if(k=='u')au=v;else aa=v;alim=25;go()};
+const tt=(m,b)=>{try{window.rpToast?rpToast(m,b):alert(m)}catch(e){}};
+function sgAct(a,id){msg=null;
+ if(a=='req'){if(!F||!T){msg=['Choose a period with a start and end date first.',1];return}const ex=sgFor(F,T,br);if(ex&&(ex.st=='pending'||liveSt(ex)=='approved')){msg=['This period already has an active sign-off.',1];return}const c=fig(F,T,br),l=perLabel();SG().push({id:uid('sg'),f:F,t:T,b:br,label:l+' ('+F+' to '+T+')',st:'pending',by:(me()||{}).name||'',at:new Date().toISOString(),snap:c,note:''});lg('signoff','Requested: '+l,F+' to '+T);msg=['Sign-off requested. A manager or owner can now review it.'];save();return}
+ const s=SG().find(x=>x.id==id);if(!s)return;
+ if(a=='reopen'){if(!isOwner()){msg=['Only an owner can reopen an approved period.',1];return}s.st='reopened';lg('signoff','Reopened: '+s.label,'');msg=['Period reopened.'];save();return}
+ if(!isApprover()){msg=['Only a manager or owner can approve or reject.',1];return}
+ if(s.st!='pending')return;const note=((document.getElementById('rdsn')||{}).value||'').trim(),self=s.by==(me()||{}).name,others=(S.users||[]).filter(u=>u.role=='Owner'||u.role=='Manager').filter(u=>u.name!=s.by).length;
+ if(self&&others){msg=['You requested this sign-off, so someone else must approve it.',1];return}
+ if(a=='rej'){if(!note){msg=['Add a note explaining the rejection.',1];return}s.st='rejected';s.by2=(me()||{}).name;s.at2=new Date().toISOString();s.note=note;lg('signoff','Rejected: '+s.label,note);msg=['Sign-off rejected.'];save();return}
+ const c=fig(s.f,s.t,s.b);if(sig(c)!=sig(s.snap)){s.snap=c;lg('signoff','Figures refreshed: '+s.label,'Books changed since the request');msg=['The figures changed since this was requested. They have been refreshed. Review them and approve again.',1];save();return}
+ s.st='approved';s.by2=(me()||{}).name;s.at2=new Date().toISOString();s.note=note||(self?'Self-approved (no other approver available)':'');lg('signoff','Approved: '+s.label,s.note);msg=['Period approved.'];save()}
+const dlLog=()=>{const own=isApprover(),m=me()||{},L=(S.rlog||[]).filter(x=>own||x.by==m.name),q=aq.trim().toLowerCase(),F2=L.filter(x=>(!au||x.by==au)&&(!aa||x.act==aa)&&(!q||(x.item+' '+x.meta+' '+x.by).toLowerCase().includes(q))),c=v=>'"'+String(v==null?'':v).replace(/"/g,'""')+'"';
+ const csv='﻿'+['Time,Person,Role,Action,Item,Detail,Branch',...F2.map(x=>[x.at,x.by,x.role,x.act,x.item,x.meta,x.br].map(c).join(','))].join('\r\n');lg('export','Audit log',F2.length+' rows');if(window.dlSave)dlSave('report-center-activity.csv',csv,'text/csv');else tt('Download is not available here.',1)};
+document.addEventListener('click',e=>{const t=e.target;if(!t.closest||view!='rpt'||ro)return;const hit=sel=>t.closest(sel);
+ if(cm&&!hit('.rd-pop')&&!hit('[data-rdm]')){cm=null;go()}
+ let el;
+ if(el=hit('[data-rdt]')){e.stopPropagation();const nt=el.dataset.rdt;if(el.dataset.rdc)lc=el.dataset.rdc;tab=nt;msg=null;cm=null;go();return}
+ if(el=hit('[data-rdc]')){e.stopPropagation();lc=el.dataset.rdc;tab='lib';cm=null;go();return}
+ if(el=hit('[data-rdm]')){e.stopPropagation();const n=el.dataset.rdm;cm=cm==n?null:n;go();return}
+ if(el=hit('[data-rdtg]')){e.stopPropagation();const co=cols().find(c=>c.id==el.dataset.rdcid),n=el.dataset.rdtg;if(co){const i=co.items.indexOf(n);i<0?co.items.push(n):co.items.splice(i,1);lg('collection',(i<0?'Added ':'Removed ')+n,co.name)}go();return}
+ if(el=hit('[data-rdv]')){e.stopPropagation();lv=el.dataset.rdv;go();return}
+ if(el=hit('[data-rdcol]')){e.stopPropagation();const a=el.dataset.rdcol;if(a=='new'){newCol=!newCol;go();if(newCol)setTimeout(()=>{const i=document.getElementById('rdcn');if(i){i.focus();i.onkeydown=ev=>{if(ev.key=='Enter'){ev.preventDefault();const b=document.querySelector('[data-rdcol="ok"]');b&&b.click()}}}},0)}
+  else if(a=='ok'){const v=((document.getElementById('rdcn')||{}).value||'').trim();if(v){const id=uid('co');cols().push({id,name:v.slice(0,40),items:[]});lg('collection','Created '+v,'');newCol=false;lc='col:'+id;save()}go()}
+  else if(a=='del'){const id=el.dataset.rdcid,i=cols().findIndex(c=>c.id==id);if(i>=0&&confirm('Delete the collection “'+cols()[i].name+'”? The reports themselves are not affected.')){lg('collection','Deleted '+cols()[i].name,'');cols().splice(i,1);lc='all';save()}go()}
+  return}
+ if(el=hit('[data-rdsg]')){e.stopPropagation();sgAct(el.dataset.rdsg,el.dataset.rdid);go();return}
+ if(el=hit('[data-rdmore]')){e.stopPropagation();alim+=50;go();return}
+ if(el=hit('[data-rdcsv]')){e.stopPropagation();dlLog();go();return}
+ if(el=hit('.rx-csv')){lg('export',ro||'report','')}
+},true);
+document.addEventListener('click',e=>{const el=e.target.closest&&e.target.closest('.rx-csv');if(el){const nm=view=='rpt'?ro:(RC.find(x=>x[3]&&x[3].v==view)||[])[0];lg('export',nm||view,'')}},true);
+/* sidebar: one button instead of a dropdown */
+const rm=MENU.find(m=>m[0]=='rpt');if(rm&&rm[2])rm.length=2;
+const ni=NAV.findIndex(n=>n[0]=='rpt');if(ni>=0)NAV[ni]=['rpt','Report Center'];
+const _g=go;go=function(){_g.apply(this,arguments);try{track();const b=document.querySelector('#nav>button[data-v="rpt"]');if(b)b.classList.toggle('on',view=='rpt'||RC.some(x=>x[3]&&x[3].v==view))}catch(e){}};
+const css=document.createElement('style');css.textContent=`
+html body .rd{display:grid;gap:16px;--rd-b:#1d4ed8;--rd-ln:#d9e5f8}
+html body .rd-hero{display:flex;justify-content:space-between;align-items:center;gap:22px;flex-wrap:wrap;padding:26px 30px;border-radius:22px;color:#fff;background:radial-gradient(800px 300px at 90% -30%,#60a5fa77,transparent 60%),radial-gradient(500px 260px at 0 130%,#38bdf855,transparent 60%),linear-gradient(135deg,#0a2766,#1347b8 58%,#2563eb);box-shadow:0 18px 40px #1d4ed84d}
+html body .rd-eye{font-size:11.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#f2c14e}
+html body .rd-hero h1{margin:6px 0 2px;font-size:28px;line-height:1.15;color:#fff!important;text-transform:none!important}
+html body .rd-hero p{margin:0;color:#c3d4fb;font-size:14px}
+html body .rd-pills{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+html body .rd-pill{display:inline-flex;align-items:center;gap:6px;padding:4px 11px;border-radius:99px;font-size:12px;font-weight:600;background:#ffffff1f;border:1px solid #ffffff3a;color:#e6eeff}
+html body .rd-pill.ok{background:#16a37a33;border-color:#34d3a066;color:#d1fae5}html body .rd-pill.bad{background:#e0546633;border-color:#fda4af88;color:#ffe4e6}
+html body .rd-pill.live u{width:7px;height:7px;border-radius:50%;background:#4ade80;box-shadow:0 0 0 3px #4ade8044;display:inline-block}
+html body .rd-hero .rx-sw{min-width:min(400px,100%)}html body .rd-sw .rd-i,html body .rd-hero .rx-sw .rd-i{color:#2563eb;width:19px;height:19px}html body .rd-af .rx-sw .rd-i{color:#2563eb}
+html body .rd-tabs{display:flex;gap:6px;flex-wrap:wrap;border-bottom:1px solid var(--rd-ln);padding-bottom:0}
+html body .rd-tabs button{position:relative;border:0;background:transparent!important;color:#475b82!important;font-size:14px;font-weight:600;padding:11px 16px;cursor:pointer;border-radius:10px 10px 0 0;box-shadow:none!important}
+html body .rd-tabs button:hover{background:#eaf1ff!important}
+html body .rd-tabs button.on{color:#1d4ed8!important}html body .rd-tabs button.on::after{content:"";position:absolute;left:12px;right:12px;bottom:-1px;height:3px;border-radius:3px 3px 0 0;background:linear-gradient(90deg,#1d4ed8,#60a5fa)}
+html body .rd-tabs em{font-style:normal;font-size:11.5px;margin-left:6px;padding:1px 7px;border-radius:99px;background:#e6eeff;color:#1d4ed8}
+html body .rd-kg{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px}
+html body .rd-kg.k4{grid-template-columns:repeat(auto-fill,minmax(220px,1fr))}
+html body .rd-kpi{display:flex;flex-direction:column;gap:4px;padding:16px 18px;border-radius:18px;background:linear-gradient(180deg,#fff,#f6f9ff);border:1px solid var(--rd-ln);box-shadow:0 1px 2px #0a1f4d0d,0 8px 22px #1d4ed812;cursor:pointer;transition:transform .15s,box-shadow .15s}
+html body .rd-kpi:hover{transform:translateY(-2px);box-shadow:0 14px 28px #1d4ed82a}
+html body .rd-kpi>span{font-size:11.5px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:#64748b}
+html body .rd-kpi>b{font-size:24px;line-height:1.2;color:#0b2a6b;letter-spacing:-.02em}
+html body .rd-kpi.lock{cursor:default;background:#f4f7fc}html body .rd-kpi.lock>b{font-size:14px;display:flex;align-items:center;gap:6px;color:#64748b}html body .rd-kpi.lock small{font-size:12px;color:#64748b}
+html body .rd-kf{display:flex;align-items:center;gap:8px}html body .rd-kf small{font-size:12px;color:#64748b}
+html body .rd-kf em,html body .rd-badge{font-style:normal;font-size:12px;font-weight:700;padding:2px 9px;border-radius:99px;display:inline-block}
+html body .rd-kf em.good,html body .rd-badge.good{background:#dcfce7;color:#166534}html body .rd-kf em.bad,html body .rd-badge.bad{background:#fee2e2;color:#991b1b}html body .rd-kf em.flat,html body .rd-badge.flat{background:#eef2f8;color:#475569}html body .rd-badge.warn{background:#fef3c7;color:#92400e}html body .rd-badge.info{background:#e0ecff;color:#1d4ed8}
+html body .rd-2{display:grid;grid-template-columns:1.1fr 1fr;gap:16px}html body .rd-3{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px}
+@media(max-width:900px){html body .rd-2{grid-template-columns:1fr}}
+html body .rd-pn{border-radius:18px;background:linear-gradient(180deg,#ffffffee,#f8fbffee);border:1px solid var(--rd-ln);box-shadow:0 1px 2px #0a1f4d0d,0 8px 24px #1d4ed812;padding:18px;min-width:0;display:flex;flex-direction:column;gap:12px}
+html body .rd-ph{display:flex;justify-content:space-between;align-items:baseline;gap:10px}html body .rd-ph h3{margin:0;font-size:16px;color:#0b2a6b;display:flex;align-items:center;gap:8px}html body .rd-ph span{font-size:13px;color:#64748b}
+html body .rd-lk{color:#1d4ed8!important;font-weight:600;cursor:pointer}
+html body .rd-i{width:18px;height:18px;flex:none}html body .rd-i.pv{color:#7c3aed}
+html body .rd-em{margin:0;font-size:13px;color:#64748b;text-align:center;padding:10px 0}
+html body .rd-bars{display:flex;gap:10px;align-items:flex-end;height:170px;padding-top:6px}html body .rd-bc{flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;height:100%}html body .rd-bb{flex:1;width:100%;display:flex;align-items:flex-end;justify-content:center;gap:4px}
+html body .rd-bb i{display:block;width:38%;max-width:26px;border-radius:6px 6px 2px 2px}html body .rd-bb i.rv,html body .rd-lg u.rv{background:linear-gradient(180deg,#3b82f6,#1d4ed8)}html body .rd-bb i.ex,html body .rd-lg u.ex{background:linear-gradient(180deg,#bcd2fb,#93b4f5)}
+html body .rd-bc small{font-size:12px;color:#64748b}html body .rd-lg{display:flex;gap:16px;font-size:13px;color:#475569}html body .rd-lg u{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:6px}
+html body .rd-ins{display:grid;gap:8px}
+html body .rd-in{display:flex;align-items:center;gap:12px;padding:11px 12px;border-radius:14px;background:#f5f8ff;border:1px solid #e1eafb;cursor:pointer;transition:background .15s}html body .rd-in:hover{background:#eaf1ff}html body .rd-in i{font-style:normal;color:#1d4ed8;font-size:18px}
+html body .rd-ii{width:28px;height:28px;border-radius:9px;display:grid;place-items:center;font-size:14px;font-weight:700;flex:none;background:#e0ecff;color:#1d4ed8}
+html body .rd-in.crit .rd-ii{background:#fee2e2;color:#b91c1c}html body .rd-in.warn .rd-ii{background:#fef3c7;color:#b45309}html body .rd-in.good .rd-ii,html body .rd-in.ok .rd-ii{background:#dcfce7;color:#15803d}
+html body .rd-in.crit{border-color:#fecaca;background:#fff6f6}
+html body .rd-it{display:flex;flex-direction:column;flex:1;min-width:0}html body .rd-it b,html body .rd-rt b,html body .rd-lt b{font-size:14px;color:#0f1d3a}html body .rd-it small,html body .rd-rt small,html body .rd-lt small{font-size:13px;color:#64748b;line-height:1.4}
+html body .rd-row{display:flex;align-items:center;gap:12px;padding:8px 6px;border-radius:12px;cursor:pointer}html body .rd-row:hover{background:#eef4ff}html body .rd-row>i{margin-left:auto;font-style:normal;color:#94a3b8}
+html body .rd-rt,html body .rd-lt{display:flex;flex-direction:column;min-width:0}
+html body .rd-ic{width:34px;height:34px;flex:none;border-radius:11px;display:grid;place-items:center;color:#fff;background:linear-gradient(135deg,var(--c,#2563eb),#60a5fa);box-shadow:0 5px 12px #1d4ed844}html body .rd-ic .rd-i{width:18px;height:18px}
+html body .rd-sgs{display:flex;flex-direction:column;gap:8px;align-items:flex-start}html body .rd-sgs small{font-size:13px;color:#64748b}
+html body .rd-tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:12px}
+html body .rd-tile{display:flex;flex-direction:column;align-items:flex-start;gap:6px;text-align:left;padding:14px;border-radius:16px;border:1px solid var(--rd-ln);background:#fff!important;cursor:pointer;box-shadow:none!important;color:#0f1d3a!important}html body .rd-tile:hover{border-color:#93b4f5;background:#f1f6ff!important}html body .rd-tile b{font-size:14px}html body .rd-tile small{font-size:13px;color:#64748b}
+/* library */
+html body .rd-lib{display:grid;grid-template-columns:240px minmax(0,1fr);gap:16px;align-items:start}
+@media(max-width:900px){html body .rd-lib{grid-template-columns:1fr}}
+html body .rd-rail{display:flex;flex-direction:column;gap:6px;padding:14px;border-radius:18px;background:#fff;border:1px solid var(--rd-ln);box-shadow:0 8px 24px #1d4ed812;position:sticky;top:12px}
+html body .rd-rg{display:flex;flex-direction:column;gap:2px}
+html body .rd-rg button{display:flex;align-items:center;gap:9px;border:0;background:transparent!important;color:#25375e!important;font-size:14px;font-weight:500;padding:8px 10px;border-radius:10px;cursor:pointer;text-align:left;box-shadow:none!important}
+html body .rd-rg button .rd-i{width:16px;height:16px;color:#64748b}html body .rd-rg button span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}html body .rd-rg button em{font-style:normal;font-size:12px;color:#64748b}
+html body .rd-rg button:hover{background:#eef4ff!important}html body .rd-rg button.on{background:#e3edff!important;color:#1d4ed8!important;font-weight:700}html body .rd-rg button.on .rd-i{color:#1d4ed8}
+html body .rd-rh{display:flex;justify-content:space-between;align-items:center;margin-top:10px;padding:0 10px;font-size:11.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#64748b}
+html body .rd-ib{border:0;background:transparent!important;color:#64748b!important;width:28px;height:28px;border-radius:8px;display:inline-grid;place-items:center;cursor:pointer;font-size:16px;box-shadow:none!important;padding:0}html body .rd-ib:hover{background:#e3edff!important;color:#1d4ed8!important}html body .rd-ib .rd-i{width:16px;height:16px}
+html body .rd-nc{display:flex;gap:6px;padding:4px 6px}html body .rd-nc input{flex:1;min-width:0;padding:7px 9px;font-size:13px}html body .rd-nc .b{padding:6px 12px;font-size:13px}
+html body .rd-main{display:grid;gap:12px;min-width:0}
+html body .rd-tb{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}html body .rd-tb h3{margin:0;font-size:16px;color:#0b2a6b}html body .rd-tb small{font-size:13px;color:#64748b}
+html body .rd-tc{display:flex;gap:8px;align-items:center;flex-wrap:wrap}html body .rd-tc select{padding:8px 10px;font-size:13px}
+html body .rd-seg{display:inline-flex;border:1px solid #cddcf5;border-radius:10px;overflow:hidden;background:#fff}html body .rd-seg button{border:0;background:transparent!important;color:#64748b!important;padding:7px 10px;cursor:pointer;box-shadow:none!important;display:grid;place-items:center}html body .rd-seg button.on{background:linear-gradient(135deg,#1d4ed8,#3b82f6)!important;color:#fff!important}html body .rd-seg .rd-i{width:16px;height:16px}
+html body .rd-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px}
+html body .rd-card{position:relative;display:flex;flex-direction:column;gap:6px;padding:16px 16px 12px;border-radius:18px;background:linear-gradient(180deg,#fff,#f6f9ff);border:1px solid var(--rd-ln);box-shadow:0 1px 2px #0a1f4d0d,0 8px 22px #1d4ed812;cursor:pointer;transition:transform .15s,box-shadow .15s,border-color .15s}
+html body .rd-card::before{content:"";position:absolute;left:0;top:14px;bottom:14px;width:4px;border-radius:0 4px 4px 0;background:var(--c)}html body .rd-card:hover{transform:translateY(-3px);box-shadow:0 14px 30px #1d4ed82e;border-color:#9dbcf4}
+html body .rd-ct{display:flex;justify-content:space-between;align-items:center}html body .rd-act{display:inline-flex;align-items:center;gap:2px;position:relative}
+html body .rd-card .star,html body .rd-lr .star{position:static!important;font-size:18px;color:#cbd5e1;cursor:pointer;padding:0 4px}html body .rd-card .star.on,html body .rd-lr .star.on{color:#f59e0b}
+html body .rd-card>b{font-size:14px;color:#0f1d3a;margin-top:4px}html body .rd-card>p{margin:0;font-size:13px;line-height:1.4;color:#64748b;min-height:36px}
+html body .rd-cf{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:4px;font-size:11.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--c)}html body .rd-cf i{font-style:normal;font-weight:600;font-size:12px;letter-spacing:0;text-transform:none;color:#64748b;text-align:right}
+html body .rd-pop{position:absolute;right:10px;top:48px;z-index:30;min-width:210px;padding:8px;border-radius:14px;background:#fff;border:1px solid #cddcf5;box-shadow:0 18px 40px #0a1f4d40;cursor:default;display:grid;gap:2px}
+html body .rd-pop .rd-pt{font-size:11.5px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:#64748b;padding:4px 8px}html body .rd-pop p{margin:0;padding:6px 8px;font-size:13px;color:#64748b}
+html body .rd-pop button{display:flex;align-items:center;gap:8px;border:0;background:transparent!important;color:#25375e!important;font-size:13px;padding:7px 8px;border-radius:8px;text-align:left;cursor:pointer;box-shadow:none!important}html body .rd-pop button:hover{background:#eef4ff!important}html body .rd-ck{width:16px;height:16px;border-radius:5px;border:1.5px solid #9db6e8;display:grid;place-items:center;font-size:11px;color:#fff}html body .rd-pop button.on .rd-ck{background:#1d4ed8;border-color:#1d4ed8}
+html body .rd-list{display:flex;flex-direction:column;border-radius:16px;border:1px solid var(--rd-ln);background:#fff}
+html body .rd-lh,html body .rd-lr{display:grid;grid-template-columns:34px minmax(0,2.4fr) minmax(0,1.1fr) minmax(0,1fr) 60px 86px;gap:12px;align-items:center;padding:10px 14px}
+html body .rd-lh{font-size:11.5px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:#64748b;background:#f3f7ff;border-radius:16px 16px 0 0}
+html body .rd-lr{position:relative;border-top:1px solid #e6edf9;cursor:pointer;font-size:13px}html body .rd-lr:hover{background:#f1f6ff}
+html body .rd-lc,html body .rd-ll,html body .rd-ln{font-size:13px;color:#475569}html body .rd-lr .rd-act{justify-content:flex-end}
+html body .rd-lr .rd-pop{top:42px}
+html body .rd-sgl .rd-lh,html body .rd-sgl .rd-lr{grid-template-columns:34px minmax(0,2fr) minmax(0,1fr) minmax(0,1fr) minmax(0,1fr) minmax(0,1.3fr)}
+html body .rd-al .rd-lh,html body .rd-al .rd-lr{grid-template-columns:minmax(0,.9fr) minmax(0,1fr) minmax(0,1fr) minmax(0,2fr) minmax(0,1.3fr)}html body .rd-al .rd-lr{cursor:default}
+@media(max-width:760px){html body .rd-lh{display:none}html body .rd-lr,html body .rd-sgl .rd-lr,html body .rd-al .rd-lr{grid-template-columns:34px 1fr auto;row-gap:4px}html body .rd-lc,html body .rd-ln{display:none}}
+/* sign-off + activity */
+html body .rd-fg{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px}html body .rd-fg div{padding:10px 12px;border-radius:12px;background:#f3f7ff;border:1px solid #e1eafb;display:flex;flex-direction:column;gap:2px}html body .rd-fg span{font-size:11.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#64748b}html body .rd-fg b{font-size:16px;color:#0b2a6b}
+html body .rd-sact{display:flex;flex-direction:column;gap:10px;align-items:flex-start}html body .rd-sact textarea{width:100%;box-sizing:border-box;font-size:14px;padding:9px 11px;resize:vertical}html body .rd-btns{display:flex;gap:8px}html body .rd-hint{font-size:13px;color:#64748b}
+html body .rd-warn{padding:12px 14px;border-radius:14px;background:#fff1f2;border:1px solid #fecdd3;color:#9f1239;font-size:13px}html body .rd-warn ul{margin:6px 0 0;padding-left:18px}
+html body .rd-msg{padding:11px 14px;border-radius:12px;background:#e6f0ff;border:1px solid #bcd2fb;color:#12306e;font-size:14px}html body .rd-msg.bad{background:#fff1f2;border-color:#fecdd3;color:#9f1239}
+html body .rd-how{margin:0;padding-left:20px;display:grid;gap:8px;font-size:14px;color:#25375e}
+html body .rd-us{display:grid;grid-template-columns:minmax(0,1.4fr) 1fr 28px;gap:10px;align-items:center;font-size:13px}html body .rd-us i{height:8px;border-radius:99px;background:#e6eeff;overflow:hidden}html body .rd-us u{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,#1d4ed8,#60a5fa)}html body .rd-us b{text-align:right}
+html body .rd-af{display:flex;gap:10px;flex-wrap:wrap;align-items:center}html body .rd-af select{padding:8px 10px;font-size:13px}html body .rd-af .b{display:inline-flex;align-items:center;gap:6px;margin-left:auto}html body .rd-af .b .rd-i{width:15px;height:15px}
+html[data-theme=dark] body .rd-pn,html[data-theme=dark] body .rd-card,html[data-theme=dark] body .rd-kpi,html[data-theme=dark] body .rd-rail,html[data-theme=dark] body .rd-list,html[data-theme=dark] body .rd-tile{background:#0f1c3d!important;border-color:#223a73}
+html[data-theme=dark] body .rd-ph h3,html[data-theme=dark] body .rd-card>b,html[data-theme=dark] body .rd-it b,html[data-theme=dark] body .rd-rt b,html[data-theme=dark] body .rd-lt b,html[data-theme=dark] body .rd-kpi>b,html[data-theme=dark] body .rd-tb h3,html[data-theme=dark] body .rd-tile{color:#e2ebff!important}
+html[data-theme=dark] body .rd-in,html[data-theme=dark] body .rd-fg div{background:#14264f;border-color:#223a73}html[data-theme=dark] body .rd-lh{background:#14264f}html[data-theme=dark] body .rd-lr:hover,html[data-theme=dark] body .rd-row:hover{background:#17306a}
+`;document.head.appendChild(css);
+})();
+
 /*CSK*/(()=>{
 const E=aesc,CUR_PAL=['#1d4ed8','#3b82f6','#0ea5e9','#6366f1','#14b8a6','#94a3b8'];
 const pad=n=>String(n).padStart(2,'0'),ymd=d=>d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
