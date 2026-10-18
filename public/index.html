@@ -5526,7 +5526,7 @@ const oc=V.ctx;V.ctx=function(){let h=oc.apply(this,arguments);
  h=h.replace('<button class="plf" onclick="ctOpen()">+ New transaction</button>','<span style="display:flex;gap:8px;flex-wrap:wrap"><button class="plf" onclick="sdOpen()">+ Currency sale deal</button><button class="plo" onclick="ctOpen()">+ Multi-currency entry</button></span>');
  return h};
 /*UPDCHK*/
-(function(){const B='2026-10-19-bm';window.PB_BUILD=B;if(location.protocol=='file:')return;let nb=null,tm=0;
+(function(){const B='2026-10-19-bn';window.PB_BUILD=B;if(location.protocol=='file:')return;let nb=null,tm=0;
 const busy=()=>{const a=document.activeElement;return !!(document.querySelector('.ov')||(a&&/^(INPUT|TEXTAREA)$/.test(a.tagName)&&String(a.value||'').length>0))};
 function go2(){try{const k='pb_upd_'+nb,n=+(sessionStorage.getItem(k)||0);sessionStorage.setItem(k,n+1)}catch(e){}location.replace(location.pathname+'?v='+encodeURIComponent(nb))}
 function bar(){let d=document.getElementById('pbupd');if(!d){d=document.createElement('div');d.id='pbupd';d.setAttribute('role','button');d.style.cssText='position:fixed;left:50%;transform:translateX(-50%);top:10px;z-index:100000;background:#0b3d33;color:#fff;padding:11px 18px;border-radius:12px;font:700 13px Inter,system-ui,sans-serif;box-shadow:0 6px 20px rgba(0,0,0,.3);cursor:pointer;text-align:center;max-width:92vw';d.onclick=()=>{d.textContent='Updating…';go2()};document.body.appendChild(d)}d.textContent='A new version of PrimeBook is ready. Tap here to update.'}
@@ -9638,6 +9638,223 @@ html body .dw-t{display:flex;align-items:center;gap:10px;padding:8px 10px;margin
 html body .dw-t b{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#fff;font-size:13px}html body .dw-g{font-size:16px;letter-spacing:-2px;opacity:.85}
 html body .dw-a{display:flex;gap:4px}html body .dw-a button{border:0;background:#ffffff26!important;color:#fff!important;min-width:30px;height:28px;padding:0 8px;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;box-shadow:none!important}html body .dw-a button:hover{background:#ffffff48!important}
 @media(max-width:900px){html body .dw{grid-column:span 12}}
+`;document.head.appendChild(css);
+})();
+
+/*CBM*/(function(){
+/* Cashbook and Banks dashboard: Overview, Ledger, Closing, Accounts, Review.
+   Type scale: 11.5 label, 13 secondary, 14 body, 16 section, 24 figure, 28 page title. Read-only over the ledger. */
+const A=x=>String(x==null?'':x).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const mf=n=>Number(n||0).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2});
+const nz=v=>Math.abs(v)<.005?0:v,r2=v=>Math.round((+v||0)*100)/100;
+const cmp=v=>Math.abs(v)>=1e6?(v/1e6).toFixed(1)+'M':Math.abs(v)>=1e3?(+(v/1e3).toFixed(1))+'k':String(Math.round(v));
+const ISO=d=>d.toISOString().slice(0,10),addD=(s,n)=>{const d=new Date(s+'T12:00:00Z');d.setUTCDate(d.getUTCDate()+n);return ISO(d)};
+const IC={search:'<circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/>',spark:'<path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/>',dl:'<path d="M12 4v11m0 0l-4-4m4 4l4-4M4 19h16"/>',shield:'<path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/><path d="M9 12l2 2 4-4"/>',bank:'<path d="M3 10l9-6 9 6zM5 10v8M9.5 10v8M14.5 10v8M19 10v8M3 21h18"/>',cash:'<rect x="3" y="6" width="18" height="12" rx="2"/><circle cx="12" cy="12" r="2.5"/>',link:'<path d="M9 15l6-6M10 6h8v8"/>'};
+const svg=(p,c)=>`<svg viewBox="0 0 24 24" class="cbm-i ${c||''}" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">${p}</svg>`;
+let tab='ov',sc='all',entry=null,rg=30,lq='',lacc='',ldir='',lper='30',lflag='',lhid=true,lso='date',lpg=0,rvs='pending',cbq='';
+const CODES=()=>sc=='cash'?[1000]:sc=='bank'?[1010]:[1000,1010];
+const isAp=()=>{const r=(me()||{}).role;return r=='Owner'||r=='Manager'};
+const brN=id=>typeof bn=='function'?bn(id):id;
+const STO=()=>{const c=S.cbk=S.cbk||{};c.rev=c.rev||{};c.log=c.log||[];if(c.thr==null)c.thr=0;return c};
+function lg(act,item,meta){const c=STO(),m=me()||{};c.log.push({at:new Date().toISOString(),by:m.name||'',role:m.role||'',act,item:item||'',meta:meta||''});if(c.log.length>500)c.log.splice(0,c.log.length-500);save()}
+const bankName=x=>{const id=x.bank||String(x.acc||'').replace('bank|','');const k=(S.banks||[]).find(q=>q.id==id);return k?k.name:'Bank'};
+/* ---- one pass: every cash/bank movement with a running balance ---- */
+function build(){const al=S.j.filter(x=>br=='all'||x.br==br).slice().sort((a,b)=>a.date.localeCompare(b.date)||(+a.id)-(+b.id)),codes=CODES(),rows=[],runBy={};let run=0;
+ al.forEach(x=>{const liq=x.lines.filter(y=>+y[0]==1000||+y[0]==1010);if(!liq.length)return;const pure=x.lines.every(y=>+y[0]==1000||+y[0]==1010)&&(sc=='all'||liq.every(y=>codes.includes(+y[0])));
+  liq.forEach(y=>{const c=+y[0];if(!codes.includes(c))return;const i=+y[1]||0,o=+y[2]||0;run+=i-o;rows.push({id:String(x.id),date:x.date,memo:x.memo||'',tt:x.tt||'',acc:c==1010?bankName(x):'Cash – '+brN(x.br),aid:c==1010?'bank|'+(x.bank||String(x.acc||'').replace('bank|','')):'cash|'+x.br,code:c,br:x.br,inn:i,out:o,run:r2(run),xf:pure,by:x.by||'',at:x.at||''})})});
+ const dupK={};rows.forEach(r=>{if(r.xf)return;const k=[r.date,r.br,r.aid,r.inn,r.out,r.memo.trim().toLowerCase()].join('|');(dupK[k]=dupK[k]||[]).push(r)});
+ const dup=new Set();Object.values(dupK).forEach(g=>{if(g.length>1)g.forEach(r=>dup.add(r.id+'|'+r.aid))});
+ /* entry-level size for review */
+ const ent={};rows.forEach(r=>{if(r.xf)return;const e=ent[r.id]||(ent[r.id]={id:r.id,date:r.date,memo:r.memo,acc:r.acc,by:r.by,at:r.at,inn:0,out:0,br:r.br});e.inn+=r.inn;e.out+=r.out});
+ Object.values(ent).forEach(e=>e.amt=Math.max(e.inn,e.out));
+ return{rows,dup,ent:Object.values(ent),bal:r2(run)}}
+const flowOn=(rows,d)=>{let i=0,o=0;rows.forEach(r=>{if(!r.xf&&r.date==d){i+=r.inn;o+=r.out}});return[i,o]};
+const balAt=(rows,d)=>{let b=0;for(const r of rows){if(r.date>d)break;b=r.run}return b};
+function model(){const M=build(),t=today(),rows=M.rows,days=[];for(let i=rg-1;i>=0;i--)days.push(addD(t,-i));
+ const per=days.map(d=>{const f=flowOn(rows,d);return{d,i:f[0],o:f[1],b:balAt(rows,d)}});
+ const win=n=>{let i=0,o=0;for(let k=0;k<n;k++){const f=flowOn(rows,addD(t,-k));i+=f[0];o+=f[1]}return{i,o,n:i-o}};
+ const w30=win(30),w14=win(14);let pi=0,po=0;for(let k=30;k<60;k++){const f=flowOn(rows,addD(t,-k));pi+=f[0];po+=f[1]}
+ const cashB=r2(bal(1000,S.j.filter(x=>br=='all'||x.br==br))),bankB=r2(bal(1010,S.j.filter(x=>br=='all'||x.br==br)));
+ const td=flowOn(rows,t),avg14=w14.n/14,proj=M.bal+avg14*7;
+ return{...M,t,per,days,w30,prev30:{i:pi,o:po,n:pi-po},w14,cashB,bankB,td,avg14,proj}}
+/* ---- accounts ---- */
+function accounts(){const brs=S.br.filter(b=>br=='all'||b.id==br),out=[];
+ brs.forEach(b=>{const c=r2(bal(1000,S.j.filter(x=>x.br==b.id)));out.push({id:'cash|'+b.id,kind:'cash',name:'Cash – '+b.name,br:b.id,bal:c,lim:+b.lim||0})});
+ (S.banks||[]).filter(k=>br=='all'||k.br==br).forEach(k=>{const c=r2(S.j.filter(x=>x.lines.some(y=>+y[0]==1010)&&aId(x)=='bank|'+k.id).reduce((s,x)=>s+x.lines.filter(y=>+y[0]==1010).reduce((a,y)=>a+(+y[1]||0)-(+y[2]||0),0),0)),st=(S.bst||[]).filter(r=>r.bank==k.id),un=st.filter(r=>!r.j).length,cl=(S.bclose||{})[k.id];out.push({id:'bank|'+k.id,kind:'bank',name:k.name,no:k.no||'',ccy:k.ccy,br:k.br,bal:c,un,all:st.length,cl:cl==null?null:+cl})});
+ return out}
+/* ---- insights ---- */
+function insights(m,acs){const o=[],add=(sev,t,d,go,lab)=>o.push({sev,t,d,go,lab});
+ acs.filter(a=>a.bal<-.005).forEach(a=>add('crit',a.name+' is below zero',S.base+' '+mf(a.bal)+'. Look for a missing deposit or a payment posted to the wrong account.',a.kind=='bank'?'bank':'',a.kind=='bank'?'Bank accounts':''));
+ acs.filter(a=>a.kind=='cash'&&a.lim>0&&a.bal>a.lim).forEach(a=>add('warn',a.name+' is over its cash limit',S.base+' '+mf(a.bal)+' held against a limit of '+mf(a.lim)+'. Consider a transfer to the bank.','cash','Transfer'));
+ if(m.proj<0&&m.avg14<0)add('crit','Cash and bank may run out within 7 days','At the 14-day pace of '+S.base+' '+mf(m.avg14)+' per day the balance would reach '+S.base+' '+mf(m.proj)+'.','cpz','Position');
+ else if(m.avg14<0&&m.bankB+m.cashB>0){const d=Math.floor((m.bal)/Math.abs(m.avg14));if(d<60)add('warn','At the current pace funds last about '+d+' days','The last 14 days used '+S.base+' '+mf(-m.avg14)+' per day on average.','cpz','Position')}
+ const avgO=m.w30.o/30;if(avgO>0&&m.td[1]>avgO*3&&m.td[1]>0)add('warn','Payments today are '+(m.td[1]/avgO).toFixed(1)+'× the daily average',S.base+' '+mf(m.td[1])+' paid out against an average of '+S.base+' '+mf(avgO)+'.','led','Ledger');
+ const act=S.br.filter(b=>(br=='all'||b.id==br)&&m.rows.some(r=>r.date==m.t&&r.br==b.id&&r.code==1000&&!r.xf)&&!closedDay(b.id,m.t));
+ if(act.length)add('warn',act.length+' branch'+(act.length==1?' has':'es have')+' cash activity but no close today',act.map(b=>b.name).join(', ')+'. Count the cash and close the day.','dcl','Close the day');
+ const un=acs.filter(a=>a.kind=='bank').reduce((s,a)=>s+a.un,0);if(un)add('info',un+' bank statement line'+(un==1?' is':'s are')+' not matched','Match them so the bank balance can be trusted.','brc','Reconcile');
+ acs.filter(a=>a.kind=='bank'&&a.cl!=null&&Math.abs(a.cl-a.bal)>.004).forEach(a=>add('warn',a.name+' differs from its statement by '+S.base+' '+mf(a.cl-a.bal),'Statement '+mf(a.cl)+' against books '+mf(a.bal)+'.','brc','Reconcile'));
+ if(m.dup.size){const n=new Set([...m.dup].map(k=>k.split('|')[0])).size;add('warn',n+' possible duplicate entr'+(n==1?'y':'ies'),'Same date, account, amount and description appear more than once.','led','Review in ledger')}
+ const c=STO();if(!(c.thr>0)){const a=m.ent.map(e=>e.amt).sort((x,y)=>x-y);if(a.length>=10)add('info','Set a review threshold for large movements','Entries above it will wait for a second person to confirm. A common starting point is '+S.base+' '+mf(a[Math.floor(a.length*.95)])+', the top 5% of your entries.','rev','Open Review')}
+ else{const pend=m.ent.filter(e=>e.amt>=c.thr&&!c.rev[e.id]).length;if(pend)add('warn',pend+' large movement'+(pend==1?'':'s')+' waiting for review','Entries of '+S.base+' '+mf(c.thr)+' or more need a second person.','rev','Review now')}
+ const tot=acs.filter(a=>a.bal>0).reduce((s,a)=>s+a.bal,0),top=acs.slice().sort((a,b)=>b.bal-a.bal)[0];if(top&&acs.length>1&&tot>0&&top.bal/tot>.8)add('info',(top.bal/tot*100).toFixed(0)+'% of funds sit in '+top.name,'Other accounts may need float. Consider a transfer if they run low.','cash','Transfer');
+ if(!o.length)o.push({sev:'ok',t:'Everything looks in order',d:'No negative balances, no unclosed days, no unmatched bank lines and no unusual movements.'});
+ const ord={crit:0,warn:1,info:2,ok:3};return o.sort((a,b)=>ord[a.sev]-ord[b.sev]).slice(0,6)}
+const GO={cpz:['go','cpz'],bank:['go','bank'],brc:['go','brc'],dcl:['go','dcl'],cash:['go','cash'],led:['t','led'],rev:['t','rev']};
+const attr=g=>{const x=GO[g];return x?(x[0]=='go'?`data-go="${x[1]}"`:`data-cbmt="${x[1]}"`):''};
+/* ---- chart ---- */
+function chart(m){const W=800,H=270,L0=54,B0=28,T0=14,R0=12,per=m.per,mx=Math.max(1,...per.flatMap(p=>[p.i,p.o])),bmn=Math.min(0,...per.map(p=>p.b)),bmx=Math.max(1,...per.map(p=>p.b)),Y=v=>T0+(H-T0-B0)*(1-v/mx),Yb=v=>T0+(H-T0-B0)*(1-(v-bmn)/Math.max(1,bmx-bmn)),gw=(W-L0-R0)/per.length,bw=Math.max(2,Math.min(16,gw/2.6)),lab=Math.max(1,Math.round(per.length/8));
+ const pts=per.map((p,i)=>(L0+i*gw+gw/2).toFixed(1)+','+Yb(p.b).toFixed(1)).join(' ');
+ return`<svg viewBox="0 0 ${W} ${H}" class="cbm-ch">${[0,.5,1].map(f=>`<line x1="${L0}" x2="${W-R0}" y1="${Y(mx*f)}" y2="${Y(mx*f)}" stroke="#e3ebf9"/><text x="${L0-8}" y="${Y(mx*f)+4}" text-anchor="end" class="cbm-ax">${cmp(mx*f)}</text>`).join('')}${per.map((p,i)=>{const x=L0+i*gw+gw/2;return`<rect x="${x-bw-1}" y="${Y(p.i)}" width="${bw}" height="${Math.max(0,Y(0)-Y(p.i))}" rx="3" fill="#2563eb"/><rect x="${x+1}" y="${Y(p.o)}" width="${bw}" height="${Math.max(0,Y(0)-Y(p.o))}" rx="3" fill="#f08a97"/>${i%lab==0?`<text x="${x}" y="${H-8}" text-anchor="middle" class="cbm-ax">${p.d.slice(5)}</text>`:''}<rect x="${x-gw/2}" y="${T0}" width="${gw}" height="${H-T0-B0}" fill="transparent"><title>${p.d}: in ${mf(p.i)}, out ${mf(p.o)}, balance ${mf(p.b)}</title></rect>`}).join('')}<polyline points="${pts}" fill="none" stroke="#0b2a6b" stroke-width="2.2" stroke-linejoin="round"/></svg>`}
+/* ---- tabs ---- */
+const delta=(c,p,inv)=>{if(Math.abs(p)<.005)return Math.abs(c)<.005?'<em class="flat">No change</em>':'<em class="flat">New</em>';const pc=(c-p)/Math.abs(p)*100,good=(pc>=0)!=!!inv;return`<em class="${Math.abs(pc)<.05?'flat':good?'good':'bad'}">${pc>=0?'▲':'▼'} ${Math.abs(pc).toFixed(1)}%</em>`};
+const kpi=(t,v,d,sub,neg)=>`<div class="cbm-k"><span>${t}</span><b class="${neg?'neg':''}">${mf(nz(v))}</b><div>${d||''}<small>${sub||S.base}</small></div></div>`;
+function overview(m,acs,ins){const tot=Math.max(1,acs.reduce((s,a)=>s+Math.max(0,a.bal),0)),recent=m.rows.slice().reverse().slice(0,7);
+ const k=[kpi('Total liquidity',m.bal,'',sc=='all'?'Cash + bank':sc=='cash'?'Cash on hand':'In banks',m.bal<0),kpi('Cash on hand',m.cashB,'',S.base),kpi('In banks',m.bankB,'',S.base),kpi('Net today',m.td[0]-m.td[1],'',m.td[0]?'In '+mf(m.td[0])+' · Out '+mf(m.td[1]):'No movement yet'),kpi('Net, last 30 days',m.w30.n,delta(m.w30.n,m.prev30.n),'vs previous 30'),kpi('7-day projection',m.proj,'','At the 14-day pace',m.proj<0)].join('');
+ const accH=acs.length?acs.slice().sort((a,b)=>b.bal-a.bal).slice(0,7).map(a=>`<div class="cbm-us"><span>${svg(a.kind=='bank'?IC.bank:IC.cash)}${A(a.name)}</span><i><u style="width:${Math.max(0,a.bal)/tot*100}%"></u></i><b class="${a.bal<0?'neg':''}">${mf(nz(a.bal))}</b></div>`).join(''):'<p class="cbm-em">No accounts yet.</p>';
+ const insH=ins.map(i=>`<div class="cbm-in ${i.sev}" ${i.go?attr(i.go):''}><span class="cbm-ii">${i.sev=='crit'||i.sev=='warn'?'!':i.sev=='ok'?'✓':'i'}</span><span class="cbm-it"><b>${A(i.t)}</b><small>${A(i.d)}</small></span>${i.lab?`<em>${A(i.lab)} ›</em>`:''}</div>`).join('');
+ return`<div class="cbm-kg">${k}</div><div class="cbm-2"><div class="cbm-pn"><div class="cbm-ph"><h3>Cash flow</h3><span class="cbm-seg">${[14,30,90].map(n=>`<button type="button" data-cbmr="${n}" class="${rg==n?'on':''}">${n}d</button>`).join('')}</span></div>${chart(m)}<div class="cbm-lg"><span><u style="background:#2563eb"></u>In</span><span><u style="background:#f08a97"></u>Out</span><span><u style="background:#0b2a6b"></u>Balance</span><small>Transfers between your own accounts are not counted as in or out.</small></div></div>
+ <div class="cbm-pn"><div class="cbm-ph"><h3>${svg(IC.spark,'pv')} AI insights</h3><span>Calculated locally from your ledger</span></div><div class="cbm-ins">${insH}</div></div></div>
+ <div class="cbm-2 b"><div class="cbm-pn"><div class="cbm-ph"><h3>Funds by account</h3><span>${acs.length} account${acs.length==1?'':'s'}</span></div>${accH}</div>
+ <div class="cbm-pn"><div class="cbm-ph"><h3>Latest movements</h3><span class="cbm-lk" data-cbmt="led">Open ledger ›</span></div>${recent.length?recent.map(r=>`<div class="cbm-rw"><span class="cbm-rt"><b>${A(r.memo||r.tt||'Entry')}</b><small>${A(r.date)} · ${A(r.acc)}</small></span><b class="${r.inn?'up':'dn'}">${r.inn?'+'+mf(r.inn):'−'+mf(r.out)}</b></div>`).join(''):'<p class="cbm-em">No movements yet.</p>'}</div></div>`}
+function flagsOf(r,m){const c=STO(),f=[];if(r.xf)f.push(['Transfer','info']);if(!r.xf&&c.thr>0&&Math.max(r.inn,r.out)>=c.thr)f.push(['Large','warn']);if(m.dup.has(r.id+'|'+r.aid))f.push(['Possible duplicate','bad']);const v=c.rev[r.id];if(v)f.push([v.st=='ok'?'Reviewed':'Flagged',v.st=='ok'?'good':'bad']);return f}
+function filtered(m){const t=m.t,q=lq.trim().toLowerCase(),from=lper=='1'?t:lper=='7'?addD(t,-6):lper=='30'?addD(t,-29):lper=='m'?t.slice(0,8)+'01':'';
+ let L=m.rows.filter(r=>(!from||r.date>=from)&&(!lacc||r.aid==lacc)&&(!ldir||(ldir=='in'?r.inn>0:r.out>0))&&(!(lhid&&r.xf))&&(!q||(r.memo+' '+r.acc+' '+r.tt+' '+r.date+' '+mf(r.inn||r.out)).toLowerCase().includes(q)));
+ if(lflag)L=L.filter(r=>flagsOf(r,m).some(f=>f[0]==lflag));
+ return lso=='amt'?L.slice().sort((a,b)=>Math.max(b.inn,b.out)-Math.max(a.inn,a.out)):lso=='old'?L:L.slice().reverse()}
+const PG=25;
+function ledger(m,acs){const L=filtered(m),pages=Math.max(1,Math.ceil(L.length/PG));if(lpg>=pages)lpg=pages-1;const sl=L.slice(lpg*PG,lpg*PG+PG),ti=L.reduce((s,r)=>s+(r.xf?0:r.inn),0),to=L.reduce((s,r)=>s+(r.xf?0:r.out),0);
+ const sel=(v,opts)=>opts.map(([k,t])=>`<option value="${A(k)}" ${v==k?'selected':''}>${A(t)}</option>`).join('');
+ return`<div class="cbm-pn"><div class="cbm-af noprint"><div class="cbm-sw">${svg(IC.search)}<input id="cbmq" value="${A(lq)}" placeholder="Search description, account, amount…" oninput="cbmQ(this.value)" autocomplete="off"></div>
+ <select onchange="cbmF('per',this.value)">${sel(lper,[['1','Today'],['7','Last 7 days'],['30','Last 30 days'],['m','This month'],['','All time']])}</select>
+ <select onchange="cbmF('acc',this.value)"><option value="">All accounts</option>${sel(lacc,acs.map(a=>[a.id,a.name]))}</select>
+ <select onchange="cbmF('dir',this.value)">${sel(ldir,[['','In and out'],['in','Money in'],['out','Money out']])}</select>
+ <select onchange="cbmF('flag',this.value)">${sel(lflag,[['','All entries'],['Large','Large'],['Possible duplicate','Possible duplicates'],['Flagged','Flagged'],['Reviewed','Reviewed']])}</select>
+ <select onchange="cbmF('so',this.value)">${sel(lso,[['date','Newest first'],['old','Oldest first'],['amt','Largest first']])}</select>
+ <label class="cbm-ck"><input type="checkbox" ${lhid?'checked':''} onchange="cbmF('hid',this.checked)"> Hide transfers</label>
+ <button type="button" class="b s cbm-btn" data-cbma="csv">${svg(IC.dl)} CSV</button></div>
+ <div class="cbm-sum"><span><small>Entries</small><b>${L.length}</b></span><span><small>Money in</small><b class="up">${mf(ti)}</b></span><span><small>Money out</small><b class="dn">${mf(to)}</b></span><span><small>Net</small><b>${mf(ti-to)}</b></span></div>
+ ${sl.length?`<div class="w cbm-w"><table class="cbm-t"><tr><th>Date</th><th>Account</th><th>Description</th><th class="n">In</th><th class="n">Out</th><th class="n">Balance</th><th>Flags</th></tr>${sl.map(r=>`<tr><td>${A(r.date)}</td><td>${A(r.acc)}</td><td><b>${A(r.memo||r.tt||'Entry')}</b>${r.tt&&r.memo?`<small>${A(r.tt)}${r.by?' · '+A(r.by):''}</small>`:r.by?`<small>${A(r.by)}</small>`:''}</td><td class="n up">${r.inn?mf(r.inn):''}</td><td class="n dn">${r.out?mf(r.out):''}</td><td class="n">${mf(r.run)}</td><td>${flagsOf(r,m).map(f=>`<span class="cbm-bd ${f[1]}">${f[0]}</span>`).join(' ')}</td></tr>`).join('')}</table></div>
+ <div class="cbm-pg noprint"><span>Showing ${lpg*PG+1}–${lpg*PG+sl.length} of ${L.length}</span><span><button type="button" class="b s" data-cbmp="-1" ${lpg==0?'disabled':''}>Previous</button> <button type="button" class="b s" data-cbmp="1" ${lpg>=pages-1?'disabled':''}>Next</button></span></div>`:'<p class="cbm-em">No entries match these filters.</p>'}</div>`}
+function closing(m){const t=m.t,brs=S.br.filter(b=>br=='all'||b.id==br),days=[6,5,4,3,2,1,0].map(i=>addD(t,-i));
+ const cards=brs.map(b=>{const cl=(S.closings||[]).filter(c=>c.br==b.id).sort((a,c)=>c.date.localeCompare(a.date)),today_=cl.find(c=>c.date==t),last=cl[0],act=d=>m.rows.some(r=>r.date==d&&r.br==b.id&&r.code==1000&&!r.xf),miss=days.filter(d=>act(d)&&!closedDay(b.id,d)&&d<t).length;
+  return`<div class="cbm-bc"><div class="cbm-ph"><h3>${A(b.name)}</h3><span class="cbm-bd ${today_?'good':act(t)?'warn':'info'}">${today_?'Closed today':act(t)?'Open · needs closing':'No activity'}</span></div>
+  <div class="cbm-cd">${days.map(d=>{const c=closedDay(b.id,d),a=act(d);return`<i class="${c?'ok':a?(d<t?'bad':'open'):'na'}" title="${d}: ${c?'closed':a?'activity, not closed':'no activity'}">${d.slice(8)}</i>`}).join('')}</div>
+  <div class="cbm-fg"><div><small>Last closing</small><b>${last?A(last.date):'—'}</b></div><div><small>Closed by</small><b>${last?A(last.by||''):'—'}</b></div><div><small>Last variance</small><b class="${last&&Math.abs(+last.base||0)>.004?'neg':''}">${last?mf(+last.base||0):'—'}</b></div><div><small>Unclosed days (7d)</small><b class="${miss?'neg':''}">${miss}</b></div></div></div>`}).join('');
+ return`<div class="cbm-pn"><div class="cbm-ph"><h3>Daily closing</h3><span>Last 7 days · <u class="ok"></u>closed <u class="bad"></u>missed <u class="open"></u>today open</span></div><div class="cbm-btns"><button type="button" class="b" data-go="dcl">Close the day</button><button type="button" class="b s" data-go="dcr">Daily cash report</button><button type="button" class="b s" data-go="chs">Closing history</button></div></div><div class="cbm-bg">${cards||'<p class="cbm-em">No branches.</p>'}</div>`}
+function accountsTab(m,acs){const cash=acs.filter(a=>a.kind=='cash'),bk=acs.filter(a=>a.kind=='bank'),t=m.t,w7=addD(t,-6);
+ const fl=a=>{let i=0,o=0;m.rows.forEach(r=>{if(!r.xf&&r.aid==a.id&&r.date>=w7){i+=r.inn;o+=r.out}});return[i,o]};
+ const cc=cash.map(a=>{const u=a.lim>0?Math.min(100,Math.max(0,a.bal)/a.lim*100):null,f=fl(a);return`<div class="cbm-bc"><div class="cbm-ph"><h3>${svg(IC.cash)}${A(a.name)}</h3><span class="cbm-bd ${a.bal<-.005?'bad':a.lim>0&&a.bal>a.lim?'warn':'good'}">${a.bal<-.005?'Below zero':a.lim>0&&a.bal>a.lim?'Over limit':'In range'}</span></div><div class="cbm-big ${a.bal<0?'neg':''}">${S.base} ${mf(nz(a.bal))}</div>${u==null?'<small class="cbm-mu">No cash limit set for this branch</small>':`<div class="cbm-bar"><i class="${u>=100?'hi':''}" style="width:${u}%"></i></div><small class="cbm-mu">${u.toFixed(0)}% of the ${mf(a.lim)} limit</small>`}<div class="cbm-fg"><div><small>In, 7 days</small><b class="up">${mf(f[0])}</b></div><div><small>Out, 7 days</small><b class="dn">${mf(f[1])}</b></div></div></div>`}).join('');
+ const bc=bk.map(a=>{const f=fl(a),h=a.all?Math.round((a.all-a.un)/a.all*100):null;return`<div class="cbm-bc"><div class="cbm-ph"><h3>${svg(IC.bank)}${A(a.name)}</h3><span class="cbm-bd ${a.un?'warn':'good'}">${a.un?a.un+' to match':a.all?'Reconciled':'No statement'}</span></div><div class="cbm-big ${a.bal<0?'neg':''}">${A(a.ccy||S.base)==S.base?S.base:S.base} ${mf(nz(a.bal))}</div><div class="cbm-bar"><i class="${h!=null&&h<80?'hi':''}" style="width:${h==null?0:h}%"></i></div><small class="cbm-mu">${h==null?'No statement imported':'Matched '+h+'%'}${a.no?' · A/C '+A(a.no):''} · ${A(brN(a.br))}</small><div class="cbm-fg"><div><small>In, 7 days</small><b class="up">${mf(f[0])}</b></div><div><small>Out, 7 days</small><b class="dn">${mf(f[1])}</b></div><div><small>Statement</small><b>${a.cl==null?'—':mf(a.cl)}</b></div><div><small>Difference</small><b class="${a.cl!=null&&Math.abs(a.cl-a.bal)>.004?'neg':''}">${a.cl==null?'—':mf(a.cl-a.bal)}</b></div></div></div>`}).join('');
+ return`<div class="cbm-pn"><div class="cbm-ph"><h3>Cash on hand</h3><span>${cash.length} branch${cash.length==1?'':'es'}</span></div><div class="cbm-bg">${cc||'<p class="cbm-em">No branches.</p>'}</div></div><div class="cbm-pn"><div class="cbm-ph"><h3>Bank accounts</h3><span>${bk.length} account${bk.length==1?'':'s'}</span></div><div class="cbm-btns"><button type="button" class="b s" data-go="bank">Manage accounts</button><button type="button" class="b s" data-go="brc">Import and reconcile</button><button type="button" class="b s" data-go="bxf">Bank transfers</button><button type="button" class="b s" data-go="cash">Transfer cash</button></div><div class="cbm-bg">${bc||'<p class="cbm-em">No bank account yet. Use Manage accounts to add one.</p>'}</div></div>`}
+function review(m){const c=STO(),ap=isAp(),thr=c.thr,all=thr>0?m.ent.filter(e=>e.amt>=thr).sort((a,b)=>b.date.localeCompare(a.date)||(+b.id)-(+a.id)):[],st=e=>c.rev[e.id]?c.rev[e.id].st:'pending',L=all.filter(e=>st(e)==rvs),cnt=k=>all.filter(e=>st(e)==k).length;
+ const cur=(me()||{}).name,others=(S.users||[]).filter(u=>u.role=='Owner'||u.role=='Manager').filter(u=>u.name!=cur).length;
+ const row=e=>{const v=c.rev[e.id],self=e.by&&e.by==cur&&others>0;return`<div class="cbm-lr"><span class="cbm-rt"><b>${A(e.memo||'Entry')}</b><small>${A(e.date)} · ${A(e.acc)}${e.by?' · by '+A(e.by):''}</small></span><b class="${e.inn>=e.out?'up':'dn'}">${S.base} ${mf(e.amt)}</b><span class="cbm-rs">${v?`<span class="cbm-bd ${v.st=='ok'?'good':'bad'}">${v.st=='ok'?'Reviewed':'Flagged'}</span><small>${A(v.by)} · ${A(v.at.slice(0,10))}${v.note?' · '+A(v.note):''}</small>`:'<span class="cbm-bd warn">Waiting</span>'}</span><span class="cbm-ra">${ap?(v?(isOwner_()?`<button type="button" class="b s" data-cbma="undo" data-cbmi="${A(e.id)}">Reopen</button>`:''):self?'<small class="cbm-mu">Needs another approver</small>':`<button type="button" class="b" data-cbma="ok" data-cbmi="${A(e.id)}">Confirm</button><button type="button" class="b s" data-cbma="flag" data-cbmi="${A(e.id)}">Flag</button>`):''}</span></div>`};
+ const lg_=c.log.slice().reverse().slice(0,30);
+ return`<div class="cbm-2"><div class="cbm-pn"><div class="cbm-ph"><h3>${svg(IC.shield)} Large-movement review</h3><span>Second-person confirmation</span></div><p class="cbm-tx">Entries at or above the threshold wait for a manager or owner to confirm. The person who recorded an entry cannot confirm it unless nobody else can.</p>
+ <div class="cbm-th"><label>Threshold (${A(S.base)})<input id="cbmth" type="number" min="0" step="0.01" value="${thr||''}" placeholder="0 = off" ${ap?'':'disabled'}></label>${ap?'<button type="button" class="b" data-cbma="thr">Save</button>':'<small class="cbm-mu">Only a manager or owner can change this.</small>'}</div></div>
+ <div class="cbm-pn"><div class="cbm-ph"><h3>Audit trail</h3><span>${c.log.length} events</span></div>${lg_.length?`<div class="cbm-au">${lg_.map(x=>`<div><small>${A(x.at.slice(0,10))} ${A(new Date(x.at).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'}))}</small><span><b>${A(x.by)}</b> <em>${A(x.role)}</em> · ${A(x.act)}: ${A(x.item)}${x.meta?' — '+A(x.meta):''}</span></div>`).join('')}</div><p style="margin:10px 0 0"><button type="button" class="b s cbm-btn" data-cbma="csvlog">${svg(IC.dl)} CSV</button></p>`:'<p class="cbm-em">Reviews, flags and threshold changes are recorded here.</p>'}</div></div>
+ <div class="cbm-pn"><div class="cbm-ph"><h3>Queue</h3><span class="cbm-seg">${[['pending','Waiting'],['flag','Flagged'],['ok','Reviewed']].map(([k,t])=>`<button type="button" data-cbmv="${k}" class="${rvs==k?'on':''}">${t} ${cnt(k)}</button>`).join('')}</span></div>${thr>0?(L.length?`<div class="cbm-lst">${L.slice(0,50).map(row).join('')}</div>`:'<p class="cbm-em">Nothing here.</p>'):'<p class="cbm-em">Set a threshold to start reviewing large movements.</p>'}</div>`}
+const isOwner_=()=>(me()||{}).role=='Owner';
+/* ---- page ---- */
+function page(){const m=model(),acs=accounts(),ins=insights(m,acs),c=STO();
+ const pend=c.thr>0?m.ent.filter(e=>e.amt>=c.thr&&!c.rev[e.id]).length:0,neg=acs.some(a=>a.bal<-.005);
+ const hero=`<div class="cbm-hero"><div class="cbm-hl"><span class="cbm-eye">Cashbook &amp; Banks</span><h1><small>${A(S.base)}</small> ${mf(nz(m.bal))}</h1><p>${sc=='all'?'Total cash and bank':sc=='cash'?'Cash on hand':'In banks'} · ${br=='all'?'All branches':A(brN(br))}</p><div class="cbm-pills"><span class="cbm-pill"><b>${mf(m.cashB)}</b> cash</span><span class="cbm-pill"><b>${mf(m.bankB)}</b> banks</span><span class="cbm-pill ${neg?'bad':'ok'}">${neg?'Account below zero':'✓ All accounts positive'}</span><span class="cbm-pill live"><u></u>Live · ${new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})}</span></div></div><div class="cbm-hr noprint"><div class="rx-sw">${svg(IC.search)}<input id="cbq" value="${A(cbq)}" placeholder="Search all movements…" oninput="cbmQ(this.value,1)" autocomplete="off"></div></div></div>`;
+ const tabs=[['ov','Overview'],['led','Ledger'],['cl','Closing'],['ac','Accounts'],['rev','Review',pend||'']],scs=[['all','All'],['cash','Cash'],['bank','Banks']];
+ const bar=`<div class="cbm-bar2 noprint"><div class="cbm-tabs">${tabs.map(([k,t,n])=>`<button type="button" data-cbmt="${k}" class="${tab==k?'on':''}">${t}${n?`<em>${n}</em>`:''}</button>`).join('')}</div><span class="cbm-seg">${scs.map(([k,t])=>`<button type="button" data-cbms="${k}" class="${sc==k?'on':''}">${t}</button>`).join('')}</span></div>`;
+ const body=tab=='led'?ledger(m,acs):tab=='cl'?closing(m):tab=='ac'?accountsTab(m,acs):tab=='rev'?review(m):overview(m,acs,ins);
+ return`<div class="cbm"><div class="cx-h prm" style="display:none"></div>${hero}${bar}${body}</div>`}
+const _c=V.cbd,_b=V.bkd;
+V.cbd=function(){if(entry!='cbd'){entry='cbd';sc='all';tab='ov'}return page()};
+V.bkd=function(){if(entry!='bkd'){entry='bkd';sc='bank';tab='ov'}return page()};
+window.cbmQ=(v,g)=>{lq=v;cbq=v;if(tab!='led'){tab='led'}lpg=0;go();rf2(g?'cbq':'cbmq')};
+window.cbmF=(k,v)=>{if(k=='per')lper=v;else if(k=='acc')lacc=v;else if(k=='dir')ldir=v;else if(k=='flag')lflag=v;else if(k=='so')lso=v;else if(k=='hid')lhid=!!v;lpg=0;go()};
+const tt=(m,b)=>{try{window.rpToast?rpToast(m,b):alert(m)}catch(e){}};
+function csv(name,head,lines){const q=v=>'"'+String(v==null?'':v).replace(/"/g,'""')+'"',t='﻿'+[head.join(','),...lines.map(r=>r.map(q).join(','))].join('\r\n');if(window.dlSave)dlSave(name,t,'text/csv');else tt('Download is not available here.',1)}
+function act(a,id){const c=STO(),m=build();
+ if(a=='csv'){const m2=model(),L=filtered(m2);csv('cashbook-ledger.csv',['Date','Account','Description','Type','In','Out','Balance','Entered by'],L.map(r=>[r.date,r.acc,r.memo,r.tt,r.inn||'',r.out||'',r.run,r.by]));lg('export','Ledger',L.length+' rows');return}
+ if(a=='csvlog'){csv('cashbook-audit.csv',['Time','Person','Role','Action','Item','Detail'],c.log.map(x=>[x.at,x.by,x.role,x.act,x.item,x.meta]));return}
+ if(!isAp()){tt('Only a manager or owner can do this.',1);return}
+ if(a=='thr'){const v=+((document.getElementById('cbmth')||{}).value)||0;if(v<0){tt('Enter zero or a positive amount.',1);return}const old=c.thr;c.thr=v;lg('threshold','Large-movement threshold',(old?mf(old):'off')+' → '+(v?mf(v):'off'));tt('Threshold saved.');return}
+ const e=m.ent.find(x=>x.id==id);if(!e)return;const cur=(me()||{}).name,others=(S.users||[]).filter(u=>u.role=='Owner'||u.role=='Manager').filter(u=>u.name!=cur).length;
+ if(a=='undo'){if(!isOwner_()){tt('Only an owner can reopen a review.',1);return}delete c.rev[id];lg('reopened',e.memo||('Entry '+id),'');return}
+ if(e.by&&e.by==cur&&others>0){tt('You recorded this entry, so someone else must review it.',1);return}
+ let note='';if(a=='flag'){note=(prompt('Why is this entry being flagged?')||'').trim();if(!note){tt('A reason is required to flag an entry.',1);return}}
+ c.rev[id]={st:a=='ok'?'ok':'flag',by:cur,at:new Date().toISOString(),note};lg(a=='ok'?'confirmed':'flagged',(e.memo||('Entry '+id))+' ('+mf(e.amt)+')',note)}
+document.addEventListener('click',e=>{if(view!='cbd'&&view!='bkd')return;const hit=s=>e.target.closest&&e.target.closest(s);let el;
+ if(el=hit('[data-cbmt]')){e.stopPropagation();tab=el.dataset.cbmt;if(tab=='led'){lpg=0}go();return}
+ if(el=hit('[data-cbms]')){e.stopPropagation();sc=el.dataset.cbms;lpg=0;go();return}
+ if(el=hit('[data-cbmr]')){e.stopPropagation();rg=+el.dataset.cbmr;go();return}
+ if(el=hit('[data-cbmv]')){e.stopPropagation();rvs=el.dataset.cbmv;go();return}
+ if(el=hit('[data-cbmp]')){e.stopPropagation();lpg=Math.max(0,lpg+ +el.dataset.cbmp);go();return}
+ if(el=hit('[data-cbma]')){e.stopPropagation();act(el.dataset.cbma,el.dataset.cbmi);go();return}
+},true);
+const _g=go;go=function(){if(view!='cbd'&&view!='bkd')entry=null;return _g.apply(this,arguments)};
+setInterval(()=>{try{if((view=='cbd'||view=='bkd')&&!MD&&!document.hidden){const a=document.activeElement;if(!a||a===document.body||!/INPUT|SELECT|TEXTAREA/.test(a.tagName))go()}}catch(e){}},45000);
+const css=document.createElement('style');css.textContent=`
+html body .cbm{display:grid;gap:16px}
+html body .cbm-hero{display:flex;justify-content:space-between;align-items:center;gap:22px;flex-wrap:wrap;padding:26px 30px;border-radius:22px;color:#fff;background:radial-gradient(800px 300px at 90% -30%,#60a5fa77,transparent 60%),radial-gradient(500px 260px at 0 130%,#38bdf855,transparent 60%),linear-gradient(135deg,#0a2766,#1347b8 58%,#2563eb);box-shadow:0 18px 40px #1d4ed84d}
+html body .cbm-eye{font-size:11.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#f2c14e}
+html body .cbm-hero h1{margin:6px 0 2px;font-size:28px;line-height:1.15;color:#fff!important;text-transform:none!important;letter-spacing:-.02em}html body .cbm-hero h1 small{font-size:14px;color:#c3d4fb;font-weight:600;margin-right:4px}
+html body .cbm-hero p{margin:0;color:#c3d4fb;font-size:14px}
+html body .cbm-pills{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+html body .cbm-pill{display:inline-flex;align-items:center;gap:6px;padding:4px 11px;border-radius:99px;font-size:12px;font-weight:600;background:#ffffff1f;border:1px solid #ffffff3a;color:#e6eeff}html body .cbm-pill b{color:#fff}
+html body .cbm-pill.ok{background:#16a37a33;border-color:#34d3a066;color:#d1fae5}html body .cbm-pill.bad{background:#e0546633;border-color:#fda4af88;color:#ffe4e6}
+html body .cbm-pill.live u{width:7px;height:7px;border-radius:50%;background:#4ade80;box-shadow:0 0 0 3px #4ade8044;display:inline-block}
+html body .cbm-hero .rx-sw{min-width:min(380px,100%)}html body .cbm-hero .rx-sw .cbm-i{color:#2563eb;width:19px;height:19px}
+html body .cbm-i{width:16px;height:16px;flex:none}html body .cbm-i.pv{color:#7c3aed}
+html body .cbm-bar2{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;flex-wrap:wrap;border-bottom:1px solid #d9e5f8}
+html body .cbm-tabs{display:flex;gap:6px;flex-wrap:wrap}
+html body .cbm-tabs button{position:relative;border:0;background:transparent!important;color:#475b82!important;font-size:14px;font-weight:600;padding:11px 16px;cursor:pointer;border-radius:10px 10px 0 0;box-shadow:none!important}
+html body .cbm-tabs button:hover{background:#eaf1ff!important}html body .cbm-tabs button.on{color:#1d4ed8!important}html body .cbm-tabs button.on::after{content:"";position:absolute;left:12px;right:12px;bottom:-1px;height:3px;border-radius:3px 3px 0 0;background:linear-gradient(90deg,#1d4ed8,#60a5fa)}
+html body .cbm-tabs em{font-style:normal;font-size:11.5px;margin-left:6px;padding:1px 7px;border-radius:99px;background:#fde68a;color:#92400e}
+html body .cbm-seg{display:inline-flex;border:1px solid #cddcf5;border-radius:10px;overflow:hidden;background:#fff;margin-bottom:6px}html body .cbm-ph .cbm-seg{margin:0}
+html body .cbm-seg button{border:0;background:transparent!important;color:#475b82!important;padding:7px 14px;font-size:13px;font-weight:600;cursor:pointer;box-shadow:none!important}html body .cbm-seg button.on{background:linear-gradient(135deg,#1d4ed8,#3b82f6)!important;color:#fff!important}
+html body .cbm-kg{display:grid;grid-template-columns:repeat(auto-fit,minmax(165px,1fr));gap:12px}
+html body[data-sv=cbd] #m .top .tbd,html body[data-sv=bkd] #m .top .tbd{display:none!important}
+html body .cbm-k{display:flex;flex-direction:column;gap:4px;padding:16px 18px;border-radius:18px;background:linear-gradient(180deg,#fff,#f6f9ff);border:1px solid #d9e5f8;box-shadow:0 1px 2px #0a1f4d0d,0 8px 22px #1d4ed812}
+html body .cbm-k>span{font-size:11.5px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:#64748b}html body .cbm-k>b{font-size:24px;line-height:1.2;color:#0b2a6b;letter-spacing:-.02em}html body .cbm-k>div{display:flex;align-items:center;gap:8px;flex-wrap:wrap}html body .cbm-k small{font-size:12px;color:#64748b}
+html body .neg{color:#b91c1c!important}html body .up{color:#1d4ed8}html body .dn{color:#be3a4b}
+html body .cbm-k em{font-style:normal;font-size:12px;font-weight:700;padding:2px 9px;border-radius:99px}html body .cbm-k em.good{background:#dcfce7;color:#166534}html body .cbm-k em.bad{background:#fee2e2;color:#991b1b}html body .cbm-k em.flat{background:#eef2f8;color:#475569}
+html body .cbm-2{display:grid;grid-template-columns:1.25fr 1fr;gap:16px}html body .cbm-2.b{grid-template-columns:1fr 1fr}@media(max-width:900px){html body .cbm-2,html body .cbm-2.b{grid-template-columns:1fr}}
+html body .cbm-pn{border-radius:18px;background:linear-gradient(180deg,#ffffffee,#f8fbffee);border:1px solid #d9e5f8;box-shadow:0 1px 2px #0a1f4d0d,0 8px 24px #1d4ed812;padding:18px;min-width:0;display:flex;flex-direction:column;gap:12px}
+html body .cbm-ph{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}html body .cbm-ph h3{margin:0;font-size:16px;color:#0b2a6b;display:flex;align-items:center;gap:8px}html body .cbm-ph>span{font-size:13px;color:#64748b}
+html body .cbm-lk{color:#1d4ed8!important;font-weight:600;cursor:pointer}
+html body .cbm-ch{width:100%;height:auto}html body .cbm-ax{font-size:11px;fill:#64748b}
+html body .cbm-lg{display:flex;gap:16px;font-size:13px;color:#475569;align-items:center;flex-wrap:wrap}html body .cbm-lg u{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:6px}html body .cbm-lg small{margin-left:auto;font-size:12px;color:#64748b}
+html body .cbm-ins{display:grid;grid-template-columns:minmax(0,1fr);gap:8px}
+html body .cbm-in{display:flex;align-items:center;gap:12px;padding:11px 12px;border-radius:14px;background:#f5f8ff;border:1px solid #e1eafb}html body .cbm-in[data-go],html body .cbm-in[data-cbmt]{cursor:pointer}html body .cbm-in[data-go]:hover,html body .cbm-in[data-cbmt]:hover{background:#eaf1ff}
+html body .cbm-in em{font-style:normal;font-size:12px;font-weight:600;color:#1d4ed8;white-space:nowrap}
+html body .cbm-ii{width:28px;height:28px;border-radius:9px;display:grid;place-items:center;font-size:14px;font-weight:700;flex:none;background:#e0ecff;color:#1d4ed8}
+html body .cbm-in.crit .cbm-ii{background:#fee2e2;color:#b91c1c}html body .cbm-in.crit{border-color:#fecaca;background:#fff6f6}html body .cbm-in.warn .cbm-ii{background:#fef3c7;color:#b45309}html body .cbm-in.ok .cbm-ii{background:#dcfce7;color:#15803d}
+html body .cbm-it,html body .cbm-rt,html body .cbm-it *,html body .cbm-rt *{white-space:normal}html body .cbm-it,html body .cbm-rt{display:flex;flex-direction:column;flex:1;min-width:0}html body .cbm-it b,html body .cbm-rt b{font-size:14px;color:#0f1d3a}html body .cbm-it small,html body .cbm-rt small{font-size:13px;color:#64748b;line-height:1.4}
+html body .cbm-us{display:grid;grid-template-columns:minmax(0,1.5fr) 1fr auto;gap:10px;align-items:center;font-size:13px}html body .cbm-us>span{display:flex;align-items:center;gap:8px;min-width:0;color:#25375e}html body .cbm-us i{height:8px;border-radius:99px;background:#e6eeff;overflow:hidden}html body .cbm-us u{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,#1d4ed8,#60a5fa)}html body .cbm-us b{text-align:right;font-size:13px}
+html body .cbm-rw{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:8px 0;border-top:1px solid #e6edf9}html body .cbm-rw:first-of-type{border-top:0}
+html body .cbm-em{margin:0;font-size:13px;color:#64748b;text-align:center;padding:12px 0}
+html body .cbm-af{display:flex;gap:10px;flex-wrap:wrap;align-items:center}html body .cbm-af select{padding:8px 10px;font-size:13px}
+html body .cbm-sw{display:flex;align-items:center;gap:8px;background:#fff;border:1px solid #cddcf5;border-radius:12px;padding:0 12px;min-width:240px;flex:1}html body .cbm-sw .cbm-i{color:#2563eb}html body .cbm-sw input{border:0!important;box-shadow:none!important;background:transparent!important;padding:9px 0!important;font-size:14px;flex:1;min-width:0}
+html body .cbm-ck{display:inline-flex;align-items:center;gap:6px;font-size:13px;color:#475569}
+html body .cbm-btn{display:inline-flex;align-items:center;gap:6px}html body .cbm-btn .cbm-i{width:15px;height:15px}
+html body .cbm-sum{display:flex;gap:10px;flex-wrap:wrap}html body .cbm-sum span{display:flex;flex-direction:column;padding:8px 14px;border-radius:12px;background:#f3f7ff;border:1px solid #e1eafb;min-width:110px}html body .cbm-sum small{font-size:11.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#64748b}html body .cbm-sum b{font-size:16px;color:#0b2a6b}
+html body .cbm-w{max-height:640px;overflow:auto;border-radius:14px;border:1px solid #e1eafb}
+html body .cbm-t{width:100%;border-collapse:collapse;font-size:13px}html body .cbm-t th{position:sticky;top:0;z-index:1;text-align:left;padding:10px 12px;font-size:11.5px;text-transform:uppercase;letter-spacing:.06em}html body .cbm-t th.n,html body .cbm-t td.n{text-align:right}html body .cbm-t td{padding:9px 12px;border-top:1px solid #e6edf9;vertical-align:top}html body .cbm-t td small{display:block;color:#64748b;font-size:12px}
+html body .cbm-bd{display:inline-block;font-size:12px;font-weight:700;padding:2px 9px;border-radius:99px;white-space:nowrap}html body .cbm-bd.good{background:#dcfce7;color:#166534}html body .cbm-bd.bad{background:#fee2e2;color:#991b1b}html body .cbm-bd.warn{background:#fef3c7;color:#92400e}html body .cbm-bd.info{background:#e0ecff;color:#1d4ed8}
+html body .cbm-pg{display:flex;justify-content:space-between;align-items:center;font-size:13px;color:#64748b}html body .cbm-pg .b{padding:7px 14px;font-size:13px}
+html body .cbm-bg{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px}
+html body .cbm-bc{display:flex;flex-direction:column;gap:10px;padding:16px;border-radius:16px;background:#fff;border:1px solid #d9e5f8}
+html body .cbm-big{font-size:24px;font-weight:700;color:#0b2a6b;letter-spacing:-.02em}
+html body .cbm-bar{height:8px;border-radius:99px;background:#e6eeff;overflow:hidden}html body .cbm-bar i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,#1d4ed8,#60a5fa)}html body .cbm-bar i.hi{background:linear-gradient(90deg,#f59e0b,#ef4444)}html body .cbm-mu{font-size:13px;color:#64748b}
+html body .cbm-fg{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:10px}html body .cbm-fg div{display:flex;flex-direction:column}html body .cbm-fg small{font-size:11.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#64748b}html body .cbm-fg b{font-size:14px;color:#0f1d3a}
+html body .cbm-cd{display:flex;gap:6px}html body .cbm-cd i{flex:1;text-align:center;font-style:normal;font-size:12px;font-weight:600;padding:7px 0;border-radius:9px;background:#eef2f8;color:#94a3b8}html body .cbm-cd i.ok{background:#dbeafe;color:#1d4ed8}html body .cbm-cd i.bad{background:#fee2e2;color:#b91c1c}html body .cbm-cd i.open{background:#fef3c7;color:#b45309}
+html body .cbm-ph u.ok,html body .cbm-ph u.bad,html body .cbm-ph u.open{display:inline-block;width:9px;height:9px;border-radius:3px;margin:0 4px 0 8px}html body .cbm-ph u.ok{background:#93b4f5}html body .cbm-ph u.bad{background:#f08a97}html body .cbm-ph u.open{background:#f5c04a}
+html body .cbm-btns{display:flex;gap:8px;flex-wrap:wrap}
+html body .cbm-tx{margin:0;font-size:14px;color:#25375e}html body .cbm-th{display:flex;gap:12px;align-items:flex-end;flex-wrap:wrap}html body .cbm-th label{display:flex;flex-direction:column;gap:4px;font-size:12px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:#64748b}html body .cbm-th input{padding:9px 11px;font-size:14px;min-width:180px}
+html body .cbm-lst{display:flex;flex-direction:column}html body .cbm-lr{display:grid;grid-template-columns:minmax(0,2fr) auto minmax(0,1.6fr) auto;gap:14px;align-items:center;padding:11px 4px;border-top:1px solid #e6edf9}html body .cbm-lr:first-child{border-top:0}
+html body .cbm-rs{display:flex;flex-direction:column;gap:2px;align-items:flex-start}html body .cbm-rs small{font-size:12px;color:#64748b}html body .cbm-ra{display:flex;gap:6px;justify-content:flex-end}html body .cbm-ra .b{padding:7px 14px;font-size:13px}
+@media(max-width:760px){html body .cbm-lr{grid-template-columns:1fr auto}html body .cbm-rs,html body .cbm-ra{grid-column:1/-1}}
+html body .cbm-au{display:grid;gap:8px;max-height:260px;overflow:auto}html body .cbm-au div{display:grid;grid-template-columns:116px 1fr;gap:10px;font-size:13px}html body .cbm-au small{color:#64748b}html body .cbm-au em{font-style:normal;color:#64748b}
+html[data-theme=dark] body .cbm-pn,html[data-theme=dark] body .cbm-k,html[data-theme=dark] body .cbm-bc{background:#0f1c3d!important;border-color:#223a73}
+html[data-theme=dark] body .cbm-ph h3,html[data-theme=dark] body .cbm-k>b,html[data-theme=dark] body .cbm-it b,html[data-theme=dark] body .cbm-rt b,html[data-theme=dark] body .cbm-big,html[data-theme=dark] body .cbm-fg b{color:#e2ebff!important}
+html[data-theme=dark] body .cbm-in,html[data-theme=dark] body .cbm-sum span{background:#14264f;border-color:#223a73}
 `;document.head.appendChild(css);
 })();
 
