@@ -4812,6 +4812,7 @@ Object.assign(window,{sq:'',sst:'all',se:'',smsg:'',ssc:'',stf:'',stt:'all',sF:'
 const stabs=()=>`<div class="ctabs noprint">${view!='smd'?'<button type="button" class="bk" data-go="smd">&lsaquo; Back</button>':''}${STABS.map(([k,t])=>`<button type="button" data-go="${k}" class="${k==view?'on':''}">${t}</button>`).join('')}</div>`+(smsg?`<div class="sh-msg noprint">${E(smsg)}</div>`:'');
 const noSup=()=>`<div class="p"><p class="mu" style="margin:0">No suppliers yet. Use <b>Add Supplier</b> to register your first one.</p></div>`;
 const pill=(t,k)=>`<span class="sh-tg ${k||''}">${t}</span>`;
+window.SUX={SU:()=>SU(),sb:(a,b)=>sb(a,b),open:(a,b)=>open(a,b),paidA:(a,b)=>paidA(a,b),addD:(a,b)=>addD(a,b)};
 V.smd=function(){const al=BL(),su=SU(),t0=today(),f30=addD(t0,-30),f90=addD(t0,-90),w7=addD(t0,7),m0=mS(),sid=new Set(su.map(c=>c.id));
  const info=su.map(c=>{const a=pag(c.id,al),b=sb(c.id,al),o=open(c,al),od=o.filter(x=>x.od).reduce((s,x)=>s+x.left,0),lp=lastPay(c.id,al),tot=billed(c.id,al),act=al.some(x=>x.cust==c.id&&x.date>=f30&&x.lines.some(y=>y[0]==2000)),share=a.tot>.004?od/a.tot:0;let sc=100-share*60-(a.b[3]>.004?15:0)-(a.tot>.004&&(!lp||lp<f90)?15:0);sc=Math.max(0,Math.round(sc));return{c,a,b,o,od,lp,life:tot,act,sc,g:sc>=80?'A':sc>=60?'B':sc>=40?'C':'D'}});
  const T=[0,1,2,3].map(i=>info.reduce((s,r)=>s+r.a.b[i],0)),owed=info.reduce((s,r)=>s+(r.b>0?r.b:0),0),od=info.reduce((s,r)=>s+r.od,0),adv=info.filter(r=>r.b<-.004),advT=adv.reduce((s,r)=>s-r.b,0);
@@ -5177,7 +5178,7 @@ const supForm=()=>{if(view!='sadd')return;const ds=document.getElementById('sf_d
  const h=document.createElement('h4');h.style.margin='18px 0 10px';h.innerHTML='Currencies <span style="font-weight:500;color:#64748b;font-size:12.5px">· the currencies this supplier can be paid in, and the default</span>';
  const box=document.createElement('div');box.className='ca-sup-cc';pk.els.forEach(x=>box.appendChild(x));grid.after(h);h.after(box)};
 
-const supWrap=()=>{if(window.sSave&&!window.sSave.rg){const orig=window.sSave;const ns=function(){if(window._sOk){window._sOk=0;const n0=S.cust.length,was=se;orig();try{const sp=was?S.cust.find(x=>x.id==was):(S.cust.length>n0?S.cust[S.cust.length-1]:null);if(sp&&window._sCc){sp.ccys=[...new Set([S.base,sp.dccy,...window._sCc])];save()}}catch(e){}setTimeout(()=>{if(S.cust.length>n0){const c=S.cust[S.cust.length-1];regToast('Supplier registered successfully',c.name+' · '+c.code,'#8b1e3f')}else if(was&&!se&&view!='sadd')regToast('Supplier updated successfully','','#8b1e3f')},80);return}
+const supWrap=()=>{if(window.sSave&&!window.sSave.rg){const orig=window.sSave;const ns=function(){if(window._sOk){window._sOk=0;const n0=S.cust.length,was=se;orig();try{const sp=was?S.cust.find(x=>x.id==was):(S.cust.length>n0?S.cust[S.cust.length-1]:null);if(sp&&window._sCc){sp.ccys=[...new Set([S.base,sp.dccy,...window._sCc])];save()}if(sp&&window._sFx){Object.assign(sp,window._sFx);window._sFx=null;save()}}catch(e){}setTimeout(()=>{if(S.cust.length>n0){const c=S.cust[S.cust.length-1];regToast('Supplier registered successfully',c.name+' · '+c.code,'#8b1e3f')}else if(was&&!se&&view!='sadd')regToast('Supplier updated successfully','','#8b1e3f')},80);return}
   if(!canW('cust'))return deny('cust');const root=document.querySelector('.p'),g=id=>((document.getElementById(id)||{}).value||'').trim(),el=id=>document.getElementById(id),errs=[];
   if(!g('sf_name'))errs.push({el:el('sf_name'),name:'Supplier name',msg:'Supplier name is required.'});
   else if(S.cust.some(x=>x.type=='Supplier'&&x.id!=se&&(x.name||'').toLowerCase()==g('sf_name').toLowerCase()))errs.push({el:el('sf_name'),name:'Supplier name',msg:'A supplier with this name already exists.'});
@@ -5185,12 +5186,15 @@ const supWrap=()=>{if(window.sSave&&!window.sSave.rg){const orig=window.sSave;co
   else{const d=S.cust.find(x=>x.type=='Supplier'&&x.id!=se&&dgt(x.phone)==dgt(g('sf_phone')));if(d)errs.push({el:el('sf_phone'),name:'Phone number',msg:'This number is already registered to '+d.name+'.'})}
   if(g('sf_email')&&!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(g('sf_email')))errs.push({el:el('sf_email'),name:'Email',msg:'Enter a valid email address, e.g. name@company.com.'});
   if(!g('sf_dccy'))errs.push({el:el('sf_dccy'),name:'Default currency',msg:'Select a default currency.'});
+  if(window.apxErrs)apxErrs(errs,el);
   if(!report(root,errs,root))return;
   const ob=+g('sf_ob')||0,sec=[['Supplier identity',[['Supplier type',g('sf_ctype')],['Supplier name',g('sf_name')],['Contact person',g('sf_contact')],['Tax / VAT number',g('sf_tax')],['Status',{html:'<span class="rg-pill '+(/^active$/i.test(g('sf_status'))?'on':'off')+'">'+X(g('sf_status')||'Active')+'</span>'}]]],
    ['Contact details',[['Phone',g('sf_phone')],['WhatsApp',g('sf_wa')],['Email',g('sf_email')],['Country',g('sf_country')],['City',g('sf_city')],['Address',g('sf_address'),1]]],
    ['Payment settings',[['Payment terms',g('sf_terms')],['Default currency',g('sf_dccy')],['Allowed currencies',{html:[...(window._sCc||[])].map(c=>'<span class="rg-chip'+(c==g('sf_dccy')?' def':'')+'">'+X(c)+(c==g('sf_dccy')?' ★':'')+'</span>').join('')},1],['Bank details',g('sf_bankd'),1]]]];
+  if(window.apxSec)sec.push(apxSec());
   if(!se)sec.push(['Opening balance',[['Amount you owe',ob>0?S.base+' '+fmt(ob):'None'],['As of',g('sf_obd')]]]);
   if(g('sf_notes'))sec.push(['Notes',[['Internal notes',g('sf_notes'),1]]]);
+  window._sFx=window.apxFields?apxFields():null;
   regPreview({title:se?'Review supplier changes':'Review supplier registration',sub:'Please confirm the details are correct before '+(se?'saving.':'registering.'),color:'#8b1e3f',sections:sec,btn:se?'Confirm and save':'Confirm and register',onOk:()=>{window._sOk=1;window.sSave()}})};ns.rg=1;window.sSave=ns}};
 const _g=go;go=function(){_g.apply(this,arguments);try{custForm();supWrap();supForm()}catch(e){console.error(e)}};supWrap();})();
 /*COA-ACTIONS*/
@@ -5661,7 +5665,7 @@ const oc=V.ctx;V.ctx=function(){let h=oc.apply(this,arguments);
  h=h.replace('<button class="plf" onclick="ctOpen()">+ New transaction</button>','<span style="display:flex;gap:8px;flex-wrap:wrap"><button class="plf" onclick="sdOpen()">+ Currency sale deal</button><button class="plo" onclick="ctOpen()">+ Multi-currency entry</button></span>');
  return h};
 /*UPDCHK*/
-(function(){const B='2026-10-19-cy';window.PB_BUILD=B;if(location.protocol=='file:')return;let nb=null,tm=0;
+(function(){const B='2026-10-19-cz';window.PB_BUILD=B;if(location.protocol=='file:')return;let nb=null,tm=0;
 const busy=()=>{const a=document.activeElement;return !!(document.querySelector('.ov')||(a&&/^(INPUT|TEXTAREA)$/.test(a.tagName)&&String(a.value||'').length>0))};
 function go2(){try{const k='pb_upd_'+nb,n=+(sessionStorage.getItem(k)||0);sessionStorage.setItem(k,n+1)}catch(e){}location.replace(location.pathname+'?v='+encodeURIComponent(nb))}
 function bar(){let d=document.getElementById('pbupd');if(!d){d=document.createElement('div');d.id='pbupd';d.setAttribute('role','button');d.style.cssText='position:fixed;left:50%;transform:translateX(-50%);top:10px;z-index:100000;background:#0b3d33;color:#fff;padding:11px 18px;border-radius:12px;font:700 13px Inter,system-ui,sans-serif;box-shadow:0 6px 20px rgba(0,0,0,.3);cursor:pointer;text-align:center;max-width:92vw';d.onclick=()=>{d.textContent='Updating…';go2()};document.body.appendChild(d)}d.textContent='A new version of PrimeBook is ready. Tap here to update.'}
@@ -10942,6 +10946,7 @@ function act(k){const i=byK(k);if(!i)return;if(i.bank&&!hasBank()){tt('Add a ban
  if(k=='rcpt')return rpOpen();if(k=='pay')return rwOpen();if(k=='sup')return mfOpen({type:'bp'});if(k=='xfr')return mfOpen({type:'tr'});
  if(k=='c2b')return mfOpen({type:'tr',acct:cash,to:bank});if(k=='b2c')return mfOpen({type:'tr',acct:bank,to:cash});
  if(CFG[k])openForm(k)}
+window.cbxAct=act;
 document.addEventListener('click',e=>{const t=e.target;if(!t.closest)return;
  const mb=t.closest('[data-cbxm]');if(mb){e.stopPropagation();e.preventDefault();const m=menuEl();menu(m&&m.hidden);return}
  const ai=t.closest('[data-cbxa]');if(ai){e.stopPropagation();e.preventDefault();act(ai.dataset.cbxa);return}
@@ -12220,6 +12225,146 @@ html[data-theme=dark] body .rbx-r,html[data-theme=dark] body .rbx-bg{background:
 html[data-theme=dark] body .rbx-mt b,html[data-theme=dark] body .rbx-tg b,html[data-theme=dark] body .rbx-sum b{color:#f2f6ff}html[data-theme=dark] body .rbx-tg,html[data-theme=dark] body .rbx-mb,html[data-theme=dark] body .rbx-he,html[data-theme=dark] body .rbx-lf{border-color:#223a73}html[data-theme=dark] body .rbx-lk{background:#14264f;border-color:#223a73;color:#cfe0ff}html[data-theme=dark] body .rbx-sw span{background:#35507f}html[data-theme=dark] body .rbx-sw input:checked+span{background:#3b82f6}
 @media(max-width:900px){html body .rbx-body{grid-template-columns:1fr}html body .rbx-l{position:static}html body .rbx-ls{max-height:240px}html body .rbx-sr{min-width:0;flex:1 1 100%}}
 @media(max-width:560px){html body .rbx-he{grid-template-columns:1fr}html body .rbx-tg{flex-wrap:wrap}}
+`;document.head.appendChild(css);
+})();
+
+/*APX*/(function(){
+const A=x=>String(x==null?'':x).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const r2=v=>Math.round((+v||0)*100)/100,sum=(a,f)=>a.reduce((s,x)=>s+(+f(x)||0),0),M=v=>S.base+' '+fmt(v);
+const U=()=>window.SUX,sups=()=>U().SU(),sidSet=()=>new Set(sups().map(c=>c.id));
+const pend=()=>(S.pbq||[]).filter(p=>/^(To review|Saved)$/.test(p.st||''));
+const ptot=p=>{try{return pbTot(p)}catch(e){return 0}};
+/* ---------- pending approvals ---------- */
+function banner(){const q=pend();if(!q.length)return '';const t=r2(sum(q,ptot));
+ return `<div class="sx-ban noprint" role="status"><span>&#9888;</span><div><b>You have ${q.length} bill${q.length==1?'':'s'} pending approval before payment can be scheduled.</b><small>${M(t)} in total. Bills are posted to Accounts Payable only after they are approved.</small></div><button type="button" onclick="pbf='open';pbs='';view='pbr';go()">Review bills</button></div>`}
+/* ---------- AP subledger vs GL ---------- */
+function gl(){const al=BL(),S_=sups(),sid=sidSet(),per=S_.map(c=>U().sb(c.id,al)),owed=r2(sum(per.filter(b=>b>.004),b=>b)),adv=r2(-sum(per.filter(b=>b<-.004),b=>b)),sub=r2(owed-adv),led=r2(-dcs(2000,al)),diff=r2(led-sub);
+ const orphan=al.filter(x=>x.lines.some(y=>String(y[0])=='2000')&&!sid.has(x.cust)),ok=Math.abs(diff)<.005,ol=orphan.map(x=>({x,v:r2(x.lines.filter(y=>String(y[0])=='2000').reduce((s,y)=>s+y[2]-y[1],0))})).filter(o=>Math.abs(o.v)>.004);
+ const row=(l,v,c,s)=>`<div class="sx-ln ${c||''}"><span>${l}${s?`<small>${s}</small>`:''}</span><i>${v}</i></div>`;
+ return `<div class="p sx-gl"><div class="card-h"><h3>AP subledger vs. GL</h3><span class="tg ${ok?'t-fx':'t-out'}">${ok?'Reconciled':'Out by '+fmt(Math.abs(diff))}</span></div>`+
+ row('Total owed to suppliers',M(owed),'','Sum of each supplier’s balance')+row('Less supplier advances',adv>0?'-'+M(adv):M(0),'mu','Prepayments held by suppliers')+row('Subledger total',M(sub),'b')+row('Accounts Payable in the General Ledger',M(led),'b','Account 2000')+
+ `<div class="sx-ln t"><span>Difference</span><i>${M(diff)}</i></div>`+
+ (ok?`<p class="sx-ok">The supplier balances add up to the Accounts Payable account.</p>`:`<div class="sx-w"><b>The two totals do not match.</b> ${ol.length?`${ol.length} entr${ol.length==1?'y':'ies'} on Accounts Payable ${ol.length==1?'is':'are'} not linked to a supplier:`:'Check for entries on account 2000 that were changed after posting.'}${ol.slice(0,4).map(o=>`<div class="sx-oe"><span>${A(o.x.date)} · ${A((o.x.memo||'').slice(0,40))}</span><i>${fmt(o.v)}</i></div>`).join('')}</div>`)+
+ `<p class="mu" style="margin:10px 0 0"><span class="lnk" data-go="jr">View journal entries</span> &nbsp;&middot;&nbsp; <span class="lnk" data-go="coa">Chart of accounts</span></p></div>`}
+/* ---------- foreign currency exposure ---------- */
+function fx(){const al=BL(),m={};al.forEach(x=>{if(!x.ccy||x.ccy==S.base)return;const l=x.lines.filter(y=>String(y[0])=='2000');if(!l.length)return;const b=l.reduce((s,y)=>s+y[2]-y[1],0),r=+x.rate||0;if(!r)return;const e=m[x.ccy]||(m[x.ccy]={n:0,b:0});e.n+=b/r;e.b+=b});
+ const R=Object.keys(m).map(c=>{const e=m[c],cur=r2(e.n*mid(c));return{c,n:e.n,b:r2(e.b),cur,imp:r2(cur-e.b),rate:mid(c)}}).filter(r=>Math.abs(r.n)>.004).sort((a,b)=>Math.abs(b.cur)-Math.abs(a.cur));
+ const fcs=sups().filter(c=>c.dccy&&c.dccy!=S.base).length;
+ if(!R.length)return `<div class="p"><div class="card-h"><h3>Foreign currency exposure</h3><span class="tg t-fx">None</span></div><p class="mu" style="margin:0">Nothing is owed to suppliers in a foreign currency. Everything you owe is in ${S.base}.${fcs?` ${fcs} supplier${fcs==1?' is':'s are'} set up to be paid in a foreign currency.`:''}</p></div>`;
+ const tot=r2(sum(R,r=>r.cur)),ti=r2(sum(R,r=>r.imp));
+ return `<div class="p"><div class="card-h"><h3>Foreign currency exposure</h3><span class="tg ${ti>.004?'t-out':'t-fx'}">${ti>.004?'Unrealised loss':ti<-.004?'Unrealised gain':'No impact'}</span></div><div class="w"><table class="sx-t"><tr><th>Currency</th><th class="n">Owed</th><th class="n">Rate now</th><th class="n">Value now (${S.base})</th><th class="n">Booked at</th><th class="n">FX impact</th></tr>${R.map(r=>`<tr><td><b>${A(r.c)}</b></td><td class="n">${fmt(r.n)}</td><td class="n">${(+r.rate).toFixed(4)}</td><td class="n">${fmt(r.cur)}</td><td class="n">${fmt(r.b)}</td><td class="n ${r.imp>.004?'sx-neg':r.imp<-.004?'sx-pos':''}">${r.imp>0?'+':''}${fmt(r.imp)}</td></tr>`).join('')}<tr class="t"><td>Total</td><td></td><td></td><td class="n">${fmt(tot)}</td><td></td><td class="n">${ti>0?'+':''}${fmt(ti)}</td></tr></table></div>
+ <p class="mu" style="margin:10px 0 0">Positive impact means you would pay more in ${S.base} than when the bill was booked. A 5% move in the foreign rates changes what you owe by about ${M(r2(Math.abs(tot)*.05))}. Rates are your board mid rates.</p></div>`}
+/* ---------- AI accounts payable insights (rule based, read only) ---------- */
+function aiItems(){const al=BL(),S_=sups(),sid=sidSet(),t=today(),out=[],it=(k,h,s)=>out.push({k,h,s});
+ const bills=al.filter(x=>sid.has(x.cust)).map(x=>({x,v:r2(x.lines.filter(y=>String(y[0])=='2000').reduce((s,y)=>s+y[2]-y[1],0))})).filter(b=>b.v>.004),nm=id=>A((S_.find(c=>c.id==id)||{}).name||'a supplier');
+ const seen={},dups=[];bills.forEach(b=>{const k=b.x.cust+'|'+b.v.toFixed(2)+'|'+b.x.date;seen[k]=(seen[k]||0)+1;if(seen[k]==2)dups.push(b)});
+ dups.slice(0,3).forEach(b=>it('w','Possible duplicate bill from '+nm(b.x.cust),'Two bills of '+M(b.v)+' on '+A(b.x.date)+'. Check that both are real before paying.'));
+ pend().forEach(p=>{try{const d=pbDup(p);if(d.length)it('w','Review queue: '+A(p.no)+' may duplicate '+A(d.join(', ')),'Same supplier with the same reference, or the same total on the same date.')}catch(e){}});
+ S_.forEach(c=>{const L=bills.filter(b=>b.x.cust==c.id).sort((a,b)=>a.x.date.localeCompare(b.x.date));if(L.length<4)return;const last=L[L.length-1],prev=L.slice(0,-1),av=sum(prev,b=>b.v)/prev.length;if(av>0&&last.v>av*3)it('w','Unusually large bill from '+nm(c.id),M(last.v)+' on '+A(last.x.date)+', against an average of '+fmt(av)+' for this supplier.')});
+ const th=+((S.cbk||{}).thr)||0;if(th>0){const near=bills.filter(b=>b.v>=th*.9&&b.v<th);if(near.length)it('w',near.length+' bill'+(near.length==1?' is':'s are')+' just under the approval limit of '+fmt(th),'Amounts sitting just below a limit are a common way of avoiding a second approval. Check '+near.slice(0,2).map(b=>nm(b.x.cust)+' ('+fmt(b.v)+')').join(', ')+'.')}
+ const paid=S_.filter(c=>U().paidA(c.id,al)>.004&&(!c.tax||!(c.sbank&&c.sbank.acct||c.bankd)));if(paid.length)it('w',paid.length+' paid supplier'+(paid.length==1?' has':'s have')+' no tax ID or bank details on file',paid.slice(0,3).map(c=>A(c.name)).join(', ')+(paid.length>3?' and more':'')+'. Complete their onboarding before the next payment.');
+ const due=[],liq=r2(dcs(1000,al)+dcs(1010,al));S_.forEach(c=>U().open(c,al).forEach(o=>due.push({c,o})));due.sort((a,b)=>a.o.due.localeCompare(b.o.due));
+ const w14=U().addD(t,14),w30=U().addD(t,30);let cum=0,short=null;due.filter(d=>d.o.due<=w14).forEach(d=>{cum=r2(cum+d.o.left);if(!short&&cum>liq+.004)short={on:d.o.due<t?t:d.o.due,need:cum}});
+ if(short)it('r','You may not have the cash to pay bills due by '+A(short.on),'Cash and bank hold '+M(liq)+' but '+M(short.need)+' falls due within 14 days (overdue bills included). Short by '+M(r2(short.need-liq))+'. Expected receipts are not counted.');
+ else{const d30=r2(sum(due.filter(d=>d.o.due<=w30),d=>d.o.left));if(d30>.004)it('ok','Cash covers the bills due in the next 30 days','Cash and bank hold '+M(liq)+' against '+M(d30)+' due, leaving about '+M(r2(liq-d30))+'. A projection that ignores new receipts and spending.')}
+ const q=pend();if(q.length)it('i',q.length+' bill'+(q.length==1?'':'s')+' in the review queue ('+M(r2(sum(q,ptot)))+')','Not yet in Accounts Payable, so not part of the cash forecast above.');
+ return{out,has:bills.length>0||q.length>0||al.some(x=>x.lines.some(y=>String(y[0])=='2000'))}}
+function ai(){const r=aiItems();let body;
+ if(!r.has)body=`<div class="sx-tip"><b>AI Tip</b>: Upload invoices to enable duplicate invoice detection and cash flow forecasting.<div><button type="button" class="plf" onclick="view='cap';go()">Upload an invoice</button></div></div>`;
+ else body=r.out.length?r.out.map(x=>`<div class="sx-ai ${x.k}"><i>${x.k=='w'||x.k=='r'?'!':x.k=='ok'?'&#10003;':'i'}</i><div><b>${x.h}</b>${x.s?`<small>${x.s}</small>`:''}</div></div>`).join(''):`<p class="mu">No issues found in your supplier bills.</p>`;
+ return `<div class="p sx-aip"><div class="card-h"><h3>&#10024; AI accounts payable insights</h3></div>${body}<p class="mu sx-fn">Rule-based checks on your own records. Nothing here approves, pays or changes a bill.</p></div>`}
+/* ---------- onboarding: documents, tax, bank ---------- */
+const DOCS=[['w9','W-9 (US supplier tax form)'],['w8','W-8BEN / W-8BEN-E (foreign supplier status)'],['reg','Business registration or certificate'],['bank','Void cheque or bank letter'],['taxres','Tax residency certificate'],['contract','Signed contract or NDA']];
+const isUS=c=>/^(us|usa|u\.s\.a?\.?|united states.*)$/i.test(String(c||'').trim()),same=(a,b)=>String(a||'').trim().toLowerCase()==String(b||'').trim().toLowerCase()||(/^(ca|can|canada)$/i.test(a)&&/^(ca|can|canada)$/i.test(b));
+function suggested(c){const s=new Set(['bank']);if(!c)return s;if((c.ctype||'Company')=='Company')s.add('reg');const ct=c.country||'';if(isUS(ct))s.add('w9');else if(ct&&S.co&&S.co.country&&!same(ct,S.co.country))s.add('w8');return s}
+const TT=[['','Not specified'],['gst','GST/HST business number (Canada)'],['vat','VAT number (EU / UK)'],['ein','US EIN / TIN'],['trn','UAE TRN'],['other','Other']];
+function taxFmt(t,v){v=String(v||'').replace(/[\s.]/g,'').toUpperCase();if(!v||!t||t=='other')return null;const P={gst:/^\d{9}(RT\d{4})?$/,vat:/^[A-Z]{2}[A-Z0-9]{8,12}$/,ein:/^\d{2}-?\d{7}$/,trn:/^\d{15}$/};return P[t]?P[t].test(v):null}
+function ibanOk(v){v=String(v||'').replace(/\s/g,'').toUpperCase();if(!/^[A-Z]{2}\d{2}[A-Z0-9]{11,30}$/.test(v))return null;const s=v.slice(4)+v.slice(0,4);let r=0;for(const ch of s){const n=/\d/.test(ch)?ch:String(ch.charCodeAt(0)-55);for(const d of n)r=(r*10+ +d)%97}return r==1}
+const bicOk=v=>{v=String(v||'').replace(/\s/g,'').toUpperCase();return v?/^[A-Z]{4}[A-Z]{2}[A-Z0-9]{2}([A-Z0-9]{3})?$/.test(v):null};
+const mask=v=>{v=String(v||'').replace(/\s/g,'');return v.length>4?'•••• '+v.slice(-4):v};
+const cur=()=>(typeof se!='undefined'&&se)?S.cust.find(x=>x.id==se):null;
+const opt=(L,sel)=>L.map(x=>{const a=Array.isArray(x)?x:[x,x];return `<option value="${A(a[0])}" ${a[0]==sel?'selected':''}>${A(a[1])}</option>`}).join('');
+function form(){const c=cur()||{},b=c.sbank||{},d=c.sdocs||{},sg=suggested({...c,country:(document.getElementById('sf_country')||{}).value||c.country,ctype:(document.getElementById('sf_ctype')||{}).value||c.ctype}),v=k=>A(b[k]||'');
+ const done=DOCS.filter(x=>(d[x[0]]||{}).st=='Received').length;
+ return `<h4 style="margin:18px 0 10px">Tax verification <span class="sx-sub">the number itself goes in Tax / VAT number above</span></h4><div class="sh-grid"><label>Tax ID type<select id="sx_ttype">${opt(TT,c.ttype||'')}</select></label><label>Verification status<select id="sx_tst">${opt(['Not verified','Pending','Verified'],(c.txv||{}).st||'Not verified')}</select></label><div class="sx-hint" id="sx_tf" aria-live="polite"></div></div>
+ <p class="sx-note">Format check only. It cannot confirm the number is registered. Check it with the tax authority (for example the CRA GST/HST registry or the EU VIES service), then set the status to Verified.</p>
+ <h4 style="margin:18px 0 10px">Banking details <span class="sx-sub">for payments to this supplier</span></h4><div class="sh-grid"><label>Account holder name<input id="sx_holder" value="${v('holder')}" placeholder="Exactly as on the bank account"></label><label>Account number or IBAN<input id="sx_acct" value="${v('acct')}" autocomplete="off"></label><label>SWIFT / BIC<input id="sx_swift" value="${v('swift')}" placeholder="e.g. ROYCCAT2"></label><label>Routing, transit or institution no.<input id="sx_rt" value="${v('routing')}"></label><label>Bank country<input id="sx_bctry" value="${v('country')}"></label><label>Bank details status<select id="sx_bst">${opt(['Not verified','Verified by call-back','Verified by bank letter'],b.st||'Not verified')}</select></label></div><div class="sx-hint" id="sx_af" aria-live="polite"></div>
+ <p class="sx-note">Confirm new or changed bank details with the supplier on a phone number you already hold before the first payment. This is the most common payment fraud.</p>
+ <h4 style="margin:18px 0 10px">Compliance documents <span class="sx-sub" id="sx_dp">${done} of ${DOCS.length} received</span></h4><div class="w"><table class="sx-t sx-dt"><tr><th>Document</th><th>Status</th><th>Received</th><th>Expires</th></tr>${DOCS.map(([k,n])=>{const e=d[k]||{},sgt=sg.has(k);return `<tr><td><b>${n}</b> <em class="sx-sg" ${sgt?'':'hidden'}>Suggested</em></td><td><select id="sx_d_${k}_st" ${e.st?'data-t="1"':''}>${opt(['Not required','Requested','Received'],e.st||(sgt?'Requested':'Not required'))}</select></td><td><input type="date" id="sx_d_${k}_rc" value="${A(e.rc||'')}"></td><td><input type="date" id="sx_d_${k}_ex" value="${A(e.ex||'')}"></td></tr>`}).join('')}</table></div>
+ <p class="sx-note">PrimeBook tracks the status, received date and expiry. Keep the signed originals in your document store. Suggestions follow the supplier’s country: W-9 for US suppliers, W-8BEN or W-8BEN-E for other countries that differ from your company’s.</p>`}
+const g=id=>((document.getElementById(id)||{}).value||'').trim();
+function live(){const a=document.getElementById('sx_tf'),b=document.getElementById('sx_af');if(!a||!b)return;
+ const t=g('sx_ttype'),tv=g('sf_tax'),f=taxFmt(t,tv);a.innerHTML=tv&&f===true?'<span class="sx-g">&#10003; Format looks right for this tax ID type.</span>':tv&&f===false?'<span class="sx-r">This does not match the usual format for this tax ID type. Check it.</span>':'';
+ const ac=g('sx_acct'),ib=ibanOk(ac),bc=bicOk(g('sx_swift')),m=[];if(ac&&ib===true)m.push('<span class="sx-g">&#10003; IBAN checksum is valid.</span>');if(ac&&ib===false)m.push('<span class="sx-r">This looks like an IBAN but the checksum fails. Check it.</span>');if(bc===false)m.push('<span class="sx-r">SWIFT / BIC should be 8 or 11 letters and digits.</span>');b.innerHTML=m.join(' ');
+ const sg=suggested({country:g('sf_country'),ctype:g('sf_ctype')||'Company'});DOCS.forEach(([k])=>{const s=document.getElementById('sx_d_'+k+'_st');if(!s)return;const em=s.closest('tr').querySelector('.sx-sg');if(em)em.hidden=!sg.has(k);if(!s.dataset.t)s.value=sg.has(k)?'Requested':'Not required'});
+ const n=DOCS.filter(([k])=>g('sx_d_'+k+'_st')=='Received').length,p=document.getElementById('sx_dp');if(p)p.textContent=n+' of '+DOCS.length+' received'}
+document.addEventListener('input',e=>{const t=e.target;if(t&&t.id&&/^sx_d_\w+_st$/.test(t.id))t.dataset.t='1';if(t&&t.id&&/^(sx_|sf_tax$)/.test(t.id))live()});document.addEventListener('change',e=>{const t=e.target;if(t&&t.id&&/^sx_d_\w+_st$/.test(t.id))t.dataset.t='1';if(t&&t.id&&/^(sx_|sf_country$|sf_ctype$)/.test(t.id))live()});
+function fields(){if(!document.getElementById('sx_ttype'))return {};const c=cur()||{},now=today(),by=(typeof me=='function'&&me().name)||'',stamp=(old,st)=>st==(old||{}).st?{st,by:(old||{}).by||'',at:(old||{}).at||''}:{st,by:st=='Not verified'?'':by,at:st=='Not verified'?'':now};
+ const docs={};DOCS.forEach(([k])=>{const st=g('sx_d_'+k+'_st');let rc=g('sx_d_'+k+'_rc');if(st=='Received'&&!rc)rc=now;docs[k]={st,rc,ex:g('sx_d_'+k+'_ex')}});
+ const bk={holder:g('sx_holder'),acct:g('sx_acct'),swift:g('sx_swift').toUpperCase(),routing:g('sx_rt'),country:g('sx_bctry'),...stamp((c.sbank||{}),g('sx_bst')||'Not verified')};
+ return{ttype:g('sx_ttype'),txv:stamp(c.txv,g('sx_tst')||'Not verified'),sbank:bk,sdocs:docs}}
+function errs(E,el){if(!document.getElementById('sx_ttype'))return;
+ if(g('sx_tst')=='Verified'&&!g('sf_tax'))E.push({el:el('sx_tst'),name:'Tax verification',msg:'Enter the Tax / VAT number before marking it Verified.'});
+ if(g('sx_bst')!='Not verified'&&!g('sx_acct'))E.push({el:el('sx_bst'),name:'Bank details status',msg:'Enter the account number or IBAN before marking the bank details verified.'});
+ DOCS.forEach(([k,n])=>{const rc=g('sx_d_'+k+'_rc'),ex=g('sx_d_'+k+'_ex');if(rc&&ex&&ex<rc)E.push({el:el('sx_d_'+k+'_ex'),name:n,msg:'The expiry date is before the received date.'})})}
+function sec(){const f=fields(),b=f.sbank||{},rows=[['Tax ID type',(TT.find(x=>x[0]==f.ttype)||[0,'Not specified'])[1]],['Tax verification',f.txv?f.txv.st:'']];
+ if(b.acct||b.holder)rows.push(['Account holder',b.holder],['Account / IBAN',mask(b.acct)],['SWIFT / BIC',b.swift],['Bank details',b.st]);
+ const rec=DOCS.filter(([k])=>(f.sdocs||{})[k]&&f.sdocs[k].st=='Received').map(x=>x[1]);rows.push(['Documents received',rec.length?rec.join(', '):'None yet',1]);return['Tax, banking and compliance',rows]}
+const _sadd=V.sadd;V.sadd=function(){let h=_sadd.apply(this,arguments);const k='<h4 style="margin:18px 0 10px">Notes</h4>';if(h.includes(k))h=h.replace(k,form()+k);h=h.replace('Bank name and account (for payments)','Bank name').replace('placeholder="Bank, account number or IBAN"','placeholder="e.g. Royal Bank of Canada"');return h};
+/* ---------- compliance summary widget ---------- */
+function status(c){const b=c.sbank||{},d=c.sdocs||{},sg=suggested(c),t=today(),in30=U().addD(t,30),is=[];
+ if(!c.tax)is.push('No tax ID');else if((c.txv||{}).st!='Verified')is.push('Tax ID not verified');
+ if(!(b.acct||c.bankd))is.push('No bank details');else if(b.acct&&(b.st||'Not verified')=='Not verified')is.push('Bank not verified');
+ DOCS.forEach(([k,n])=>{const e=d[k]||{},need=e.st?e.st!='Not required':sg.has(k);if(need&&e.st!='Received')is.push(n.split(' (')[0]+' missing');else if(e.st=='Received'&&e.ex){if(e.ex<t)is.push(n.split(' (')[0]+' expired');else if(e.ex<=in30)is.push(n.split(' (')[0]+' expires '+e.ex)}});return is}
+function comp(){const S_=sups().filter(c=>(c.status||'Active')=='Active');
+ if(!S_.length)return `<div class="p"><div class="card-h"><h3>Supplier compliance</h3></div><p class="mu" style="margin:0">Add a supplier to start tracking tax IDs, bank verification and compliance documents.</p></div>`;
+ const R=S_.map(c=>({c,is:status(c)})),ok=R.filter(r=>!r.is.length).length,bad=R.filter(r=>r.is.length).sort((a,b)=>b.is.length-a.is.length),cnt=f=>R.filter(r=>r.is.some(f)).length,pc=ok/R.length*100;
+ const bar=(l,n)=>`<div class="sx-cb"><span>${l}</span><b>${n}</b></div>`;
+ return `<div class="p"><div class="card-h"><h3>Supplier compliance</h3><span class="tg ${ok==R.length?'t-fx':'t-low'}">${ok} of ${R.length} complete</span></div><div class="pyx-pg sx-pg"><i style="width:${pc}%"></i></div>${bar('Tax ID missing or unverified',cnt(x=>/tax ID/.test(x)))}${bar('Bank details missing or unverified',cnt(x=>/Bank|bank/.test(x)))}${bar('Documents missing or expired',cnt(x=>/missing|expire/.test(x)&&!/ID|ank/.test(x)))}
+ ${bad.length?`<div class="sx-lst">${bad.slice(0,5).map(r=>`<div class="sx-sr"><div><b>${A(r.c.name)}</b><small>${r.is.slice(0,3).map(A).join(' · ')}${r.is.length>3?' · +'+(r.is.length-3)+' more':''}</small></div><button type="button" class="b s" onclick="se='${r.c.id}';view='sadd';go()">Complete</button></div>`).join('')}</div>`:'<p class="sx-ok">Every active supplier has its tax ID, bank details and documents on file.</p>'}</div>`}
+function rows(){return `<div class="zr2">${gl()}${ai()}</div><div class="zr2">${fx()}${comp()}</div>`}
+
+/* ---------- Suppliers dashboard: 5th hero tile, banner, new widget rows ---------- */
+const _smd=V.smd;V.smd=function(){let h=_smd.apply(this,arguments);const n=pend().length,tag='</b></div></div></div>',i=h.indexOf(tag);
+ if(i>0){h=h.replace('<div class="cx-h rust">','<div class="cx-h rust sx5">');const j=h.indexOf(tag)+'</b></div>'.length;h=h.slice(0,j)+`<div class="${n?'sx-pt':''}" title="Bills waiting for approval before they post to Accounts Payable"><span>Pending approvals</span><b>${n}</b></div>`+h.slice(j)}
+ const ci=h.indexOf('<div class="cbg">');if(ci>0)h=h.slice(0,ci)+banner()+h.slice(ci);
+ const ai=h.indexOf('Payables ageing'),k=h.lastIndexOf('<div class="zr2">',ai);if(k>0)h=h.slice(0,k)+rows()+h.slice(k);else h+=rows();return h};
+/* ---------- action buttons in the header ---------- */
+const SUPV=['smd','sadd','slist','stx','srem','sstm','srep'];
+const api={pending:()=>pend().length,banner,rows,fields,errs,sec,
+ bill(){if(!canW('cash'))return deny('cash');closeM();pbf='open';pbNew({sup:(S.cust.find(c=>c.type=='Supplier')||{id:'new'}).id,date:today(),br:S.br[0].id,ccy:S.base});view='pbr';go()},
+ pay(){closeM();if(!canW('cash'))return deny('cash');rwOpen()},
+ exp(){closeM();if(!canW('cash'))return deny('cash');if(window.cbxAct)cbxAct('exp')},
+ menu(e){e.stopPropagation();const m=document.getElementById('sx-menu');if(!m)return;m.hidden=!m.hidden;e.currentTarget.setAttribute('aria-expanded',String(!m.hidden))}};
+const closeM=()=>{const m=document.getElementById('sx-menu');if(m)m.hidden=true;const b=document.querySelector('.sx-chev');if(b)b.setAttribute('aria-expanded','false')};
+document.addEventListener('click',e=>{if(!e.target.closest||!e.target.closest('.sx-split'))closeM()});document.addEventListener('keydown',e=>{if(e.key=='Escape')closeM()});
+function swap(){const dd=document.querySelector('.top .tbd'),on=SUPV.includes(view),ex=document.querySelector('.sx-split');
+ if(!on){if(ex)ex.remove();if(dd)dd.style.display='';return}
+ if(!dd||ex)return;dd.style.setProperty('display','none','important');
+ dd.insertAdjacentHTML('beforebegin',`<div class="sx-split noprint"><button type="button" class="sx-main" onclick="apx.bill()">+ New Bill</button><button type="button" class="sx-chev" aria-haspopup="menu" aria-expanded="false" aria-label="More supplier actions" onclick="apx.menu(event)"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></button><div class="sx-menu" id="sx-menu" role="menu" hidden><button type="button" role="menuitem" onclick="apx.bill()"><b>New Bill</b><small>Capture a supplier invoice for review</small></button><button type="button" role="menuitem" onclick="apx.pay()"><b>Pay Bills</b><small>Pay a supplier and settle open bills</small></button><button type="button" role="menuitem" onclick="apx.exp()"><b>Log Expense</b><small>Record a cost you paid now</small></button></div></div>`)}
+const _go=go;go=function(){_go.apply(this,arguments);try{swap()}catch(e){console.error(e)}};
+window.apx=api;window.apxFields=fields;window.apxErrs=errs;window.apxSec=sec;
+/* ---------- styles ---------- */
+const css=document.createElement('style');css.textContent=`
+html body .sx-split{position:relative;display:inline-flex;vertical-align:middle}
+html body .sx-main{background:#1d4ed8!important;color:#fff!important;border:0!important;border-radius:12px 0 0 12px!important;padding:11px 18px!important;font:700 14px Inter,system-ui,sans-serif!important;cursor:pointer;box-shadow:0 6px 16px #1d4ed84d;margin:0!important;text-transform:none!important;letter-spacing:0!important}
+html body .sx-chev{background:#1741b3!important;color:#fff!important;border:0!important;border-left:1px solid #ffffff55!important;border-radius:0 12px 12px 0!important;padding:0 11px!important;cursor:pointer;display:grid;place-items:center;margin:0!important}
+html body .sx-menu{position:absolute;right:0;top:calc(100% + 8px);z-index:60;width:290px;background:#fff;border:1px solid #d5def0;border-radius:12px;padding:6px;box-shadow:0 16px 36px #0a1b4a33}html body .sx-menu[hidden]{display:none}
+html body .sx-menu button{display:block;width:100%;text-align:left;background:transparent!important;color:#0b1b44!important;border:0!important;border-radius:8px!important;padding:10px 12px!important;margin:0!important;cursor:pointer}html body .sx-menu button:hover{background:#eef3ff!important}html body .sx-menu b{display:block;font:700 14px Inter,system-ui,sans-serif}html body .sx-menu small{font:400 12.5px Inter,system-ui,sans-serif;color:#667085}
+html body .cx-h.sx5 .cx-r{grid-template-columns:repeat(5,minmax(104px,auto))!important;gap:10px!important;flex:1 1 560px;justify-content:flex-end}html body .cx-h.sx5 .cx-r>div{padding:11px 14px!important}html body .cx-h.sx5 .cx-r b{font-size:17px!important;white-space:nowrap}
+@media(max-width:1100px){html body .cx-h.sx5 .cx-r{grid-template-columns:repeat(3,minmax(0,1fr))!important;flex:1 1 100%}}@media(max-width:640px){html body .cx-h.sx5 .cx-r{grid-template-columns:1fr 1fr!important}}
+html body .sx-ban{display:flex;align-items:center;gap:14px;background:#fff4d6;border:1px solid #e8c766;border-left:5px solid #e0a800;border-radius:12px;padding:12px 16px;margin:0 0 14px;color:#5c4200}html body .sx-ban>span{font-size:20px}html body .sx-ban div{flex:1}html body .sx-ban b{display:block;font:700 14.5px Inter,system-ui,sans-serif}html body .sx-ban small{font:500 13px Inter,system-ui,sans-serif}html body .sx-ban button{margin:0!important;background:#e0a800!important;color:#2b1d00!important;border:0!important;padding:8px 16px!important;border-radius:9px!important;font-weight:700;cursor:pointer}
+html body .cx-r>div.sx-pt{background:#fff4d6!important;border-color:#e8c766!important}html body .cx-r>div.sx-pt b{color:#8a5a00!important}
+html body .sx-ln{display:flex;justify-content:space-between;gap:16px;padding:9px 0;border-bottom:1px solid #e6ecf7;font:500 14px Inter,system-ui,sans-serif}html body .sx-ln span small{display:block;font:400 12px Inter,system-ui,sans-serif;color:#667085}html body .sx-ln i{font-style:normal;font-variant-numeric:tabular-nums;font-weight:600;white-space:nowrap}html body .sx-ln.b i{font-weight:800}html body .sx-ln.mu span,html body .sx-ln.mu i{color:#667085;font-weight:500}html body .sx-ln.t{border-bottom:0;border-top:2px solid #0b1b44;font-weight:800;font-size:15.5px}
+html body .sx-ok{margin:10px 0 0;color:#0b6b43;font:600 13.5px Inter,system-ui,sans-serif}html body .sx-w{margin-top:10px;background:#fff4d6;border:1px solid #e8c766;border-radius:8px;padding:10px 12px;font-size:13px;color:#6b4b00}html body .sx-oe{display:flex;justify-content:space-between;gap:12px;padding:3px 0;font-size:12.5px}
+html body .sx-t{width:100%;border-collapse:collapse;font-size:13.5px}html body .sx-t th{text-align:left;padding:7px 8px;font:700 11.5px Inter,system-ui,sans-serif;letter-spacing:.05em;text-transform:uppercase;color:#667085;border-bottom:1px solid #d9e2f3;background:transparent!important}html body .sx-t td{padding:8px;border-bottom:1px solid #eef2f9;background:transparent!important}html body .sx-t .n{text-align:right;font-variant-numeric:tabular-nums}html body .sx-t tr.t td{font-weight:800;border-bottom:0}html body .sx-neg{color:#b42318;font-weight:700}html body .sx-pos{color:#0b6b43;font-weight:700}
+html body .sx-tip{background:#eef4ff;border:1px solid #cfdcf7;border-radius:12px;padding:16px 18px;font:500 15px/1.5 Inter,system-ui,sans-serif;color:#1e3a8a}html body .sx-tip div{margin-top:10px}html body .sx-tip button{margin:0!important}
+html body .sx-ai{display:grid;grid-template-columns:26px 1fr;gap:12px;padding:10px 0;border-bottom:1px solid #e6ecf7}html body .sx-ai i{width:24px;height:24px;border-radius:50%;display:grid;place-items:center;font:700 13px Inter,system-ui,sans-serif;font-style:normal;background:#e3edff;color:#1d4ed8}html body .sx-ai.w i{background:#fff0c7;color:#8a5a00}html body .sx-ai.r i{background:#fde4e1;color:#b42318}html body .sx-ai.ok i{background:#dcf5ea;color:#0d7a53}html body .sx-ai b{display:block;font:600 14px/1.35 Inter,system-ui,sans-serif}html body .sx-ai small{display:block;margin-top:2px;font:400 13px/1.4 Inter,system-ui,sans-serif;color:#667085}html body .sx-fn{margin:12px 0 0!important;font-size:12px!important}
+html body .sx-sub{font:500 12.5px Inter,system-ui,sans-serif;color:#667085;margin-left:6px}html body .sx-note{margin:8px 0 0;font:400 12.5px/1.45 Inter,system-ui,sans-serif;color:#667085}html body .sx-hint{grid-column:1/-1;min-height:18px;font:600 13px Inter,system-ui,sans-serif}html body .sx-hint:empty{display:none}html body .sx-g{color:#0b6b43}html body .sx-r{color:#b42318}
+html body .sx-dt select,html body .sx-dt input{margin:0!important;height:38px!important;min-width:130px}html body .sx-sg{font:700 11px Inter,system-ui,sans-serif;font-style:normal;background:#e8f1ff;color:#1d4ed8;border-radius:99px;padding:2px 8px;margin-left:6px}
+html body .sx-cb{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #eef2f9;font:500 14px Inter,system-ui,sans-serif}html body .sx-cb b{font-variant-numeric:tabular-nums}html body .sx-pg{margin:0 0 8px}
+html body .sx-sr{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid #eef2f9}html body .sx-sr b{display:block;font:600 14px Inter,system-ui,sans-serif}html body .sx-sr small{font:400 12.5px Inter,system-ui,sans-serif;color:#667085}html body .zr2>.p{min-width:0}html body .sx-t{min-width:420px}html body .sx-sr>div{flex:1 1 auto;min-width:0}html body .sx-sr small{display:block;white-space:normal;overflow-wrap:anywhere}html body .sx-sr button{margin:0!important;flex:none}
+html[data-theme=dark] body .sx-menu{background:#0f1f45;border-color:#223a73}html[data-theme=dark] body .sx-menu button{color:#e6edff!important}html[data-theme=dark] body .sx-menu button:hover{background:#14264f!important}html[data-theme=dark] body .sx-ln,html[data-theme=dark] body .sx-ai,html[data-theme=dark] body .sx-cb,html[data-theme=dark] body .sx-sr,html[data-theme=dark] body .sx-t td{border-color:#223a73}html[data-theme=dark] body .sx-tip{background:#14264f;border-color:#223a73;color:#cfe0ff}html[data-theme=dark] body .sx-ln.t{border-top-color:#9fb6ee}
 `;document.head.appendChild(css);
 })();
 
