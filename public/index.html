@@ -3252,11 +3252,11 @@ const t=today(),t14=ld(Date.now()+14*864e5),out=L.filter(l=>l.st=='Approved'&&l.
 const ename=id=>aesc((E.find(e=>e.id==id)||{}).name||'—');
 const ytd=E.map(e=>({e,g:PA.filter(p=>p.emp==e.id&&p.date.slice(0,4)==yr).reduce((s,p)=>s+(+p.gross||0),0)})).sort((a,b)=>b.g-a.g),tg=ytd.reduce((s,r)=>s+r.g,0),top1=ytd[0]&&tg>0?Math.round(ytd[0].g/tg*100):0;
 const ins=dxIns('Average cost per employee',S.base+' '+fmt(perEmp),'gross pay plus benefits this month')+dxIns('Payroll vs income',ratio===null?'n/a':ratio.toFixed(1)+'%','gross pay as share of income',ratio!==null&&ratio>60?'dn':'up')+dxIns('Overtime this month',S.base+' '+fmt(ot),'paid on top of base pay')+dxIns('Top earner share',top1+'%','of gross pay this year',top1>50&&E.length>2?'dn':'')+dxIns('Paycheques this month',String(P.length),paidIds.size+' of '+E.length+' employees paid');
-return ytabs()+al2([...(pe.length?[`${pe.length} time-off request${pe.length==1?'':'s'} need${pe.length==1?'s':''} a decision.`]:[]),...(!E.length?['No employees yet. Add one under Employees to start payroll.']:[]),...(E.length&&unpaid.length&&new Date().getDate()>=25?[`${unpaid.length} employee${unpaid.length==1?' has':'s have'} not been paid this month.`]:[])])+
-dxHero('violet','GROSS PAY THIS MONTH',gross,dxPill(gr).replace('class="pill','class="pill hp')+' '+E.length+' employee'+(E.length==1?'':'s'),[['Net pay',fmt(net)],['Withheld',fmt(wh)],['Employees',String(E.length)],['Time off pending',String(pe.length)]])+
+const hsub=dxPill(gr).replace('class="pill','class="pill hp')+' '+E.length+' employee'+(E.length==1?'':'s'),chk=pyx.showCheck(E);
+return pyx.search()+pyx.hero({E,P,gross,net,wh,pe:pe.length,sub:hsub})+pyx.banner(PA)+'<div class="pyx-act noprint">'+ytabs()+pyx.qrBtn()+'</div>'+al2([...(pe.length?[`${pe.length} time-off request${pe.length==1?'':'s'} need${pe.length==1?'s':''} a decision.`]:[]),...(E.length&&unpaid.length&&new Date().getDate()>=25?[`${unpaid.length} employee${unpaid.length==1?' has':'s have'} not been paid this month.`]:[])])+
 `<div class="cbg">${kmon('Average cost per employee',perEmp,'this month')}${kcard('Payroll vs income',ratio===null?'n/a':ratio.toFixed(1)+'%','of income this month',ratio!==null&&ratio>60?'neg':'')}${kmon('Still to pay this month',est,unpaid.length+' employee'+(unpaid.length==1?'':'s')+' unpaid')}${kcard('On leave soon',String(out.length),'in the next 14 days')}</div>
-<div class="zr2"><div class="p"><div class="card-h"><h3>Payroll · 6 months</h3>${dxLeg('Gross','Net','Withheld','#4a3aa8','#12a36f')}</div>${dxFlowN(per,'#4a3aa8','#12a36f',['Gross','Net','Withheld'])}</div><div class="p"><h3>Payroll analytics</h3><div class="insg">${ins}</div></div></div>
-<div class="zr2"><div class="p"><h3>Pay run planner</h3>${unpaid.length?tb(['Employee','Pay type','Expected'],unpaid.slice(0,6).map(e=>[aesc(e.name),aesc(e.pay||''),e.pay=='Salary'?(+e.rate||0):0]))+`<p class="mu" style="margin:8px 0 0">Employees without a paycheque this month. Hourly staff depend on hours worked.</p>`:'<p class="mu">Everyone has been paid this month.</p>'}</div><div class="p"><h3>Where payroll money goes · this month</h3>${gross>.004||ben>.004?split.map(r=>dxBar(r[0],fmt(r[1]),r[1]/sm*100,r[2])).join(''):'<p class="mu">No paycheques issued this month.</p>'}</div></div>
+<div class="zr2">${chk?pyx.check(E):`<div class="p"><div class="card-h"><h3>Payroll \u00b7 6 months</h3>${dxLeg('Gross','Net','Withheld','#4a3aa8','#12a36f')}</div>${dxFlowN(per,'#4a3aa8','#12a36f',['Gross','Net','Withheld'])}</div>`}<div class="p"><h3>Payroll analytics</h3><div class="insg">${ins}</div></div></div>
+<div class="zr2">${pyx.ai(E,PA,P)}${pyx.liab(PA)}</div>
 <div class="zr2"><div class="p"><h3>Leave balances · ${yr}</h3>${bal.length?bal.map(r=>dxBar(aesc(r.e.name)+' <small class="mu">'+r.left+' of '+r.al+' days left</small>','',r.al?Math.max(0,r.left)/r.al*100:0,r.left<=2?'linear-gradient(90deg,#c62f2f,#f0716b)':'linear-gradient(90deg,#4a3aa8,#8f86e0)')).join(''):'<p class="mu">No employees yet.</p>'}</div><div class="p"><h3>Who is out · next 14 days</h3>${out.length?tb(['Employee','From','Type'],out.map(l=>[ename(l.emp),l.from,aesc(l.type||'')])):'<p class="mu">Nobody is booked off.</p>'}</div></div>
 <div class="zr2"><div class="p"><h3>Pay by employee · ${yr}</h3>${ytd.length?ytd.slice(0,6).map((r,i)=>dxBar(`<span class="medal">${i+1}</span>${aesc(r.e.name)}`,fmt(r.g),ytd[0].g>0?r.g/ytd[0].g*100:0,'linear-gradient(90deg,#4a3aa8,#8f86e0)')).join(''):'<p class="mu">No employees yet.</p>'}</div><div class="p"><div class="card-h"><h3>Latest paycheques</h3><span class="lnk" onclick="pyt='cheque';view='pay';go()">All paycheques</span></div>${tb(['No.','Date','Employee','Net pay'],PA.slice(-6).reverse().map(p=>[p.no,p.date,ename(p.emp),p.net||0]))}</div></div>
 <div class="p"><h3>Time off requests</h3>${tb(['Employee','From','To','Type','Status'],L.slice(-6).reverse().map(l=>[ename(l.emp),l.from,l.to,aesc(l.type||''),l.st||'']))}</div>`};
@@ -5661,7 +5661,7 @@ const oc=V.ctx;V.ctx=function(){let h=oc.apply(this,arguments);
  h=h.replace('<button class="plf" onclick="ctOpen()">+ New transaction</button>','<span style="display:flex;gap:8px;flex-wrap:wrap"><button class="plf" onclick="sdOpen()">+ Currency sale deal</button><button class="plo" onclick="ctOpen()">+ Multi-currency entry</button></span>');
  return h};
 /*UPDCHK*/
-(function(){const B='2026-10-19-cw';window.PB_BUILD=B;if(location.protocol=='file:')return;let nb=null,tm=0;
+(function(){const B='2026-10-19-cx';window.PB_BUILD=B;if(location.protocol=='file:')return;let nb=null,tm=0;
 const busy=()=>{const a=document.activeElement;return !!(document.querySelector('.ov')||(a&&/^(INPUT|TEXTAREA)$/.test(a.tagName)&&String(a.value||'').length>0))};
 function go2(){try{const k='pb_upd_'+nb,n=+(sessionStorage.getItem(k)||0);sessionStorage.setItem(k,n+1)}catch(e){}location.replace(location.pathname+'?v='+encodeURIComponent(nb))}
 function bar(){let d=document.getElementById('pbupd');if(!d){d=document.createElement('div');d.id='pbupd';d.setAttribute('role','button');d.style.cssText='position:fixed;left:50%;transform:translateX(-50%);top:10px;z-index:100000;background:#0b3d33;color:#fff;padding:11px 18px;border-radius:12px;font:700 13px Inter,system-ui,sans-serif;box-shadow:0 6px 20px rgba(0,0,0,.3);cursor:pointer;text-align:center;max-width:92vw';d.onclick=()=>{d.textContent='Updating…';go2()};document.body.appendChild(d)}d.textContent='A new version of PrimeBook is ready. Tap here to update.'}
@@ -6691,7 +6691,7 @@ H.caddl=function(o){o['ck_'+(o.dccy||S.base)]='on';o['ck_'+S.base]='on';if(!o.ob
 })();
 
 window.heroFirst=html=>{const t=html.match(/<div class="ctabs noprint">.*?<\/div>/s),s=html.indexOf('<div class="cx-h');if(!t||s<0)return html;let i=s,d=0,re=/<div\b|<\/div>/g,x;re.lastIndex=s;while((x=re.exec(html))){d+=x[0]=='</div>'?-1:1;if(!d){i=re.lastIndex;break}}if(!d&&i>s){const hero=html.slice(s,i),rest=html.slice(0,s)+html.slice(i);const ti=rest.indexOf(t[0]);if(ti<0)return html;return hero+t[0]+rest.slice(0,ti)+rest.slice(ti+t[0].length)}return html};
-Object.keys(V).forEach(k=>{if(!['acd','sld','pud','cmd','pyd','cbd','bkd','std','stk','sd'].includes(k))return;const o=V[k];if(typeof o=='function'&&!o.hf)V[k]=Object.assign(function(){return window.heroFirst(o.apply(this,arguments))},{hf:1})});
+Object.keys(V).forEach(k=>{if(!['acd','sld','pud','cmd','cbd','bkd','std','stk','sd'].includes(k))return;const o=V[k];if(typeof o=='function'&&!o.hf)V[k]=Object.assign(function(){return window.heroFirst(o.apply(this,arguments))},{hf:1})});
 Object.assign(FIc,{jrn:'<path d="M13 3H7a2 2 0 00-2 2v14a2 2 0 002 2h3"/><path d="M13 3l5 5v2M13 3v5h5"/><path d="M12.5 21l-3 .7.7-3 8.5-8.5a1.5 1.5 0 012.1 2.1z"/>',tree:'<rect x="9" y="3" width="6" height="5" rx="1.2"/><rect x="3" y="16" width="6" height="5" rx="1.2"/><rect x="15" y="16" width="6" height="5" rx="1.2"/><path d="M12 8v3.5M6 16v-4.5h12V16"/>',ledger:'<path d="M12 6.5C10 5 7 4.5 4 5v13c3-.5 6 0 8 1.5 2-1.5 5-2 8-1.5V5c-3-.5-6 0-8 1.5z"/><path d="M12 6.5v13M7 9h2M7 12h2M15 9h2M15 12h2"/>',inc:'<path d="M4 20h16"/><path d="M5 15l4-4 3 3 6-7"/><path d="M14 7h4v4"/>',bsh:'<rect x="3" y="4" width="18" height="16" rx="2.5"/><path d="M12 4v16M6 9h3M6 13h3M15 9h3M15 13h3"/>',age:'<circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/>',fx2:'<circle cx="9.5" cy="9.5" r="5.5"/><circle cx="14.5" cy="14.5" r="5.5"/>',store:'<path d="M4 9l1.5-5h13L20 9"/><path d="M4 9a2.7 2.7 0 005.3 0 2.7 2.7 0 005.4 0A2.7 2.7 0 0020 9"/><path d="M5 12v8h14v-8M10 20v-4.5h4V20"/>',rev:'<path d="M4 20h16M6 20v-5M11 20v-9M16 20v-6M20 20V5"/>',ctrl:'<path d="M12 3l8 3v5.5c0 4.6-3.3 8-8 9.5-4.7-1.5-8-4.9-8-9.5V6z"/><path d="M8.5 12l2.5 2.5 4.5-5"/>',rep:'<rect x="4" y="3" width="16" height="18" rx="2.5"/><path d="M8 17v-4M12 17V8M16 17v-6"/>',back:'<path d="M15 5l-7 7 7 7"/>',plus:'<path d="M12 5v14M5 12h14"/>',bag:'<path d="M5 8h14l-1.1 12.2H6.1z"/><path d="M9 8V6.6a3 3 0 016 0V8"/>',user:'<circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-6.5 8-6.5s8 2.5 8 6.5"/>',chev:'<path d="M6 9l6 6 6-6"/>',logout:'<path d="M9 4H5a1 1 0 00-1 1v14a1 1 0 001 1h4M16 8l4 4-4 4M20 12H9"/>',moon:'<path d="M20 14.5A8 8 0 019.5 4a8 8 0 1010.5 10.5z"/>'});
 const fiIc=(s,list)=>{s=(s||'').toLowerCase();const m=[[/manual journal/,'jrn'],[/chart of acc/,'tree'],[/general journal|general ledger/,'ledger'],[/income statement/,'inc'],[/balance sheet/,'bsh'],[/aged receiv/,'age'],[/fx gain/,'fx2'],[/branch perf/,'store'],[/revenue trend|revenue analysis/,'rev'],[/controls|audit/,'ctrl'],[/report center/,'rep'],[/back|‹|lsaquo/,'back'],[/^\s*\+|add |new /,'plus'],[/chart of acc/,'grid'],[/overview|dashboard|summary/,'grid'],[/trial/,'scale'],[/balance sheet|balance/,'bars'],[/profit|trend|revenue|margin/,'trend'],[/branch/,'branch'],[/integrity|check|compliance|audit/,'shield'],[/exchange|forex|\bfx\b|transfer|currenc|adjust|rate/,'swap'],[/journal|voucher|invoice|receipt|quote|sale|estimate|order/,'doc'],[/purchase|bill|supplier|vendor|expense/,'bag'],[/payment|cash|till|float|deposit|withdraw/,'cash'],[/bank|reconcil|statement/,'bank'],[/stock|inventory|item|product|valuation/,'box'],[/customer|client|employee|people|payroll|paycheque|collect|owed|receivable|ageing|aged/,'users'],[/time off|leave|day|clos|calendar|month|period/,'cal'],[/report|analysis|analytic|insight|top/,'bars'],[/income|inflow|sales/,'up'],[/spend|outflow|cost/,'down'],[/alert|low|warning|overdue/,'alert'],[/activity|latest|recent|history|log/,'hist']];for(const [r,i] of m)if(r.test(s))return i;return 'doc'};
 window.fiSkin=html=>{if(typeof html!='string')return html;
@@ -7502,6 +7502,7 @@ const css=document.createElement('style');css.textContent=`html body em.pln-b{fo
 const A=x=>String(x==null?'':x).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const R2=v=>Math.round((+v||0)*100)/100,api=()=>window.plnApi,P2=n=>String(n).padStart(2,'0');
 const RP=[['reg','Payroll register','Every paycheque in the period with full deductions'],['emp','Employee earnings summary','Gross, deductions, net and employer cost per employee'],['trend','Monthly payroll cost','Cost trend with employer contributions'],['ded','Deductions and CRA remittances','Withheld and owed, with remitted and outstanding'],['aging','Unpaid and overdue salaries','Accrued liabilities and missed months by employee'],['time','Payment timeliness','On time or late, days late and who was paid late'],['ytd','Year-to-date (T4 summary)','Annual boxes per employee']];
+window.prpRP=RP;
 let rk='reg',F='',T='',EF='',PF='';
 const curMk=()=>today().slice(0,7);
 const init=()=>{if(!F){F=curMk().slice(0,4)+'-01';T=curMk()}};
@@ -11953,6 +11954,156 @@ html body .dbx-ov{position:fixed;inset:0;background:#0f172a99;z-index:300;displa
 html[data-theme=dark] body .dbx-fo,html[data-theme=dark] body .dbx-p,html[data-theme=dark] body .dbx-md{background:#0f1f45;border-color:#223a73}html[data-theme=dark] body .dbx-k{background:#14264f;border-color:#223a73}html[data-theme=dark] body .dbx-fh h2,html[data-theme=dark] body .dbx-ph h3,html[data-theme=dark] body .dbx-l b,html[data-theme=dark] body .dbx-t td,html[data-theme=dark] body .dbx-i b,html[data-theme=dark] body .dbx-qr b,html[data-theme=dark] body .dbx-mh h3{color:#e6efff!important}html[data-theme=dark] body .dbx-t td{background:#0f1f45}html[data-theme=dark] body .dbx-t th{background:#14264f}html[data-theme=dark] body .dbx-qr button,html[data-theme=dark] body .dbx-bt,html[data-theme=dark] body .dbx-i{background:#14264f!important;border-color:#223a73}
 @media print{html body .dbx-ov{position:static;background:#fff}}
 `;document.head.appendChild(css);
+})();
+
+
+/*PYX*/(function(){
+const A=x=>String(x==null?'':x).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const R2=v=>Math.round((+v||0)*100)/100,M=()=>S.base+' ',sum=(a,f)=>a.reduce((s,x)=>s+(+f(x)||0),0);
+const ymd=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+const pdt=s=>{const[a,b,c]=String(s).split('-').map(Number);return new Date(a,b-1,c)};
+const nice=s=>pdt(s).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
+const ST={q:'',res:null};
+/* ---- configuration flag: set when payroll tax settings are saved ---- */
+['pset','pprov'].forEach(k=>{const o=H[k];if(typeof o!='function')return;H[k]=function(){const r=o.apply(this,arguments);if(r!==false&&window.capSettings)window.capSettings().cfg=today();return r}});
+/* ---- jurisdiction ---- */
+const ctry=()=>String((S.co&&S.co.country)||'').trim();
+const isCA=()=>/^(ca|can|canada)$/i.test(ctry());
+function provs(E){const c={};E.forEach(e=>{if(e.prov)c[e.prov]=(c[e.prov]||0)+1});return Object.keys(c).sort((a,b)=>c[b]-c[a]||a.localeCompare(b))}
+function badge(E){
+ if(isCA()){const p=provs(E);return `<i class="pyx-bdg ok" title="Payroll jurisdiction. The province comes from where each employee works.">&#127464;&#127462; Canada${p.length?' ('+(p.length>1?p[0]+' +'+(p.length-1):p[0])+')':''}</i>`}
+ if(ctry())return `<i class="pyx-bdg no" title="Only Canadian payroll is available. Other countries stay locked until their rules are built and verified.">&#127760; ${A(ctry())} &middot; payroll unavailable</i>`;
+ return `<a class="pyx-bdg warn" onclick="view='ent';go()" title="Set the company country in Company profile">Jurisdiction not set</a>`}
+/* ---- next pay date ---- */
+const api=()=>window.plnApi||null,cur=()=>today().slice(0,7);
+function nextPay(E){const a=api(),t=today();if(!a)return{v:'—',s:''};let best=null;
+ E.filter(e=>e.pay=='Salary').forEach(e=>{const U=a.unpaid(e);let d=null;if(U.length)d=a.payDate(e,U[0]);else{let[y,m]=cur().split('-').map(Number);m++;if(m>12){m=1;y++}const nk=y+'-'+String(m).padStart(2,'0');if(a.factor(e,nk)>0)d=a.payDate(e,nk)}if(d&&(!best||d<best))best=d});
+ if(!best)return{v:'—',s:E.length?'no salaried employees to pay':'no employees yet'};
+ const dd=Math.round((pdt(best)-pdt(t))/864e5);
+ return{v:nice(best),s:dd==0?'today':dd>0?'in '+dd+' day'+(dd==1?'':'s'):Math.abs(dd)+' day'+(dd==-1?'':'s')+' overdue',late:dd<0}}
+/* ---- withheld breakdown (this month's paycheques) ---- */
+function wdet(P){const f=k=>R2(sum(P,p=>p.d&&p.d[k])),wh=R2(sum(P,p=>p.wh)),fit=f('fit'),pit=f('pit'),cpp=R2(f('cpp')+f('cpp2')),ei=f('ei'),oth=R2(wh-fit-pit-cpp-ei);return{wh,rows:[['Federal tax',fit],['Provincial tax',pit],['CPP',cpp],['EI',ei],['Other deductions',Math.abs(oth)<.005?0:oth]]}}
+function tip(P){const w=wdet(P);if(w.wh<=0)return `<div class="pyx-tip" role="tooltip"><b>Withheld this month</b><p>Nothing has been withheld yet.</p></div>`;
+ return `<div class="pyx-tip" role="tooltip"><b>Withheld this month</b>${w.rows.filter(r=>r[0]!='Other deductions'||r[1]).map(r=>`<div><span>${r[0]}</span><i>${fmt(r[1])}</i></div>`).join('')}<div class="t"><span>Total</span><i>${fmt(w.wh)}</i></div><p>Employee deductions only. Employer CPP and EI are listed under Payroll liabilities.</p></div>`}
+/* ---- hero ---- */
+function hero(c){const np=nextPay(c.E),T=(l,v,x,extra)=>`<div class="${x||''}" ${extra||''}><span>${l}</span><b>${v}</b>${x=='pyx-wh'?tip(c.P):''}${c.sub2&&c.sub2[l]?`<small>${c.sub2[l]}</small>`:''}</div>`;
+ return `<div class="cx-h violet pyx-h"><div class="cx-l"><span>GROSS PAY THIS MONTH ${badge(c.E)}</span><b><small>${S.base}</small> ${fmt(c.gross)}</b><em>${c.sub}</em></div><div class="cx-r pyx-r">`+
+ T('Net pay',fmt(c.net))+T('Withheld',fmt(c.wh),'pyx-wh','tabindex="0"')+T('Employees',String(c.E.length))+T('Time off pending',String(c.pe))+`<div class="${np.late?'pyx-late':''}"><span>Next pay date</span><b>${np.v}</b><small>${np.s}</small></div></div></div>`}
+/* ---- pending approval banner ---- */
+function banner(PA){const q=PA.filter(p=>p.st=='Pending approval');if(!q.length)return '';
+ return `<div class="pyx-ban noprint" role="status"><span>&#9888;</span><div><b>${q.length} payroll run${q.length==1?' is':'s are'} waiting for approval</b><small>${S.base} ${fmt(sum(q,p=>p.net))} net pay. Nothing is paid until it is approved.</small></div><button type="button" onclick="pyt='cheque';view='pay';go()">Review</button></div>`}
+/* ---- setup checklist ---- */
+function steps(E){const P=S.pay||[],cfg=!!(S.pset&&S.pset.cfg);return[
+ {t:'Register company jurisdiction',d:isCA()?'Company country is Canada. Payroll uses each employee\u2019s province of employment.':ctry()?'Only Canada is supported. Payroll for '+A(ctry())+' stays locked.':'Set the company country in Company profile so the right payroll rules load.',ok:isCA(),go:"view='ent';go()",b:'Open company profile'},
+ {t:'Add employees',d:E.length?E.length+' employee'+(E.length==1?'':'s')+' on payroll.':'Add each employee with their province, pay and TD1 claim amounts.',ok:E.length>0,go:"pyt='emp';view='pay';go()",b:'Add an employee'},
+ {t:'Configure tax rules',d:cfg?'Federal, CPP, EI and provincial tax tables confirmed.':'Check the federal, CPP, EI and provincial tables against the CRA figures, then save.',ok:cfg,go:"pyt='set';view='pay';go()",b:'Open tax settings'},
+ {t:'Run first payroll',d:P.length?P.length+' paycheque'+(P.length==1?'':'s')+' issued.':'Issue the first paycheque. The accounting entry is posted for you.',ok:P.length>0,go:"pyt='run';view='pay';go()",b:'Run payroll'}]}
+const showCheck=E=>!E.length||!(S.pay||[]).length;
+function check(E){const s=steps(E),n=s.filter(x=>x.ok).length,first=s.findIndex(x=>!x.ok);
+ return `<div class="p pyx-ck"><div class="card-h"><h3>Payroll setup checklist</h3><span class="tg ${n==4?'t-fx':'t-low'}">${n} of 4 done</span></div><div class="pyx-pg"><i style="width:${n*25}%"></i></div><p class="mu" style="margin:10px 0 4px">The payroll charts appear once you have employees and at least one paycheque.</p>`+
+ s.map((x,i)=>`<div class="pyx-st ${x.ok?'ok':i==first?'now':''}"><span class="pyx-dot">${x.ok?'&#10003;':i+1}</span><div><b>${x.t}</b><small>${x.d}</small></div>${x.ok?'<em>Done</em>':`<button type="button" class="${i==first?'plf':'b s'}" onclick="${x.go}">${x.b}</button>`}</div>`).join('')+`</div>`}
+/* ---- liabilities ---- */
+function liab(PA){const a=api(),dd=p=>p.d?R2((+p.d.fit||0)+(+p.d.pit||0)+(+p.d.cpp||0)+(+p.d.cpp2||0)+(+p.d.ei||0)):R2(+p.wh||0);
+ const emp=R2(sum(PA,dd)),er=R2(sum(PA,p=>p.er&&p.er.tot)),oth=R2(sum(PA,p=>p.d&&((+p.d.penc||0)+(+p.d.oth||0)))),rem=R2(sum(S.remit||[],r=>r.amt)),owed=R2(emp+er-rem),net=R2(sum(PA.filter(p=>p.status=='accrued'),p=>p.net));
+ const cp=PA.filter(p=>p.prov!='QC'),qc=PA.filter(p=>p.prov=='QC'),au=(L,l)=>L.length?`<div class="pyx-ln mu"><span>${l}</span><i>${fmt(R2(sum(L,p=>dd(p)+(p.er&&+p.er.tot||0))))}</i></div>`:'';
+ const row=(l,v,c,s)=>`<div class="pyx-ln ${c||''}"><span>${l}${s?`<small>${s}</small>`:''}</span><i>${fmt(v)}</i></div>`;
+ const led=R2(-dcs(2300,S.j)),diff=R2(led-(owed+oth)),any=PA.length||rem>.004;
+ return `<div class="p pyx-lb"><div class="card-h"><h3>Payroll liabilities &amp; remittances</h3><span class="tg ${owed>.004?'t-low':'t-fx'}">${owed>.004?'To remit':'Nothing owed'}</span></div>`+
+ (any?row('Employee deductions payable',emp,'','Federal and provincial tax, CPP and EI withheld')+row('Employer contributions payable',er,'','Employer CPP and EI')+row('Remitted so far',rem>0?-rem:0,'mu','Remittance payments recorded')+`<div class="pyx-ln t"><span>Owed to the CRA / Revenu Qu\u00e9bec</span><i>${S.base} ${fmt(owed)}</i></div>`+au(cp,'Accrued for the CRA')+au(qc,'Accrued for Revenu Qu\u00e9bec')+(oth>.004?row('Other deductions payable',oth,'mu','Pension and other amounts held for employees'):'')+(net>.004?row('Net wages payable',net,'mu','Salaries accrued but not yet paid'):'')+(br=='all'&&Math.abs(diff)>.004?`<div class="pyx-w">The ledger balance on Payroll Liabilities (2300) differs from the paycheques and remittances by ${fmt(Math.abs(diff))}. Check journal entries on that account.</div>`:'')+`<p class="mu" style="margin:10px 0 0">Amounts come from your paycheques and recorded remittances. <span class="lnk" onclick="pyt='rem';view='pay';go()">Record a remittance</span></p>`:'<p class="mu">Nothing is owed to the CRA or Revenu Qu\u00e9bec yet. Amounts appear here after the first paycheque.</p>')+`</div>`}
+/* ---- AI insights (rule-based, read-only) ---- */
+function aiItems(E,PA,P){const out=[],it=(k,t,s)=>out.push({k,t,s});
+ const noSin=E.filter(e=>!e.sin),noProv=E.filter(e=>!e.prov);
+ if(noSin.length)it('i',noSin.length+' employee'+(noSin.length==1?' has':'s have')+' no SIN on file',noSin.slice(0,3).map(e=>A(e.name)).join(', ')+(noSin.length>3?' and more':'')+'. Needed for T4 slips.');
+ if(noProv.length)it('w',noProv.length+' employee'+(noProv.length==1?' has':'s have')+' no province of employment','Their tax is a flat percentage, not the CRA tables. Set a province in their profile.');
+ const seen={},dup=[];PA.forEach(p=>{const k=p.emp+'|'+p.date+'|'+p.gross;seen[k]=(seen[k]||0)+1;if(seen[k]==2)dup.push(p)});
+ dup.slice(0,2).forEach(p=>it('w','Possible duplicate paycheque for '+A((E.find(e=>e.id==p.emp)||{}).name||'an employee'),'Two cheques on '+p.date+' for '+S.base+' '+fmt(p.gross)+'. Check that both are real.'));
+ E.forEach(e=>{const L=PA.filter(p=>p.emp==e.id).sort((a,b)=>a.date.localeCompare(b.date));if(L.length<4)return;const last=L[L.length-1],prev=L.slice(0,-1),avg=sum(prev,p=>p.gross)/prev.length;if(avg>0&&(last.gross>avg*1.5||last.gross<avg*.5))it('w','Unusual paycheque for '+A(e.name),S.base+' '+fmt(last.gross)+' on '+last.date+' against an average of '+fmt(avg)+'.')});
+ const a=api(),t=today();
+ if(a){const od=[];E.filter(e=>e.pay=='Salary').forEach(e=>a.unpaid(e).forEach(m=>{if(a.payDate(e,m)<t)od.push({e,m})}));if(od.length)it('w',od.length+' salary payment'+(od.length==1?' is':'s are')+' overdue',od.slice(0,3).map(x=>A(x.e.name)+' ('+A(a.mLab(x.m))+')').join(', ')+(od.length>3?' and more':'')+'.')}
+ const mm={};PA.forEach(p=>{const m=p.date.slice(0,7);if(m<t.slice(0,7))mm[m]=(mm[m]||0)+(+p.gross||0)});const ms=Object.keys(mm).sort().slice(-6);
+ if(ms.length>=2){const av=sum(ms,m=>mm[m])/ms.length;it('ok','Forecast: about '+S.base+' '+fmt(av)+' gross a month','Average of the last '+ms.length+' full months with paycheques. A projection, not a promise.')}
+ if(a){const mks=[...new Set(PA.map(p=>a.mkOf(p)))].sort();mks.forEach(m=>{const o=R2(a.owedBy(m)-a.paidBy(m));if(o>.004){const[y,mo]=m.split('-').map(Number),due=ymd(new Date(y,mo,15));it(due<t?'w':'i',S.base+' '+fmt(o)+' still to remit for '+a.mLab(m),(due<t?'The 15th-of-the-month date has passed for regular remitters. ':'Regular remitters pay by '+nice(due)+'. ')+'Confirm your remitter type with the CRA.')}})}
+ return out}
+function ai(E,PA,P){const L=aiItems(E,PA,P);let body;
+ if(!E.length)body=`<div class="pyx-tipbox"><b>AI Tip</b>: Add your first employee to unlock payroll forecasting and anomaly detection.</div>`;
+ else{if(!PA.length)L.unshift({k:'i',t:'AI Tip: Run your first payroll to unlock forecasting and anomaly detection.',s:''});
+  body=L.length?L.map(x=>`<div class="pyx-ai ${x.k}"><i>${x.k=='w'?'!':x.k=='ok'?'&#10003;':'i'}</i><div><b>${x.t}</b>${x.s?`<small>${x.s}</small>`:''}</div></div>`).join(''):`<p class="mu">No issues found in ${PA.length} paycheque${PA.length==1?'':'s'}.</p>`}
+ return `<div class="p pyx-aip"><div class="card-h"><h3>&#10024; AI Payroll Insights</h3></div>${body}<p class="mu pyx-fn">Rule-based checks on your own records. Tax is always calculated by the payroll engine. Nothing here changes payroll or files anything.</p></div>`}
+/* ---- quick reports button ---- */
+const QRP=[['Payroll register','Every paycheque with full deductions',"pyt='prp';view='pay';prpSet('rk','reg')"],['CRA remittances','Withheld, owed and remitted',"pyt='prp';view='pay';prpSet('rk','ded')"],['Employee earnings','Gross, deductions and cost per employee',"pyt='prp';view='pay';prpSet('rk','emp')"],['Year-to-date (T4 summary)','Annual boxes per employee',"pyt='prp';view='pay';prpSet('rk','ytd')"],['All payroll reports','Open the full reports tab',"pyt='prp';view='pay';go()"]];
+function qrBtn(){return `<span class="pyx-qr noprint"><button type="button" class="pyx-qb" onclick="this.parentNode.classList.toggle('open')" aria-haspopup="true">Quick reports &#9662;</button><span class="pyx-qm">${QRP.map(r=>`<button type="button" onclick="${r[2]}"><b>${r[0]}</b><small>${r[1]}</small></button>`).join('')}</span></span>`}
+/* ---- search / ask (read only) ---- */
+function search(){const r=ST.res;
+ return `<form class="pyx-sb noprint" onsubmit="return pyx.ask(event)" role="search"><span>&#10024;</span><input id="pyxq" type="search" value="${A(ST.q)}" placeholder="Ask AI or search payroll reports..." aria-label="Ask AI or search payroll reports" autocomplete="off"><button class="plf">Ask</button></form>${r?`<div class="pyx-rs noprint">${r}</div>`:''}`}
+function answer(q){const E=S.emp||[],PA=(S.pay||[]).filter(p=>br=='all'||!p.br||p.br==br),m0=mS(),P=PA.filter(p=>p.date>=m0),s=q.toLowerCase().trim(),out=[],btn=(l,js)=>`<button type="button" class="b s" onclick="${js}">${l}</button>`;
+ const num=(l,v)=>`<div class="pyx-an"><span>${l}</span><b>${v}</b></div>`;
+ if(/not paid|unpaid|haven.?t been paid|who.*(paid|pay)/.test(s)){const ids=new Set(P.map(p=>p.emp)),un=E.filter(e=>!ids.has(e.id));out.push(un.length?num('Not paid this month',un.map(e=>A(e.name)).join(', ')):num('Not paid this month','Everyone has a paycheque this month.'))}
+ if(/withh|deduct|tax|cpp|\bei\b/.test(s)){const w=wdet(P);out.push(num('Withheld this month',S.base+' '+fmt(w.wh)+(w.wh?' ('+w.rows.filter(r=>r[1]).map(r=>r[0]+' '+fmt(r[1])).join(', ')+')':'')))}
+ if(/overtime/.test(s))out.push(num('Overtime paid this month',S.base+' '+fmt(sum(P,p=>p.otp))));
+ if(/gross|payroll cost|total pay/.test(s))out.push(num('Gross pay this month',S.base+' '+fmt(sum(P,p=>p.gross))));
+ if(/net pay/.test(s))out.push(num('Net pay this month',S.base+' '+fmt(sum(P,p=>p.net))));
+ if(/next pay|pay date|when.*paid/.test(s)){const n=nextPay(E);out.push(num('Next pay date',n.v+' ('+n.s+')'))}
+ if(/owe|liabilit|remit|cra|revenu/.test(s))out.push(num('Owed to tax authorities',S.base+' '+fmt(-dcs(2300,BL()))));
+ const words=s.replace(/[^a-z0-9 ]/g,' ').split(/\s+/).filter(w=>w.length>2&&!/^(the|show|for|all|and|payroll|report|reports|find|open|get|see)$/.test(w));
+ const prr=(window.prpRP||[]).filter(r=>(words.length?words.some(w=>(r[1]+' '+r[2]).toLowerCase().includes(w)):/payroll|report/.test(s))),rp0=prr.slice(0,4).map(r=>[r[1],`pyt='prp';view='pay';prpSet('rk','${r[0]}')`]);
+ const rp=RC.filter(c=>{const h=(c[0]+' '+c[1]+' '+c[2]).toLowerCase();return words.length?words.some(w=>h.includes(w)):/payroll/.test(s)&&/payroll/.test(h)}).sort((a,b)=>(/payroll/i.test(b[0])?1:0)-(/payroll/i.test(a[0])?1:0)).slice(0,4);
+ const ep=words.length?E.filter(e=>words.some(w=>e.name.toLowerCase().includes(w))).slice(0,4):[];
+ const pn=PA.filter(p=>String(p.no)==s.replace(/\D/g,'')&&s.replace(/\D/g,'')).slice(0,1);
+ if(rp.length||rp0.length)out.push(`<div class="pyx-an"><span>Reports</span><div class="pyx-bt">${rp0.map(c=>btn(A(c[0]),c[1])).join('')}${rp.filter(c=>/payroll/i.test(c[0]+c[1])).map(c=>btn(A(c[0]),`dbx.rep('${c[0].replace(/'/g,"\\'")}')`)).join('')}</div></div>`);
+ if(ep.length)out.push(`<div class="pyx-an"><span>Employees</span><div class="pyx-bt">${ep.map(e=>{const l=PA.filter(p=>p.emp==e.id).slice(-1)[0];return btn(A(e.name)+(l?' · latest paycheque':''),l?`pys='${l.id}';pyt='cheque';view='pay';go()`:`pyt='emp';view='pay';go()`)}).join('')}</div></div>`);
+ if(pn.length)out.push(`<div class="pyx-an"><span>Paycheque</span><div class="pyx-bt">${btn('Open paycheque '+A(pn[0].no),`pys='${pn[0].id}';pyt='cheque';view='pay';go()`)}</div></div>`);
+ return out.length?out.join(''):`<div class="pyx-an"><span>Nothing found</span><b>Try an employee name, a report such as "Payroll Summary", or a question like "who has not been paid this month" or "how much was withheld".</b></div>`}
+window.pyx={search,hero,banner,check,showCheck,ai,liab,qrBtn,
+ ask(e){e.preventDefault();ST.q=(document.getElementById('pyxq')||{}).value||'';ST.res=ST.q.trim()?answer(ST.q):null;const y=window.scrollY;go();setTimeout(()=>window.scrollTo(0,y),0);return false}};
+/* ---- styles ---- */
+const css=document.createElement('style');css.textContent=`
+html body .pyx-sb{display:flex;align-items:center;gap:10px;background:#fff;border:1px solid #d5def0;border-radius:14px;padding:6px 8px 6px 14px;margin:0 0 14px;box-shadow:0 2px 10px #1d4ed814}
+html body .pyx-sb span{font-size:16px}html body .pyx-sb input{flex:1;min-width:0;border:0!important;background:transparent!important;box-shadow:none!important;font:500 15px Inter,system-ui,sans-serif;padding:8px 4px!important;margin:0!important;height:auto!important}
+html body .pyx-sb button{margin:0!important;padding:9px 18px!important}
+html body .pyx-rs{background:#fff;border:1px solid #d5def0;border-radius:14px;padding:10px 16px;margin:-6px 0 14px}
+html body .pyx-an{display:grid;grid-template-columns:150px 1fr;gap:12px;padding:8px 0;border-bottom:1px solid #e6ecf7;align-items:center}html body .pyx-an:last-child{border:0}
+html body .pyx-an>span{font:600 12px Inter,system-ui,sans-serif;letter-spacing:.05em;text-transform:uppercase;color:#667085}html body .pyx-an b{font:600 14px Inter,system-ui,sans-serif}
+html body .pyx-bt{display:flex;flex-wrap:wrap;gap:8px}
+html body .pyx-bdg{display:inline-block;margin-left:10px;padding:3px 10px;border-radius:999px;font:700 12px Inter,system-ui,sans-serif;letter-spacing:0;text-transform:none;vertical-align:middle;font-style:normal;cursor:default;background:#ffffff26;border:1px solid #ffffff55;color:#fff}
+html body .pyx-bdg.warn{background:#fff4d6;color:#6b4b00;border-color:#e8c766;cursor:pointer}html body .pyx-bdg.no{background:#ffffff1a}
+html body .cx-h.pyx-h{align-items:flex-start}
+html body .pyx-r{grid-template-columns:repeat(5,minmax(104px,auto))!important;gap:10px!important;flex:1 1 560px;justify-content:flex-end}
+html body .pyx-r>div{position:relative;padding:11px 14px!important;min-width:0}html body .pyx-r b{font-size:17px!important;white-space:nowrap}html body .pyx-r small{display:block;margin-top:2px;font:500 11.5px Inter,system-ui,sans-serif;color:#c3d4fb}
+html body .pyx-late small{color:#ffd48a!important}
+html body .pyx-wh{cursor:help;outline-offset:2px}html body .pyx-wh>span:after{content:" \\24D8";opacity:.8}
+html body .pyx-tip{display:none;position:absolute;right:0;top:calc(100% + 8px);z-index:30;width:240px;background:#0b1b44;color:#fff;border:1px solid #ffffff33;border-radius:12px;padding:12px 14px;box-shadow:0 14px 34px #0a1b4a66;text-align:left}
+html body .pyx-wh:hover .pyx-tip,html body .pyx-wh:focus .pyx-tip,html body .pyx-wh:focus-within .pyx-tip{display:block}
+html body .pyx-tip b{display:block;font:700 13px Inter,system-ui,sans-serif!important;margin-bottom:6px;color:#fff}html body .pyx-tip div{display:flex;justify-content:space-between;gap:12px;padding:3px 0;font:500 13px Inter,system-ui,sans-serif;background:transparent!important;border:0!important;border-radius:0!important;backdrop-filter:none!important}
+html body .pyx-tip div span{display:inline!important;font:500 13px Inter,system-ui,sans-serif!important;letter-spacing:0!important;text-transform:none!important;color:#c3d4fb!important}html body .pyx-tip div i{font-style:normal;font-variant-numeric:tabular-nums;color:#fff}
+html body .pyx-tip div.t{border-top:1px solid #ffffff33!important;margin-top:4px;padding-top:6px;font-weight:700}html body .pyx-tip p{margin:8px 0 0;font:400 11.5px/1.4 Inter,system-ui,sans-serif;color:#9fb6ee}
+html body .pyx-ban{display:flex;align-items:center;gap:14px;background:#fff4d6;border:1px solid #e8c766;border-left:5px solid #e0a800;border-radius:12px;padding:12px 16px;margin:0 0 14px;color:#5c4200}
+html body .pyx-ban>span{font-size:20px}html body .pyx-ban div{flex:1}html body .pyx-ban b{display:block;font:700 14.5px Inter,system-ui,sans-serif}html body .pyx-ban small{font:500 13px Inter,system-ui,sans-serif}html body .pyx-ban button{margin:0!important;background:#e0a800!important;color:#2b1d00!important;border:0!important;padding:8px 16px!important;border-radius:9px!important;font-weight:700}
+html body .pyx-act{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin:0 0 14px}html body .pyx-act>.fi-qa,html body .pyx-act>.ctabs{flex:1 1 420px;min-width:0;margin:0!important}html body .pyx-qr{position:relative;flex:0 0 auto}
+html body .pyx-qb{background:#1d4ed8!important;color:#fff!important;border:0!important;border-radius:10px!important;padding:9px 18px!important;font:700 14px Inter,system-ui,sans-serif!important;box-shadow:0 6px 16px #1d4ed84d;cursor:pointer}
+html body .pyx-qm{display:none;position:absolute;right:0;top:calc(100% + 6px);z-index:40;width:290px;background:#fff;border:1px solid #d5def0;border-radius:12px;padding:6px;box-shadow:0 16px 36px #0a1b4a33}html body .pyx-qr.open .pyx-qm{display:block}
+html body .pyx-qm button{display:block;width:100%;text-align:left;background:transparent!important;color:#0b1b44!important;border:0!important;border-radius:8px!important;padding:9px 12px!important;margin:0!important}html body .pyx-qm button:hover{background:#eef3ff!important}html body .pyx-qm b{display:block;font:700 14px Inter,system-ui,sans-serif}html body .pyx-qm small{font:400 12.5px Inter,system-ui,sans-serif;color:#667085}
+html body .pyx-pg{height:8px;border-radius:99px;background:#e4ebf8;overflow:hidden}html body .pyx-pg i{display:block;height:100%;background:linear-gradient(90deg,#1d4ed8,#3b82f6);border-radius:99px}
+html body .pyx-st{display:grid;grid-template-columns:34px 1fr auto;gap:14px;align-items:center;padding:14px 4px;border-bottom:1px solid #e6ecf7}html body .pyx-st:last-child{border:0}
+html body .pyx-dot{width:32px;height:32px;border-radius:50%;display:grid;place-items:center;font:700 14px Inter,system-ui,sans-serif;background:#eef2fb;color:#667085;border:2px solid #d5def0}
+html body .pyx-st.now .pyx-dot{background:#1d4ed8;color:#fff;border-color:#1d4ed8}html body .pyx-st.ok .pyx-dot{background:#12a36f;color:#fff;border-color:#12a36f}
+html body .pyx-st b{display:block;font:700 15px Inter,system-ui,sans-serif}html body .pyx-st small{display:block;margin-top:2px;font:400 13px/1.4 Inter,system-ui,sans-serif;color:#667085}html body .pyx-st em{font:600 13px Inter,system-ui,sans-serif;color:#12a36f;font-style:normal}
+html body .pyx-st button{margin:0!important;white-space:nowrap}
+html body .pyx-ck{min-height:340px}
+html body .pyx-ln{display:flex;justify-content:space-between;gap:16px;padding:9px 0;border-bottom:1px solid #e6ecf7;font:500 14px Inter,system-ui,sans-serif}html body .pyx-ln span small{display:block;font:400 12px Inter,system-ui,sans-serif;color:#667085}
+html body .pyx-ln i{font-style:normal;font-variant-numeric:tabular-nums;font-weight:600;white-space:nowrap}html body .pyx-ln.t{border-bottom:0;border-top:2px solid #0b1b44;margin-top:2px;font-weight:800;font-size:15.5px}html body .pyx-ln.mu span,html body .pyx-ln.mu i{color:#667085;font-weight:500}
+html body .pyx-w{margin-top:10px}html body .pyx-lb .pyx-w{background:#fff4d6;border:1px solid #e8c766;border-radius:8px;padding:8px 10px;font-size:13px;color:#6b4b00}
+html body .pyx-tipbox{background:#eef4ff;border:1px solid #cfdcf7;border-radius:12px;padding:16px 18px;font:500 15px/1.5 Inter,system-ui,sans-serif;color:#1e3a8a}
+html body .pyx-ai{display:grid;grid-template-columns:26px 1fr;gap:12px;padding:10px 0;border-bottom:1px solid #e6ecf7}html body .pyx-ai:last-of-type{border:0}
+html body .pyx-ai i{width:24px;height:24px;border-radius:50%;display:grid;place-items:center;font:700 13px Inter,system-ui,sans-serif;font-style:normal;background:#e3edff;color:#1d4ed8}html body .pyx-ai.w i{background:#fff0c7;color:#8a5a00}html body .pyx-ai.ok i{background:#dcf5ea;color:#0d7a53}
+html body .pyx-ai b{display:block;font:600 14px/1.35 Inter,system-ui,sans-serif}html body .pyx-ai small{display:block;margin-top:2px;font:400 13px/1.4 Inter,system-ui,sans-serif;color:#667085}
+html body .pyx-fn{margin:12px 0 0!important;font-size:12px!important}
+html[data-theme=dark] body .pyx-sb,html[data-theme=dark] body .pyx-rs,html[data-theme=dark] body .pyx-qm{background:#0f1f45;border-color:#223a73}html[data-theme=dark] body .pyx-qm button{color:#e6edff!important}html[data-theme=dark] body .pyx-qm button:hover{background:#14264f!important}
+html[data-theme=dark] body .pyx-tipbox{background:#14264f;border-color:#223a73;color:#cfe0ff}html[data-theme=dark] body .pyx-st,html[data-theme=dark] body .pyx-ln,html[data-theme=dark] body .pyx-ai,html[data-theme=dark] body .pyx-an{border-color:#223a73}html[data-theme=dark] body .pyx-dot{background:#14264f;border-color:#223a73}html[data-theme=dark] body .pyx-ln.t{border-top-color:#9fb6ee}html[data-theme=dark] body .pyx-pg{background:#223a73}
+@media(max-width:1100px){html body .pyx-r{grid-template-columns:repeat(3,minmax(0,1fr))!important;flex:1 1 100%}}
+@media(max-width:640px){html body .pyx-r{grid-template-columns:1fr 1fr!important}html body .pyx-st{grid-template-columns:34px 1fr}html body .pyx-st button,html body .pyx-st em{grid-column:2}html body .pyx-an{grid-template-columns:1fr}html body .pyx-tip{right:auto;left:0}}
+@media print{.pyx-sb,.pyx-rs,.pyx-ban,.pyx-qr{display:none!important}}
+`;document.head.appendChild(css);
+document.addEventListener('click',e=>{document.querySelectorAll('.pyx-qr.open').forEach(q=>{if(!q.contains(e.target))q.classList.remove('open')})});
 })();
 
 </script></body></html>
