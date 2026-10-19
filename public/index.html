@@ -5661,7 +5661,7 @@ const oc=V.ctx;V.ctx=function(){let h=oc.apply(this,arguments);
  h=h.replace('<button class="plf" onclick="ctOpen()">+ New transaction</button>','<span style="display:flex;gap:8px;flex-wrap:wrap"><button class="plf" onclick="sdOpen()">+ Currency sale deal</button><button class="plo" onclick="ctOpen()">+ Multi-currency entry</button></span>');
  return h};
 /*UPDCHK*/
-(function(){const B='2026-10-19-ct';window.PB_BUILD=B;if(location.protocol=='file:')return;let nb=null,tm=0;
+(function(){const B='2026-10-19-cu';window.PB_BUILD=B;if(location.protocol=='file:')return;let nb=null,tm=0;
 const busy=()=>{const a=document.activeElement;return !!(document.querySelector('.ov')||(a&&/^(INPUT|TEXTAREA)$/.test(a.tagName)&&String(a.value||'').length>0))};
 function go2(){try{const k='pb_upd_'+nb,n=+(sessionStorage.getItem(k)||0);sessionStorage.setItem(k,n+1)}catch(e){}location.replace(location.pathname+'?v='+encodeURIComponent(nb))}
 function bar(){let d=document.getElementById('pbupd');if(!d){d=document.createElement('div');d.id='pbupd';d.setAttribute('role','button');d.style.cssText='position:fixed;left:50%;transform:translateX(-50%);top:10px;z-index:100000;background:#0b3d33;color:#fff;padding:11px 18px;border-radius:12px;font:700 13px Inter,system-ui,sans-serif;box-shadow:0 6px 20px rgba(0,0,0,.3);cursor:pointer;text-align:center;max-width:92vw';d.onclick=()=>{d.textContent='Updating…';go2()};document.body.appendChild(d)}d.textContent='A new version of PrimeBook is ready. Tap here to update.'}
@@ -11690,6 +11690,45 @@ setInterval(()=>{if(document.hidden||!cloud()||!regd().length)return;pull()},450
 setInterval(()=>{if(document.hidden||!cloud()||!regd().length)return;publish(false)},300000);
 setTimeout(()=>{if(cloud()&&regd().length){fetchStatus();pull();publish(false)}},5000);
 const css=document.createElement('style');css.textContent='html body .ptl-b{display:flex;gap:12px;justify-content:space-between;align-items:center;flex-wrap:wrap;margin:0 0 12px;padding:13px 16px;border-radius:14px;background:#eef4ff;border:1px solid #c7d7fb;color:#12306e;font:500 13.5px/1.5 Inter,system-ui,sans-serif}html body .ptl-bt{display:flex;gap:8px}html body .ptl-e{flex-basis:100%;background:#fee2e2;color:#991b1b;border-radius:9px;padding:8px 11px;font-size:13px}';document.head.appendChild(css);
+})();
+
+/*NAVX*/
+(function(){
+const st=document.createElement('style');st.textContent=`
+html body nav#nav{padding-bottom:12px}
+html body nav#nav button.nv,html body nav#nav button.gh{display:flex;align-items:center;gap:12px;width:calc(100% - 24px)!important;margin:2px 12px!important;transform:none!important;padding:12px!important;border-radius:10px;border:0!important;background:transparent!important;box-shadow:none!important;font:500 14px/20px Inter,system-ui,sans-serif!important;letter-spacing:0!important;text-transform:none!important;color:#b6c2dd!important;text-align:left;cursor:pointer;min-height:0;transition:background .15s,color .15s}
+html body nav#nav button.nv:hover,html body nav#nav button.gh:hover{transform:none!important;background:#ffffff14!important;color:#fff!important}
+html body nav#nav button.nv .ni,html body nav#nav button.gh .ni{width:20px!important;height:20px!important;min-width:20px;transform:none!important;flex:none;display:inline-grid;place-items:center;color:#8fa0c4}
+html body nav#nav .ni svg{width:20px;height:20px;fill:none!important;stroke:currentColor!important;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round;color:inherit}
+html body nav#nav .ni svg .d{fill:none!important}
+html body nav#nav button.nv.on,html body nav#nav button.gh.on0{background:#ffffff1f!important;color:#fff!important}
+html body nav#nav button.nv.on .ni,html body nav#nav button.gh.on0 .ni{color:#fff!important}
+html body nav#nav button.nv[data-v=fdk]{background:#2563eb!important;color:#fff!important;box-shadow:0 6px 18px -4px #2563eb99,0 0 0 1px #60a5fa55 inset!important}
+html body nav#nav button.nv[data-v=fdk] .ni{color:#fff!important}html body nav#nav button.nv[data-v=fdk]:hover{background:#1d4ed8!important}
+html body nav#nav .nvl{margin:14px 24px 4px;font:600 11px/16px Inter,system-ui,sans-serif;letter-spacing:.08em;text-transform:uppercase;color:#7f90b5}
+html body nav#nav .nvd{height:1px;background:#ffffff1f;margin:12px 24px 0}
+html body nav#nav .grp{position:relative}
+html body nav#nav .grp .cv{margin-left:auto;font-size:0;width:8px;height:8px;border-right:2px solid currentColor;border-bottom:2px solid currentColor;transform:rotate(45deg);transition:transform .2s;opacity:.8;margin-right:4px}
+html body nav#nav .grp .cv.cl{transform:rotate(-45deg)}
+html body nav#nav .grp.op:before{content:"";position:absolute;left:34px;top:46px;bottom:18px;width:1px;background:#ffffff33}
+html body nav#nav button.sub{position:relative;display:block;width:calc(100% - 24px)!important;margin:2px 12px!important;transform:none!important;padding:9px 12px 9px 44px!important;border-radius:8px;border:0;background:transparent!important;box-shadow:none!important;font:500 13.5px/20px Inter,system-ui,sans-serif!important;letter-spacing:0!important;text-transform:none!important;color:#a3b1d1!important;text-align:left;cursor:pointer;min-height:0;animation:nvs .2s ease-out}
+html body nav#nav button.sub:hover{background:#ffffff12!important;color:#fff!important}
+html body nav#nav button.sub.on{background:#ffffff1a!important;color:#fff!important;box-shadow:none!important}
+html body nav#nav button.sub.on:before{content:"";position:absolute;left:21px;top:6px;bottom:6px;width:2px;border-radius:2px;background:#3b82f6}
+@keyframes nvs{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
+html[data-dens=compact] body nav#nav button.nv,html[data-dens=compact] body nav#nav button.gh{padding:8px 12px!important}
+@media(max-width:720px){html body nav#nav .nvl,html body nav#nav .nvd{display:none}html body nav#nav button.nv,html body nav#nav button.gh{width:auto;margin:0;padding:10px 12px!important}}
+`;document.head.appendChild(st);
+const T=s=>s.toLowerCase().replace(/(^|[\s(])([a-z])/g,(m,a,b)=>a+b.toUpperCase());
+let busy=0;
+function fix(){const n=document.getElementById('nav');if(!n||busy)return;busy=1;
+ n.querySelectorAll(':scope>button[data-v], .grp>button.gh').forEach(b=>{b.classList.add('nv');[...b.childNodes].forEach(t=>{if(t.nodeType==3&&/[A-Z]{3}/.test(t.nodeValue))t.nodeValue=T(t.nodeValue)})});
+ n.querySelectorAll('.grp').forEach(g=>{const cv=g.querySelector('.cv');const o=!!g.querySelector('.sub');g.classList.toggle('op',o);if(cv)cv.classList.toggle('cl',!o)});
+ if(!n.querySelector('.nvl')){const f=n.querySelector('.brand')?.nextElementSibling;if(f)f.insertAdjacentHTML('beforebegin','<div class="nvl">Main</div>');
+  const s=n.querySelector(':scope>button[data-v=std]');if(s)s.insertAdjacentHTML('beforebegin','<div class="nvd"></div><div class="nvl">Management</div>')}
+ busy=0}
+const mo=new MutationObserver(()=>{fix()});
+const start=()=>{const n=document.getElementById('nav');if(n){mo.observe(n,{childList:true});fix()}else setTimeout(start,300)};start();
 })();
 
 </script></body></html>
