@@ -5730,7 +5730,7 @@ const oc=V.ctx;V.ctx=function(){let h=oc.apply(this,arguments);
  h=h.replace('<button class="plf" onclick="ctOpen()">+ New transaction</button>','<span style="display:flex;gap:8px;flex-wrap:wrap"><button class="plf" onclick="sdOpen()">+ Currency sale deal</button><button class="plo" onclick="ctOpen()">+ Multi-currency entry</button></span>');
  return h};
 /*UPDCHK*/
-(function(){const B='2026-10-20-dx';window.PB_BUILD=B;if(location.protocol=='file:')return;let nb=null,tm=0;
+(function(){const B='2026-10-20-dy';window.PB_BUILD=B;if(location.protocol=='file:')return;let nb=null,tm=0;
 const busy=()=>{const a=document.activeElement;return !!(document.querySelector('.ov')||(a&&/^(INPUT|TEXTAREA)$/.test(a.tagName)&&String(a.value||'').length>0))};
 function go2(){try{const k='pb_upd_'+nb,n=+(sessionStorage.getItem(k)||0);sessionStorage.setItem(k,n+1)}catch(e){}location.replace(location.pathname+'?v='+encodeURIComponent(nb))}
 function bar(){let d=document.getElementById('pbupd');if(!d){d=document.createElement('div');d.id='pbupd';d.setAttribute('role','button');d.style.cssText='position:fixed;left:50%;transform:translateX(-50%);top:10px;z-index:100000;background:#0b3d33;color:#fff;padding:11px 18px;border-radius:12px;font:700 13px Inter,system-ui,sans-serif;box-shadow:0 6px 20px rgba(0,0,0,.3);cursor:pointer;text-align:center;max-width:92vw';d.onclick=()=>{d.textContent='Updating…';go2()};document.body.appendChild(d)}d.textContent='A new version of PrimeBook is ready. Tap here to update.'}
@@ -10782,6 +10782,9 @@ const isOwner_=()=>(me()||{}).role=='Owner';
 let wst='pend',wq='',wty='',wk='';
 const TYN={dp:'Deposit',wd:'Withdrawal',tr:'Transfer',bp:'Supplier payment'};
 const WSL={draft:'Draft',pend:'Pending approval',rej:'Rejected',posted:'Posted'};
+const wsLbl=x=>x.st=='posted'&&x.rec.revBy?'Reversed':x.st=='rej'&&x.rec.ret?'Returned for correction':WSL[x.st];
+const wsLim=()=>{try{return window.rbxLimit?window.rbxLimit():0}catch(e){return 0}};
+const wsOver=it=>{const l=wsLim();return l>0&&it.base>l+.004};
 const wsAp=()=>isAp();
 function wsItems(){const out=[],cur=(me()||{}),see=r=>wsAp()||(r.by==cur.name);
  (S.cxd||[]).forEach(r=>{if(!see(r))return;const s=r.s||{},amt=+s.amt||0,rt=(typeof ratex=='function'?ratex(s.ccy||S.base,s.rate):1)||1;
@@ -10805,9 +10808,9 @@ function wsTrail(it){const ev=[],r=it.rec;
 const REVT=['Deposit','Withdrawal','Transfer'];
 function wsActions(it){const role=(me()||{}).role,r=it.rec;
  if(it.st=='draft')return`<button type="button" class="tw-b pri" data-tw="form:${A(it.k)}">Open to edit or submit</button>`;
- if(it.st=='rej')return`<p class="tw-mu">${A(r.note||'Rejected.')}</p><button type="button" class="tw-b pri" data-tw="form:${A(it.k)}">Open to correct and resubmit</button>`;
+ if(it.st=='rej')return`<p class="tw-mu">${A(r.note||(r.ret?'Returned for correction.':'Rejected.'))}</p>`+(it.by==(me()||{}).name||wsAp()?`<button type="button" class="tw-b pri" data-tw="form:${A(it.k)}">Open to correct and resubmit</button>`:'');
  if(it.st=='pend'){if(!wsCanAp(it))return`<p class="tw-mu">${(role=='Owner'||role=='Manager')?'You entered this, so another manager must approve it.':'Waiting for a manager or owner to approve it.'}</p>`;
-  return`<button type="button" class="tw-b pri" data-tw="form:${A(it.k)}">Review and approve</button><label class="tw-nl">Reason (required to reject)<textarea id="tw-note" rows="2" maxlength="200"></textarea></label><p class="tw-er" id="tw-er" role="alert"></p><button type="button" class="tw-b" data-tw="reject:${A(it.k)}">Reject</button>`}
+  return(wsOver(it)?`<p class="tw-mu">This is over your approval limit of ${A(S.base)} ${mf(wsLim())}. An Owner must approve it. You can still return or reject it.</p>`:`<button type="button" class="tw-b pri" data-tw="form:${A(it.k)}">Review and approve</button>`)+`<label class="tw-nl">Comment (required to return or reject)<textarea id="tw-note" rows="2" maxlength="200"></textarea></label><p class="tw-er" id="tw-er" role="alert"></p><button type="button" class="tw-b" data-tw="return:${A(it.k)}">Return for correction</button> <button type="button" class="tw-b" data-tw="reject:${A(it.k)}">Reject</button>`}
  if(it.st=='posted'){const x=r;if(x.revBy)return`<p class="tw-mu">Reversed by entry ${A((S.j.find(q=>q.id==x.revBy)||{}).vno||'#'+x.revBy)}. Posted entries are never edited; a reversing journal corrects them.</p>`;
   if(x.rev)return`<p class="tw-mu">This is a reversing entry.</p>`;
   if(!['Owner','Manager','Accountant'].includes(role))return`<p class="tw-mu">Posted entries are never edited. Ask a manager or accountant to reverse it.</p>`;
@@ -10816,27 +10819,28 @@ function wsActions(it){const role=(me()||{}).role,r=it.rec;
  return''}
 function wsPanel(it){const r=it.rec;
  return`<div class="tw-dp" role="dialog" aria-label="Transaction details" aria-modal="false"><header><div><small>${A(it.type)}</small><h3>${A(it.ref)}</h3></div><button type="button" class="tw-x" data-tw="close" aria-label="Close details">✕</button></header>
- <div class="tw-body"><span class="tw-s st-${it.st}">${A(it.st=='posted'&&r.revBy?'Reversed':WSL[it.st])}</span>
- <dl class="tw-fg"><div><dt>Date</dt><dd>${A(it.date)}</dd></div><div><dt>Entered by</dt><dd>${A(it.by||'Unknown')}</dd></div><div><dt>Amount</dt><dd>${it.ccy==S.base?A(S.base)+' '+mf(it.amt):A(it.ccy)+' '+mf(it.amt)}</dd></div><div><dt>${A(S.base)} equivalent</dt><dd>${mf(it.base)}</dd></div><div class="w"><dt>Description</dt><dd>${it.desc?A(it.desc):'<em class="tw-mu">No description</em>'}</dd></div></dl>
+ <div class="tw-body"><span class="tw-s st-${it.st}">${A(wsLbl(it))}</span>${it.st=='rej'&&r.note?`<p class="tw-bn" role="note"><b>${r.ret?'Returned':'Rejected'}${r.rejBy?' by '+A(r.rejBy):''}.</b> ${A(String(r.note).replace(/^(Rejected|Returned): /,''))}</p>`:''}
+ <dl class="tw-fg"><div><dt>Date</dt><dd>${A(it.date)}</dd></div><div><dt>Entered by</dt><dd>${A(it.by||'Unknown')}</dd></div><div><dt>Amount</dt><dd>${it.ccy==S.base?A(S.base)+' '+mf(it.amt):A(it.ccy)+' '+mf(it.amt)}</dd></div><div><dt>${A(S.base)} equivalent</dt><dd>${mf(it.base)}</dd></div>${it.s&&+it.s.rate&&it.ccy!=S.base?`<div><dt>Rate</dt><dd>${A(String(+(+it.s.rate).toFixed(4)))}</dd></div>`:''}${it.st=='pend'?`<div class="w"><dt>Approval route</dt><dd>${wsOver(it)?'Over your limit: needs an Owner':'Needs a manager or owner other than '+A(it.by||'the person who entered it')}</dd></div>`:''}${it.st=='posted'?`<div><dt>Posting</dt><dd>Posted when approved</dd></div>`:''}<div class="w"><dt>Description</dt><dd>${it.desc?A(it.desc):'<em class="tw-mu">No description</em>'}</dd></div></dl>
  <h4>Journal preview</h4>${wsJournal(it)}<h4>Approval and audit trail</h4><ol class="tw-tr">${wsTrail(it)||'<li><small>No history recorded.</small></li>'}</ol><h4>Actions</h4><div class="tw-ac">${wsActions(it)}</div></div></div>`}
 function workspace(m){const all=wsItems(),cnt=k=>all.filter(x=>x.st==k),sum=k=>cnt(k).reduce((t,x)=>t+x.base,0),t0=today(),pt=cnt('posted').filter(x=>x.date==t0);
  const oldest=cnt('pend').slice().sort((a,b)=>String(a.at).localeCompare(String(b.at)))[0];
  const card=(l,n,sub)=>`<div class="tw-k"><small>${l}</small><b>${n}</b><span>${sub}</span></div>`;
- const cards=`<div class="tw-kg">${card('Drafts',cnt('draft').length,mf(sum('draft'))+' '+A(S.base))}${card('Pending approval',cnt('pend').length,cnt('pend').length?mf(sum('pend'))+' '+A(S.base)+' · oldest '+wsAgo(oldest.at):'Nothing waiting')}${card('Rejected',cnt('rej').length,cnt('rej').length?'Needs correcting':'None')}${card('Posted today',pt.length,mf(pt.reduce((t,x)=>t+x.base,0))+' '+A(S.base))}</div>`;
- const stages=[['draft','Drafts'],['pend','Pending approval'],['rej','Rejected'],['posted','Posted']];
+ const cards=`<div class="tw-kg">${card('Drafts',cnt('draft').length,mf(sum('draft'))+' '+A(S.base))}${card('Pending approval',cnt('pend').length,cnt('pend').length?mf(sum('pend'))+' '+A(S.base)+' · oldest '+wsAgo(oldest.at):'Nothing waiting')}${card('Returned or rejected',cnt('rej').length,cnt('rej').length?'Needs correcting':'None')}${card('Posted today',pt.length,mf(pt.reduce((t,x)=>t+x.base,0))+' '+A(S.base))}</div>`;
+ const stages=[['draft','Drafts'],['pend','Pending approval'],['rej','Rejected &amp; returned'],['posted','Posted']];
  const tabs=`<div class="tw-st" role="tablist" aria-label="Transaction stage">${stages.map(([k,l])=>`<button type="button" role="tab" aria-selected="${wst==k}" class="${wst==k?'on':''}" data-tw="stage:${k}">${l}<span>${cnt(k).length}</span></button>`).join('')}<button type="button" data-cbmt="led">Transaction History ›</button></div>`;
  let L=cnt(wst);const types=[...new Set(L.map(x=>x.type))].sort();if(wty&&!types.includes(wty))wty='';
  const q=wq.trim().toLowerCase();if(wty)L=L.filter(x=>x.type==wty);if(q)L=L.filter(x=>(x.ref+' '+x.type+' '+x.desc+' '+x.by).toLowerCase().includes(q));
  L=L.slice().sort((a,b)=>b.date.localeCompare(a.date)||String(b.at).localeCompare(String(a.at)));const shown=L.slice(0,100);
  const tools=`<div class="tw-tl"><div class="cbz-sr" role="search">${svg(IC.search)}<input id="twq" type="search" value="${A(wq)}" placeholder="Search reference, description or person" aria-label="Search transactions" oninput="twQ(this.value)" autocomplete="off"></div><select class="cbz-fs" aria-label="Type" onchange="twT(this.value)"><option value="">All types</option>${types.map(x=>`<option ${wty==x?'selected':''}>${A(x)}</option>`).join('')}</select></div>`;
- const tbl=shown.length?`<div class="cbz-w"><table class="cbz-t tw-t"><thead><tr><th>Reference</th><th>Type</th><th>Date</th><th>Description</th><th>Entered by</th><th class="n">Amount</th><th>Status</th></tr></thead><tbody>${shown.map(x=>`<tr class="cbz-row ${wk==x.k?'sel':''}" tabindex="0" data-tw="open:${A(x.k)}"><td><b>${A(x.ref)}</b></td><td>${A(x.type)}</td><td>${A(x.date)}</td><td>${A(x.desc)}</td><td>${A(x.by)}</td><td class="n">${wsAmt(x)}</td><td><span class="tw-s st-${x.st}">${A(x.st=='posted'&&x.rec.revBy?'Reversed':WSL[x.st])}</span></td></tr>`).join('')}</tbody></table></div>${L.length>shown.length?`<p class="cbz-fn">Showing the latest ${shown.length} of ${L.length}. Search or use Transaction History to see the rest.</p>`:''}`:`<p class="cbz-em">${q||wty?'Nothing matches your search.':wst=='draft'?'No drafts. Save an entry as a draft from Add transaction.':wst=='pend'?'Nothing is waiting for approval.':wst=='rej'?'No rejected entries.':'No posted entries yet.'}</p>`;
+ const tbl=shown.length?`<div class="cbz-w"><table class="cbz-t tw-t"><thead><tr><th>Reference</th><th>Type</th><th>Date</th><th>Description</th><th>Entered by</th><th class="n">Amount</th><th>Status</th></tr></thead><tbody>${shown.map(x=>`<tr class="cbz-row ${wk==x.k?'sel':''}" tabindex="0" data-tw="open:${A(x.k)}"><td><b>${A(x.ref)}</b></td><td>${A(x.type)}</td><td>${A(x.date)}</td><td>${A(x.desc)}</td><td>${A(x.by)}</td><td class="n">${wsAmt(x)}</td><td><span class="tw-s st-${x.st}">${A(wsLbl(x))}</span></td></tr>`).join('')}</tbody></table></div>${L.length>shown.length?`<p class="cbz-fn">Showing the latest ${shown.length} of ${L.length}. Search or use Transaction History to see the rest.</p>`:''}`:`<p class="cbz-em">${q||wty?'Nothing matches your search.':wst=='draft'?'No drafts. Save an entry as a draft from Add transaction.':wst=='pend'?'Nothing is waiting for approval.':wst=='rej'?'No rejected entries.':'No posted entries yet.'}</p>`;
  const sel=all.find(x=>x.k==wk);
- return`${cards}<section class="cbz-p"><div class="cbz-ph"><h3>Transactions</h3><span class="cbz-mu">${A((me()||{}).role||'')} · ${wsAp()?'you can approve entries':'you can submit entries for approval'}</span></div>${tabs}${tools}${tbl}</section>${sel?wsPanel(sel):''}`}
+ const lim=wsLim(),ib=`<div class="tw-ib" role="note"><span><small>Signed in</small><b>${A((me()||{}).name||'')} · ${A((me()||{}).role||'')}</b></span><span><small>Currency</small><b>${A(S.base)}</b></span><span><small>Posting</small><b>When approved</b></span><span><small>Your approval limit</small><b>${lim>0?A(S.base)+' '+mf(lim):wsAp()?'No limit':'Cannot approve'}</b></span></div>`;
+ return`${ib}${cards}<section class="cbz-p"><div class="cbz-ph"><h3>Transactions</h3><span class="cbz-mu">${wsAp()?'you can approve entries':'you can submit entries for approval'}</span></div>${tabs}${tools}${tbl}</section>${sel?wsPanel(sel):''}`}
 window.twQ=v=>{wq=v;go();rf2('twq')};window.twT=v=>{wty=v;go()};
 function wsOpenForm(it){wk='';if(it.src=='rdq'){if(window.rdOpenQ)window.rdOpenQ(it.id);return}
  const s=it.s||{};window.mfOpen({type:s.type,party:s.party||'other',cat:s.cat});setTimeout(()=>{if(window.cxLoadDraft)window.cxLoadDraft(it.id)},80)}
-function wsReject(it,why){const r=it.rec;if(it.src=='cx'){r.st='Rejected';r.rejBy=(me()||{}).name;r.note=why}else{r.st='Rejected';r.rejBy=(me()||{}).name;r.note='Rejected: '+why}
- save();if(window.alog)alog('Cash approval','Rejected '+it.ref+': '+why);lg('rejected',it.ref,why)}
+function wsReject(it,why,ret){const r=it.rec;r.ret=ret?1:0;if(it.src=='cx'){r.st='Rejected';r.rejBy=(me()||{}).name;r.note=why}else{r.st='Rejected';r.rejBy=(me()||{}).name;r.note=(ret?'Returned: ':'Rejected: ')+why}
+ save();if(window.alog)alog('Cash approval',(ret?'Returned for correction ':'Rejected ')+it.ref+': '+why);lg(ret?'returned':'rejected',it.ref,why)}
 function wsReverse(it,why){const x=it.rec,{id:_i,vno:_v,at:_a,alloc:_al,revBy:_rb,...rest}=x;let id=0;
  try{id=post({...rest,date:today(),tt:'Reversal',memo:'Reversal of '+(x.vno||x.ref||('#'+x.id))+': '+why,lines:x.lines.map(y=>[y[0],+y[2]||0,+y[1]||0]),rev:x.id,by:(me()||{}).name||''})}catch(e){if(!e||!e.pe)throw e;return e.message}
  {const z=S.j[S.j.length-1];x.revBy=z&&z.rev==x.id?z.id:id}save();if(window.alog)alog('Reversal','Reversed '+(x.vno||x.ref||('#'+x.id))+': '+why);lg('reversed',x.vno||('#'+x.id),why);return''}
@@ -10847,6 +10851,7 @@ document.addEventListener('click',e=>{if(view!='cbd'&&view!='bkd')return;const e
  if(a=='form'){wsOpenForm(it);return}
  const note=(document.getElementById('tw-note')||{}).value||'',er=document.getElementById('tw-er');
  if(a=='reject'){if(!wsCanAp(it))return;if(!note.trim()){if(er)er.textContent='Please write the reason for rejecting.';return}wsReject(it,note.trim());wk='';go();return}
+ if(a=='return'){if(!wsCanAp(it))return;if(!note.trim()){if(er)er.textContent='Please write what needs to be corrected.';return}wsReject(it,note.trim(),1);wk='';go();return}
  if(a=='reverse'){if(!note.trim()){if(er)er.textContent='Please write the reason for the reversal.';return}const m=wsReverse(it,note.trim());if(m){if(er)er.textContent=m;return}go();return}
 },true);
 document.addEventListener('keydown',e=>{if((view=='cbd'||view=='bkd')&&tab=='ws'){if(e.key=='Escape'&&wk){wk='';go()}else if(e.key=='Enter'){const r=e.target.closest&&e.target.closest('tr[data-tw]');if(r){wk=r.dataset.tw.slice(5);go()}}}});
@@ -10866,6 +10871,7 @@ html body .tw-tr{list-style:none;margin:0;padding:0 0 0 14px;border-left:2px sol
 html body .tw-ac{display:flex;flex-direction:column;gap:10px;align-items:flex-start}html body .tw-mu{color:#64748B;font:400 13px/1.5 Inter;margin:0}html body .tw-nl{display:flex;flex-direction:column;gap:4px;font:600 12.5px Inter;color:#1E293B;width:100%}html body .tw-nl textarea{border:1px solid #CBD5E1;border-radius:6px;padding:8px;font:400 13px Inter;width:100%;box-sizing:border-box;resize:vertical}
 html body .tw-er{margin:0;color:#B91C1C;font:500 12.5px Inter}html body .tw-er:empty{display:none}
 html body .tw-b{height:36px;padding:0 14px;border:1px solid #CBD5E1;border-radius:6px;background:#fff!important;color:#1E293B!important;font:600 13px Inter;cursor:pointer;box-shadow:none!important}html body .tw-b.pri{background:#2563EB!important;border-color:#2563EB;color:#fff!important}html body .tw-b:focus-visible,html body .tw-t tr:focus-visible{outline:2px solid #2563EB;outline-offset:2px}
+html body .tw-ib{display:flex;flex-wrap:wrap;gap:8px 28px;background:#fff;border:1px solid #E2E8F0;border-radius:8px;padding:10px 16px;margin:0 0 12px}html body .tw-ib span{display:flex;flex-direction:column}html body .tw-ib small{color:#64748B;font:500 12px Inter}html body .tw-ib b{font:600 13.5px Inter;color:#1E293B;font-variant-numeric:tabular-nums}html body .tw-bn{margin:0;padding:10px 12px;border:1px solid #FCD34D;background:#FFFBEB;border-radius:6px;color:#92400E;font:400 13px/1.5 Inter}
 @media(max-width:900px){html body .tw-kg{grid-template-columns:1fr 1fr}}@media(max-width:560px){html body .tw-kg{grid-template-columns:1fr}html body .tw-fg{grid-template-columns:1fr}}
 `;document.head.appendChild(c3)}
 /* ---- page ---- */
