@@ -537,7 +537,7 @@ const need=(o)=>o.pay=='credit'&&o.cust=='c1'?(alert('Choose a named customer or
 const cur=()=>Object.keys(S.rates).map(c=>[c,c]);
 let sub='deals',pu=0,pend=null;
 const _sn=v=>typeof v=='string'&&/[<>]/.test(v)?v.replace(/</g,'\u2039').replace(/>/g,'\u203a'):v;
-function sanNames(){try{(S.br||[]).forEach(b=>{b.name=_sn(b.name)});(S.users||[]).forEach(u=>{u.name=_sn(u.name)});(S.cust||[]).forEach(c=>{c.name=_sn(c.name)});if(S.coa)Object.keys(S.coa).forEach(k=>{if(typeof S.coa[k]=='string')S.coa[k]=_sn(S.coa[k])})}catch(e){}}
+function sanNames(){try{const st=[S],seen=new Set();while(st.length){const o=st.pop();if(!o||typeof o!='object'||seen.has(o))continue;seen.add(o);for(const k in o){if(o===S&&(k=='j'||k=='fx'&&0))continue;const v=o[k];if(typeof v=='string'){if(v.length<5000&&/[<>]/.test(v))o[k]=_sn(v)}else if(v&&typeof v=='object')st.push(v)}}}catch(e){}}
 function ensure(){sanNames();S.banks=S.banks||[];S.closings=S.closings||[];S.par=S.par||{};S.coa=S.coa||{};Object.assign(CH,S.coa);S.docs=S.docs||[];S.rv=S.rv||{};S.fav=S.fav||REP.slice(0,9).map(x=>x[0]);S.users.forEach((u,i)=>{u.id=u.id||'USR-'+String(i+1).padStart(4,'0');u.un=u.un||u.name.toLowerCase().replace(/[^a-z0-9]+/g,'.');u.email=u.email||'';u.status=u.status||'Active'})}
 const B32='ABCDEFGHIJKLMNOPQRSTUVWXYZ234567',pidx=()=>me().role=='Owner'?pu:(S.me||0);
 const newSecret=()=>{let b='',s='';crypto.getRandomValues(new Uint8Array(20)).forEach(x=>b+=x.toString(2).padStart(8,'0'));for(let i=0;i<160;i+=5)s+=B32[parseInt(b.slice(i,i+5),2)];return s};
@@ -2296,6 +2296,7 @@ const b32e=u=>{let b='',o='';u.forEach(x=>b+=x.toString(2).padStart(8,'0'));for(
 const b32d=s=>{let b='';for(const c of s)b+=b32a.indexOf(c).toString(2).padStart(5,'0');const o=[];for(let i=0;i+8<=b.length;i+=8)o.push(parseInt(b.slice(i,i+8),2));return new Uint8Array(o)};
 async function hotp(sec,ctr){const k=await crypto.subtle.importKey('raw',b32d(sec),{name:'HMAC',hash:'SHA-1'},false,['sign']),m=new Uint8Array(8);let c=ctr;for(let i=7;i>=0;i--){m[i]=c&255;c=Math.floor(c/256)}const h=new Uint8Array(await crypto.subtle.sign('HMAC',k,m)),o=h[19]&15;return String(((h[o]&127)<<24|h[o+1]<<16|h[o+2]<<8|h[o+3])%1e6).padStart(6,'0')}
 async function totpStep(sec,code,last){const t=Math.floor(Date.now()/3e4);for(const d of[0,-1,1]){const s=t+d;if(s>(last||0)&&await hotp(sec,s)==code)return s}return 0}
+window.pbVerifyLocal=async function(pw){const a=SESS&&accs().find(x=>x.id==SESS.id);if(!a||!a.hash||!a.salt)return null;return (await pbk(pw,b64d(a.salt)))===a.hash};
 async function pbk(pw,salt){const k=await crypto.subtle.importKey('raw',new TextEncoder().encode(pw),'PBKDF2',false,['deriveBits']);return b64e(new Uint8Array(await crypto.subtle.deriveBits({name:'PBKDF2',salt,iterations:150000,hash:'SHA-256'},k,256)))}
 async function sha(t){return b64e(new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(t))))}
 const rnd=n=>crypto.getRandomValues(new Uint8Array(n));
@@ -2711,7 +2712,7 @@ document.addEventListener('click',e=>{const t=e.target.closest('[data-pyt]');if(
 /* ---------- Clear data (typed confirmation) ---------- */
 H.clr=function(o){if(!/^clear$/i.test((o.confirm||'').trim()))return alert('Type the word CLEAR to confirm. Nothing was deleted.'),false;
 const tx=()=>{S.j=[];S.fx=[];S.inv=[];S.docs=[];S.pos={};S.ist={};S.lots=[];S.imv=[];S.closings=[];S.bst=[];S.bclose={};S.pbq=[];S.tme=[];S.pay=[];S.leave=[];S.dord=[];S.mdeals=[]};
-tx();if(o.what=='all'){S.cust=S.cust.filter(c=>c.id=='c1');S.items=[];S.banks=[];S.prj=[];S.ctr=[];S.emp=[];S.tax=[];S.coa={};S.br=[{id:'b1',name:S.br[0]?S.br[0].name:'Main Branch'}];S.users.forEach(u=>{u.br='All'});br='all'}
+tx();if(o.what=='all'){S.cust=S.cust.filter(c=>c.id=='c1');S.items=[];S.banks=[];S.prj=[];S.ctr=[];S.emp=[];S.tax=[];S.br=[{id:'b1',name:S.br[0]?S.br[0].name:'Main Branch'}];S.users.forEach(u=>{u.br='All'});br='all'}
 view='clr';bmsg2=o.what=='all'?'All business data was cleared. Your company profile, branches, users and currencies were kept.':'All transactions were cleared. Customers, items, bank accounts and settings were kept.'};
 let bmsg2='';
 const clrForm=()=>`<div class="p" style="border-color:#b3261e"><h3 style="color:#b3261e">Clear data</h3><p class="mu" style="margin:0 0 10px">This permanently deletes data from this company in this browser. Copy a backup first if you may need it again. It cannot be undone.</p><form data-f="clr"><div class="fg">${fi2(['what','What to clear','s',[['tx','Transactions only (keep customers, items, banks, settings)'],['all','Everything (customers, items, banks, projects, staff, extra branches and transactions)']]])}${fi2(['confirm','Type CLEAR to confirm','x',null,'','CLEAR'])}</div><button style="background:#b3261e">Clear data now</button></form></div>`;
@@ -4150,27 +4151,37 @@ const RS=[['tx','Transactions','Ledger entries, invoices, forex deals, documents
 ['bank','Bank accounts','Registered bank accounts',()=>(S.banks||[]).length],
 ['hr','Employees','Staff records',()=>(S.emp||[]).length],
 ['prj','Projects & contracts','Projects and contract records',()=>(S.prj||[]).length+(S.ctr||[]).length],
-['cfg','Tax & account settings','Tax rates and account name changes',()=>(S.tax||[]).length+Object.keys(S.coa||{}).length],
+['cfg','Tax rates','Tax rates only. The Chart of Accounts is never reset',()=>(S.tax||[]).length],
 ['br','Extra branches','Keeps the first branch; users move to All branches',()=>Math.max(0,S.br.length-1)],
 ['log','Audit & activity history','System activity log and backup history',()=>(S.alog||[]).length+(S.bkl||[]).length]];
 window.rstSync=()=>{const f=document.getElementById('rstf'),tx=f.querySelector('[name=s_tx]');const dep=[...f.querySelectorAll('input[type=checkbox]')].filter(c=>c.name!='s_tx'&&c.name!='s_log'&&c.checked).length;if(dep)tx.checked=true;const n=[...f.querySelectorAll('input[type=checkbox]:checked')].length;document.getElementById('rstn').textContent=n?n+' selected':'Nothing selected'};
 window.rstPre=k=>{const f=document.getElementById('rstf');f.querySelectorAll('input[type=checkbox]').forEach(c=>c.checked=k=='all'?c.name!='s_log':k=='tx'?c.name=='s_tx':false);rstSync()};
 let rstMsg='';
 V.clr=()=>{const m=rstMsg?banner('ok','&#10004; '+esc(rstMsg)):'';rstMsg='';const p=getPrev();
-return seg('clr')+m+banner('warn','&#9888; Resetting permanently deletes data from <b>'+esc((S.co||{}).name||'this company')+'</b> in this browser. A safety copy is kept so you can undo it, but download a backup first.')+
+return seg('clr')+m+banner('warn','&#9888; Resetting permanently deletes data from <b>'+esc((S.co||{}).name||'this company')+'</b> in this browser. A safety copy is kept so you can undo it, but download a backup first. <b>Your Chart of Accounts is always kept.</b> You must enter your password to reset.')+
 `<div class="cd-card cd-dz"><h4 style="color:#b42318">Choose what to reset</h4><p>Pick a preset or tick items yourself. Anything that depends on transactions will clear them too, so your books never end up half-empty.</p><div class="cd-pre"><button type="button" class="b s cd-btn" onclick="rstPre('tx')">Transactions only</button><button type="button" class="b s cd-btn" onclick="rstPre('all')">Full business reset</button><button type="button" class="b s cd-btn" onclick="rstPre('none')">Clear selection</button></div>
 <form id="rstf" data-f="clr2">${RS.map(([k,t,d,c])=>`<label class="cd-sc"><input type="checkbox" name="s_${k}" onchange="rstSync()"><span><b>${t}</b><small>${d}</small></span><span class="n">${c()} record${c()==1?'':'s'}</span></label>`).join('')}
-<div style="margin-top:12px;display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end"><label style="font-size:12px;color:#667085">Type <b>RESET</b> to confirm<input name="confirm" autocomplete="off" placeholder="RESET" style="display:block;margin-top:3px;padding:9px 11px;border:1px solid #f3c5c0;border-radius:8px;font:inherit"></label><button class="cd-btn" style="background:#b42318;border-color:#b42318">Reset selected data</button><span id="rstn" style="font-size:12.5px;color:#667085">Nothing selected</span></div></form></div>`+
+<div style="margin-top:12px;display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end"><label style="font-size:12px;color:#667085">Type <b>RESET</b> to confirm<input name="confirm" autocomplete="off" placeholder="RESET" style="display:block;margin-top:3px;padding:9px 11px;border:1px solid #f3c5c0;border-radius:8px;font:inherit"></label><label style="font-size:12px;color:#667085">Your password<input name="rpw" type="password" autocomplete="new-password" placeholder="Enter your password" style="display:block;margin-top:3px;padding:9px 11px;border:1px solid #f3c5c0;border-radius:8px;font:inherit"></label><button class="cd-btn" style="background:#b42318;border-color:#b42318">Reset selected data</button><span id="rstn" style="font-size:12.5px;color:#667085">Nothing selected</span></div></form></div>`+
 (p&&p.data?`<div class="cd-card" style="margin-top:14px;border-color:#c7d6f8"><h4>Undo available</h4><p>Safety copy from ${esc(fdt(p.at))} (${esc(p.why)}).</p><button class="b s cd-btn" onclick="bkUndo()">Undo and restore this copy</button></div>`:'')};
-H.clr2=o=>{if(!/^reset$/i.test((o.confirm||'').trim()))return alert('Type the word RESET to confirm. Nothing was deleted.'),false;const sel=RS.map(r=>r[0]).filter(k=>o['s_'+k]);if(!sel.length)return alert('Select at least one item to reset.'),false;
+const rstFk='pb_rst_fail',rstFg=()=>{try{return JSON.parse(localStorage.getItem(rstFk))||{n:0,until:0}}catch(e){return{n:0,until:0}}},rstFs=v=>{try{localStorage.setItem(rstFk,JSON.stringify(v))}catch(e){}};
+async function rstVerify(pw){let r=null;if(window.pbVerifyCloud)r=await window.pbVerifyCloud(pw);if(r===null&&window.pbVerifyLocal)r=await window.pbVerifyLocal(pw);return r}
+async function rstGate(o){const f=rstFg();if(f.until>Date.now()){const m=Math.ceil((f.until-Date.now())/6e4);alert('Reset is locked after too many wrong passwords. Try again in '+m+' minute'+(m==1?'':'s')+'.');alog('Data reset','Blocked: reset locked after failed password attempts');save();return}
+const pw=o.rpw||'';let r;try{r=await rstVerify(pw)}catch(e){alert('Your password could not be checked (no connection). Nothing was deleted.');return}
+if(r===null){if(!/^reset$/i.test((o.confirm||'').trim()))return;rstExec(o);save();go();return}
+if(!pw||r!==true){const n=(f.n||0)+1;if(n>=3){rstFs({n:0,until:Date.now()+15*6e4});alog('Data reset','Password check failed 3 times: reset locked for 15 minutes');save();alert('Wrong password. Reset is locked for 15 minutes.')}else{rstFs({n,until:0});alog('Data reset','Password check failed ('+n+' of 3)');save();alert('Wrong password. Nothing was deleted. '+(3-n)+' attempt'+(3-n==1?'':'s')+' left.')}go();return}
+rstFs({n:0,until:0});rstExec(o);save();go()}
+H.clr2=o=>{if(!/^reset$/i.test((o.confirm||'').trim()))return alert('Type the word RESET to confirm. Nothing was deleted.'),false;if(!RS.some(r=>o['s_'+r[0]]))return alert('Select at least one item to reset.'),false;if(Object.keys(o).some(k=>/^s_(coa|chart|accounts?)$/i.test(k))){alog('Data reset','Rejected: a request tried to reset the Chart of Accounts');save();return alert('The Chart of Accounts can never be reset. Nothing was deleted.'),false}
+rstGate(o);return false};
+function rstExec(o){const coa0=JSON.stringify([S.coa,S.par,S.acx]);const sel=RS.map(r=>r[0]).filter(k=>o['s_'+k]);
 const dep=sel.filter(k=>k!='tx'&&k!='log').length;if(dep&&!sel.includes('tx'))sel.push('tx');
 if(!snap('Before data reset'))if(!confirm('A safety copy could not be saved (storage is full), so this cannot be undone. Continue?'))return false;
 const names=sel.map(k=>RS.find(r=>r[0]==k)[1]);
 if(sel.includes('tx')){S.j=[];S.fx=[];S.inv=[];S.docs=[];S.pos={};S.ist={};S.lots=[];S.imv=[];S.closings=[];S.bst=[];S.bclose={};S.pbq=[];S.tme=[];S.pay=[];S.leave=[]}
-if(sel.includes('stock'))S.items=[];if(sel.includes('cust'))S.cust=S.cust.filter(c=>c.id=='c1');if(sel.includes('bank'))S.banks=[];if(sel.includes('hr'))S.emp=[];if(sel.includes('prj')){S.prj=[];S.ctr=[]}if(sel.includes('cfg')){S.tax=[];S.coa={};S.acx={}}
+if(sel.includes('stock'))S.items=[];if(sel.includes('cust'))S.cust=S.cust.filter(c=>c.id=='c1');if(sel.includes('bank'))S.banks=[];if(sel.includes('hr'))S.emp=[];if(sel.includes('prj')){S.prj=[];S.ctr=[]}if(sel.includes('cfg')){S.tax=[]}
 if(sel.includes('br')){S.br=[{id:S.br[0].id,name:S.br[0].name}];S.users.forEach(u=>{u.br='All'});br='all'}
 if(sel.includes('log')){S.alog=[];S.bkl=[]}
-else alog('Data reset','Cleared: '+names.join(', '));rstMsg='Reset complete: '+names.join(', ')+'. You can undo this below.';view='clr'};
+if(JSON.stringify([S.coa,S.par,S.acx])!==coa0){const c=JSON.parse(coa0);S.coa=c[0];S.par=c[1];S.acx=c[2];if(window.ensure)ensure();alog('Data reset','Safeguard: Chart of Accounts change was undone')}
+else alog('Data reset','Cleared: '+names.join(', '));rstMsg='Reset complete: '+names.join(', ')+'. You can undo this below.';view='clr'}
 /* ======== 4. AUDIT TRAIL ======== */
 const AU={tab:'tx',u:'all',b:'all',t:'all',f:'',to:'',q:'',flag:false,n:100,k:'all'};
 window.auSet=(k,v)=>{AU[k]=v;if(k!='n')AU.n=100;go()};
@@ -5667,7 +5678,7 @@ const oc=V.ctx;V.ctx=function(){let h=oc.apply(this,arguments);
  h=h.replace('<button class="plf" onclick="ctOpen()">+ New transaction</button>','<span style="display:flex;gap:8px;flex-wrap:wrap"><button class="plf" onclick="sdOpen()">+ Currency sale deal</button><button class="plo" onclick="ctOpen()">+ Multi-currency entry</button></span>');
  return h};
 /*UPDCHK*/
-(function(){const B='2026-10-20-de';window.PB_BUILD=B;if(location.protocol=='file:')return;let nb=null,tm=0;
+(function(){const B='2026-10-20-df';window.PB_BUILD=B;if(location.protocol=='file:')return;let nb=null,tm=0;
 const busy=()=>{const a=document.activeElement;return !!(document.querySelector('.ov')||(a&&/^(INPUT|TEXTAREA)$/.test(a.tagName)&&String(a.value||'').length>0))};
 function go2(){try{const k='pb_upd_'+nb,n=+(sessionStorage.getItem(k)||0);sessionStorage.setItem(k,n+1)}catch(e){}location.replace(location.pathname+'?v='+encodeURIComponent(nb))}
 function bar(){let d=document.getElementById('pbupd');if(!d){d=document.createElement('div');d.id='pbupd';d.setAttribute('role','button');d.style.cssText='position:fixed;left:50%;transform:translateX(-50%);top:10px;z-index:100000;background:#0b3d33;color:#fff;padding:11px 18px;border-radius:12px;font:700 13px Inter,system-ui,sans-serif;box-shadow:0 6px 20px rgba(0,0,0,.3);cursor:pointer;text-align:center;max-width:92vw';d.onclick=()=>{d.textContent='Updating…';go2()};document.body.appendChild(d)}d.textContent='A new version of PrimeBook is ready. Tap here to update.'}
@@ -6618,6 +6629,7 @@ if(r.version>m.ver){if(m.dirty)return conflict();if(first){lsS(dataK(SB.user.id)
 else if(m.dirty)push();else if(state!='new')pill('ok')}catch(e){if(isNet(e))pill('off');else if(e.status==401||e.status==400){pill('err','Signed out. Sign in again')}}}
 function startSync(){if(hasEnt()){pill('na','Multi-company is not synced yet');return}pill('sav');check(true);clearInterval(pollT);pollT=setInterval(()=>{if(!document.hidden&&!busy&&!meta().dirty)check(false)},25000);addEventListener('online',()=>check(false));document.addEventListener('visibilitychange',()=>{if(document.hidden&&meta().dirty)push();else if(!document.hidden)check(false)})}
 /* ---- sign out ---- */
+window.pbVerifyCloud=async function(pw){if(!SB||!SB.user||!SB.user.email)return null;try{const j=await api('/auth/v1/token?grant_type=password',{method:'POST',body:{email:SB.user.email,password:pw},anon:1});return !!(j&&j.access_token)}catch(e){if(e&&e.status&&e.status<500&&e.status!=429)return false;throw e}};
 window.pbOut=async function(){if(SB&&meta().dirty){pill('sav');await push();if(meta().dirty&&!confirm('Some changes are not saved online yet. Sign out anyway and lose them?'))return}
 if(window.pbSec&&SESS)return pbSec.logout('manual');const uid=SB&&SB.user&&SB.user.id;try{if(SB)await api('/auth/v1/logout',{method:'POST',body:{}})}catch(e){}
 if(uid){lsD(dataK(uid));lsD('pb_meta_'+uid);putAccs(accs().filter(a=>a.id!=uid))}sbSave(null);lsD(AS);location.reload()};
