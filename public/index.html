@@ -5730,7 +5730,7 @@ const oc=V.ctx;V.ctx=function(){let h=oc.apply(this,arguments);
  h=h.replace('<button class="plf" onclick="ctOpen()">+ New transaction</button>','<span style="display:flex;gap:8px;flex-wrap:wrap"><button class="plf" onclick="sdOpen()">+ Currency sale deal</button><button class="plo" onclick="ctOpen()">+ Multi-currency entry</button></span>');
  return h};
 /*UPDCHK*/
-(function(){const B='2026-10-20-dq';window.PB_BUILD=B;if(location.protocol=='file:')return;let nb=null,tm=0;
+(function(){const B='2026-10-20-dr';window.PB_BUILD=B;if(location.protocol=='file:')return;let nb=null,tm=0;
 const busy=()=>{const a=document.activeElement;return !!(document.querySelector('.ov')||(a&&/^(INPUT|TEXTAREA)$/.test(a.tagName)&&String(a.value||'').length>0))};
 function go2(){try{const k='pb_upd_'+nb,n=+(sessionStorage.getItem(k)||0);sessionStorage.setItem(k,n+1)}catch(e){}location.replace(location.pathname+'?v='+encodeURIComponent(nb))}
 function bar(){let d=document.getElementById('pbupd');if(!d){d=document.createElement('div');d.id='pbupd';d.setAttribute('role','button');d.style.cssText='position:fixed;left:50%;transform:translateX(-50%);top:10px;z-index:100000;background:#0b3d33;color:#fff;padding:11px 18px;border-radius:12px;font:700 13px Inter,system-ui,sans-serif;box-shadow:0 6px 20px rgba(0,0,0,.3);cursor:pointer;text-align:center;max-width:92vw';d.onclick=()=>{d.textContent='Updating…';go2()};document.body.appendChild(d)}d.textContent='A new version of PrimeBook is ready. Tap here to update.'}
@@ -10375,15 +10375,28 @@ html[data-theme=dark] body .rd-in,html[data-theme=dark] body .rd-fg div{backgrou
 })();
 
 /*DWG*/(function(){
-/* Main Dashboard: simple widget editor. Move, resize, hide and restore cards. Saved per user. */
+/* Main Dashboard layout. Cards are grouped into sections (Financial overview, Accounts, Transactions, Reports, Settings & more).
+   Press and hold any card, then drag it to a new place (also across sections). Customize mode adds handles, width, hide and
+   "move to section" controls. Every change can be undone or redone and is saved per user (S.dwl[user]). */
 const A=x=>String(x==null?'':x).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const SIZES=[4,6,8,12];
+const SECS=[['ov','Financial overview'],['ac','Accounts'],['tx','Transactions'],['rp','Reports'],['mr','Settings & more']];
+const SEC0={dbxfo:'ov',dbxcf:'ov',dbxai:'ov',dbxcb:'ac',dbxca:'ac',qa:'tx',rec:'tx',act:'tx',deals:'tx',dbxqr:'rp',kpt:'rp',brn:'rp',exp:'rp',rates:'mr',snp:'mr',acc:'mr',ins:'mr',hero:'mr',kpi:'mr'};
+const ORD0=['dbxfo','dbxcf','dbxai','dbxcb','dbxca','qa','rec','act','deals','dbxqr','kpt','brn','exp','rates','snp','acc','ins'];
 const NAMES={hero:'Financial health',kpi:'Key figures',ins:'Smart insights',kpt:'Key performance indicators',qa:'Quick actions',deals:'Pending sales deals',rates:'Exchange rates',acc:'Account balances',brn:'Branch performance',act:'Action center',rec:'Recent transactions',exp:'Expense breakdown',snp:'Business snapshot'};
-const DEF={dbxfo:12,dbxcb:12,dbxcf:8,dbxai:4,dbxca:12,dbxqr:6,hero:12,kpi:12,ins:6,kpt:6,qa:12,deals:12,rates:12,acc:12,brn:8,act:4,rec:4,exp:4,snp:4};
+const DEF={dbxfo:12,dbxcb:12,dbxcf:8,dbxai:4,dbxca:12,dbxqr:6,hero:12,kpi:12,ins:6,kpt:6,qa:12,deals:12,rates:12,acc:12,brn:8,act:6,rec:6,exp:4,snp:4};
 const HEAD={'account balances':'acc','branch performance':'brn','action center':'act','recent transactions':'rec','expense breakdown':'exp','business snapshot':'snp'};
-let edit=false,drag=null;
+let edit=false,note='',lastIds=[];const U=[],RD=[];let who='';
 const key=()=>((me()||{}).name)||'u';
-const L=()=>{S.dwl=S.dwl||{};return S.dwl[key()]||(S.dwl[key()]={ord:[],hid:[],sp:{}})};
+const L=()=>{S.dwl=S.dwl||{};return S.dwl[key()]||(S.dwl[key()]={ord:[],hid:[],sp:{},sec:{}})};
+const snap=()=>{const l=L();return JSON.stringify({ord:l.ord||[],hid:l.hid||[],sp:l.sp||{},sec:l.sec||{}})};
+const restore=s=>{const l=L(),o=JSON.parse(s);l.ord=o.ord;l.hid=o.hid;l.sp=o.sp;l.sec=o.sec};
+const secOf=id=>{const l=L();return(l.sec&&l.sec[id])||SEC0[id]||'mr'};
+const isCol=s=>{const l=L();return l.col&&s in l.col?!!l.col[s]:s=='mr'};
+/* every layout change goes through here, so it can be undone */
+function commit(fn,msg){if(key()!=who){who=key();U.length=0;RD.length=0}const before=snap();fn();if(snap()==before)return;U.push(before);if(U.length>60)U.shift();RD.length=0;note=msg||'Layout changed.';save();go()}
+function undo(){if(!U.length)return;RD.push(snap());restore(U.pop());note='Undid the last layout change.';save();go()}
+function redo(){if(!RD.length)return;U.push(snap());restore(RD.pop());note='Redid the layout change.';save();go()}
 const heading=e=>{const h=e.querySelector('h3,h2,b');return h?h.textContent.trim():''};
 function collect(m){const out=[];const add=(id,el,label)=>{if(el&&!out.some(o=>o.el===el)&&!out.some(o=>o.id==id))out.push({id,el,label:label||NAMES[id]||id})};
  m.querySelectorAll(':scope>[data-dwid]').forEach(e=>add(e.dataset.dwid,e,e.dataset.dwl));
@@ -10391,59 +10404,114 @@ function collect(m){const out=[];const add=(id,el,label)=>{if(el&&!out.some(o=>o
  if(dsh){add('hero',dsh.querySelector(':scope>.dsh-hero'));add('kpi',dsh.querySelector(':scope>.dsh-kp'));const r=dsh.querySelector(':scope>.dsh-r');if(r){const k=[...r.children];add('ins',k[0]);add('kpt',k[1]);k.slice(2).forEach((e,i)=>add('dx'+i,e,heading(e)))}}
  add('qa',m.querySelector(':scope>.dqa2'));add('deals',m.querySelector(':scope>.fdc'));add('rates',m.querySelector(':scope>.rts'));
  const fdn=m.querySelector(':scope>.fdn');if(fdn)[...fdn.children].forEach((e,i)=>{if(e.classList.contains('fdn-h'))return;const hl=heading(e).toLowerCase(),id=Object.keys(HEAD).filter(k=>hl.indexOf(k)==0).map(k=>HEAD[k])[0]||'fx'+i;add(id,e,heading(e)||id)});
- [...m.children].forEach((e,i)=>{if(e.classList.contains('top')||e.classList.contains('ctabs')||e.classList.contains('tsw')||e.classList.contains('dwb')||e.classList.contains('dwg')||out.some(o=>o.el===e||o.el.contains(e)||e.contains(o.el)))return;if(e.querySelector('*')||e.textContent.trim())add('mx'+i,e,heading(e)||'Panel')});
+ [...m.children].forEach((e,i)=>{if(e.classList.contains('top')||e.classList.contains('ctabs')||e.classList.contains('tsw')||e.classList.contains('dwb')||e.classList.contains('dws')||e.classList.contains('dwg')||out.some(o=>o.el===e||o.el.contains(e)||e.contains(o.el)))return;if(e.querySelector('*')||e.textContent.trim())add('mx'+i,e,heading(e)||'Panel')});
  return out}
-function build(){const m=document.getElementById('m');if(!m||view!='dash'||m.querySelector('.dwg'))return;
+const ICN={undo:'<path d="M9 14L4 9l5-5"/><path d="M4 9h10a6 6 0 010 12h-3"/>',redo:'<path d="M15 14l5-5-5-5"/><path d="M20 9H10a6 6 0 000 12h3"/>',cog:'<rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><path d="M17.5 14v7M14 17.5h7"/>'};
+const ic=d=>`<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${d}</svg>`;
+function build(){const m=document.getElementById('m');if(!m||view!='dash'||m.querySelector('.dws'))return;
  const W=collect(m);if(W.length<2)return;const lay=L(),byId={};W.forEach(w=>byId[w.id]=w);
  if(!lay.mig2){lay.mig2=1;['hero','kpi'].forEach(i=>{if(!lay.hid.includes(i))lay.hid.push(i)});lay.ord=lay.ord.filter(i=>!/^dbx/.test(i));save()}
- const ids=[...lay.ord.filter(i=>byId[i]),...W.map(w=>w.id).filter(i=>!lay.ord.includes(i))];
+ /* v3: duplicates merged. Account balances (same cash and bank figures as Currency balances) and Smart insights (covered by AI insights and Action center) start hidden; restore them from Hidden cards. */
+ if(!lay.mig3){lay.mig3=1;['acc','ins'].forEach(i=>{if(!lay.hid.includes(i))lay.hid.push(i)});lay.sec=lay.sec||{};save()}
+ lay.sec=lay.sec||{};
+ const rank=id=>{const i=lay.ord.indexOf(id);if(i>=0)return i;const j=ORD0.indexOf(id);return 1000+(j>=0?j:500)};
+ const ids=W.map(w=>w.id).sort((a,b)=>rank(a)-rank(b));lastIds=ids.slice();
  const hid=lay.hid.filter(i=>byId[i]);
- const g=document.createElement('div');g.className='dwg'+(edit?' edit':'');
- ids.forEach((id,n)=>{const w=byId[id];if(hid.includes(id))return;const sp=lay.sp[id]||DEF[id]||12,d=document.createElement('div');d.className='dw';d.dataset.dwid=id;d.style.setProperty('--sp',sp);
-  if(edit){d.innerHTML=`<div class="dw-t" draggable="true" data-dwgrip="${id}"><span class="dw-g" title="Drag to move">⋮⋮</span><b>${A(w.label)}</b><span class="dw-a"><button type="button" data-dwx="up" data-dwid="${id}" title="Move earlier">↑</button><button type="button" data-dwx="dn" data-dwid="${id}" title="Move later">↓</button><button type="button" data-dwx="sz" data-dwid="${id}" title="Change width">${sp==12?'Full':sp==8?'2/3':sp==6?'Half':'1/3'}</button><button type="button" data-dwx="hd" data-dwid="${id}" title="Hide">✕</button></span></div>`}
-  d.appendChild(w.el);g.appendChild(d)});
+ const wrap=document.createElement('div');wrap.className='dwa';
+ SECS.forEach(([sid,sname])=>{const mine=ids.filter(i=>secOf(i)==sid&&!hid.includes(i)),col=isCol(sid)&&!edit;
+  const s=document.createElement('section');s.className='dws'+(mine.length?'':' empty')+(col?' col':'');s.dataset.dws=sid;s.setAttribute('aria-label',sname);
+  s.innerHTML=`<div class="dws-h"><button type="button" class="dws-t" data-dwx="col" data-dws="${sid}" aria-expanded="${!col}"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg><span>${A(sname)}</span></button><span class="dws-n">${mine.length} card${mine.length==1?'':'s'}</span></div>`;
+  const g=document.createElement('div');g.className='dwg'+(edit?' edit':'');g.dataset.dwsec=sid;
+  mine.forEach(id=>{const w=byId[id];if(col)return;const sp=lay.sp[id]||DEF[id]||12,d=document.createElement('div');d.className='dw';d.dataset.dwid=id;d.dataset.sp=sp;d.style.setProperty('--sp',sp);
+   if(edit){const i=mine.indexOf(id);d.innerHTML=`<div class="dw-t" data-dwgrip="${id}"><span class="dw-g" aria-hidden="true">⋮⋮</span><b>${A(w.label)}</b><span class="dw-a"><select data-dwsel="${id}" aria-label="Move ${A(w.label)} to section">${SECS.map(([k,n])=>`<option value="${k}" ${k==sid?'selected':''}>${A(n)}</option>`).join('')}</select><button type="button" data-dwx="up" data-dwid="${id}" title="Move earlier" aria-label="Move ${A(w.label)} earlier"${i==0?' disabled':''}>↑</button><button type="button" data-dwx="dn" data-dwid="${id}" title="Move later" aria-label="Move ${A(w.label)} later"${i==mine.length-1?' disabled':''}>↓</button><button type="button" data-dwx="sz" data-dwid="${id}" title="Change width">${sp==12?'Full':sp==8?'2/3':sp==6?'Half':'1/3'}</button><button type="button" data-dwx="hd" data-dwid="${id}" title="Hide this card" aria-label="Hide ${A(w.label)}">Hide</button></span></div>`}
+   d.appendChild(w.el);g.appendChild(d)});
+  if(!col)s.appendChild(g);wrap.appendChild(s)});
  hid.forEach(i=>{const w=byId[i];if(w&&w.el&&w.el.parentNode&&!w.el.closest('.dw'))w.el.remove()});
- /* clean up emptied containers */
- ['.dsh','.fdn'].forEach(s=>{const c=m.querySelector(':scope>'+s);if(c&&!c.querySelector('.dw,.dwg')&&!c.contains(g)){const left=[...c.children].filter(x=>!x.classList.contains('fdn-h'));if(!left.length||left.every(x=>!x.textContent.trim()))c.remove()}});
+ /* cards in a collapsed section are not shown */
+ W.forEach(w=>{if(w.el.parentNode&&!w.el.closest('.dw'))w.el.remove()});
+ ['.dsh','.fdn'].forEach(s=>{const c=m.querySelector(':scope>'+s);if(c&&!c.querySelector('.dw,.dws')&&!c.contains(wrap)){const left=[...c.children].filter(x=>!x.classList.contains('fdn-h'));if(!left.length||left.every(x=>!x.textContent.trim()))c.remove()}});
  const bar=document.createElement('div');bar.className='dwb noprint';
  const hidden=hid.map(i=>`<button type="button" data-dwx="show" data-dwid="${i}">+ ${A(byId[i].label)}</button>`).join('');
- bar.innerHTML=edit?`<div class="dwb-e"><div><b>Customize dashboard</b><span>Drag a card by its handle, or use the arrows. Changes save automatically.</span></div><div class="dwb-a"><button type="button" class="b s" data-dwx="reset">Reset</button><button type="button" class="b" data-dwx="done">Done</button></div></div>${hidden?`<div class="dwb-h"><span>Hidden cards</span>${hidden}</div>`:''}`:`<button type="button" class="dwb-c" data-dwx="edit"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><path d="M17.5 14v7M14 17.5h7"/></svg>Customize</button>`;
- const top=m.querySelector(':scope>.top');if(top)top.after(bar);else m.prepend(bar);bar.after(g)}
-document.addEventListener('click',e=>{const el=e.target.closest&&e.target.closest('[data-dwx]');if(!el||view!='dash')return;e.stopPropagation();e.preventDefault();
- const a=el.dataset.dwx,id=el.dataset.dwid,lay=L(),cur=[...document.querySelectorAll('.dwg>.dw')].map(x=>x.dataset.dwid);
- const all=()=>{const m=document.getElementById('m'),seen=lay.ord.slice();cur.forEach(i=>{if(!seen.includes(i))seen.push(i)});lay.hid.forEach(i=>{if(!seen.includes(i))seen.push(i)});return seen};
- if(a=='edit')edit=true;else if(a=='done')edit=false;
- else if(a=='reset'){S.dwl[key()]={ord:[],hid:[],sp:{}}}
- else if(a=='hd'){if(!lay.hid.includes(id))lay.hid.push(id)}
- else if(a=='show'){lay.hid=lay.hid.filter(i=>i!=id)}
- else if(a=='sz'){const c=lay.sp[id]||DEF[id]||12;lay.sp[id]=SIZES[(SIZES.indexOf(c)+1)%SIZES.length]}
- else if(a=='up'||a=='dn'){const o=cur.slice(),i=o.indexOf(id),j=a=='up'?i-1:i+1;if(i<0||j<0||j>=o.length)return;[o[i],o[j]]=[o[j],o[i]];lay.ord=[...o,...all().filter(x=>!o.includes(x))]}
- save();go()},true);
-document.addEventListener('dragstart',e=>{const g=e.target.closest&&e.target.closest('[data-dwgrip]');if(!g)return;drag=g.dataset.dwgrip;try{e.dataTransfer.setData('text/plain',drag);e.dataTransfer.effectAllowed='move'}catch(x){}const w=g.closest('.dw');if(w)w.classList.add('drag')});
-document.addEventListener('dragover',e=>{if(drag&&e.target.closest&&e.target.closest('.dw')){e.preventDefault()}});
-document.addEventListener('dragend',()=>{drag=null;document.querySelectorAll('.dw.drag').forEach(x=>x.classList.remove('drag'))});
-document.addEventListener('drop',e=>{if(!drag)return;const t=e.target.closest&&e.target.closest('.dw');if(!t||t.dataset.dwid==drag){drag=null;return}e.preventDefault();
- const lay=L(),o=[...document.querySelectorAll('.dwg>.dw')].map(x=>x.dataset.dwid),i=o.indexOf(drag),j=o.indexOf(t.dataset.dwid);if(i<0||j<0){drag=null;return}
- o.splice(i,1);o.splice(j,0,drag);lay.ord=[...o,...lay.ord.filter(x=>!o.includes(x))];drag=null;save();go()});
-const _g=go;go=function(){_g.apply(this,arguments);try{if(view!='dash')edit=false;else build()}catch(e){console.error('DWG',e)}};
+ bar.innerHTML=`<div class="dwb-r"><span class="dwb-hint">${edit?'Drag a card by its handle, or use the controls on each card. Changes save automatically.':'Tip: press and hold a card, then drag it to rearrange.'}</span><div class="dwb-a"><button type="button" class="dwb-b" data-dwx="undo" ${U.length?'':'disabled'} title="Undo (Ctrl+Z)" aria-label="Undo layout change">${ic(ICN.undo)}Undo</button><button type="button" class="dwb-b" data-dwx="redo" ${RD.length?'':'disabled'} title="Redo (Ctrl+Shift+Z)" aria-label="Redo layout change">${ic(ICN.redo)}Redo</button>${edit?`<button type="button" class="dwb-b" data-dwx="reset">Reset layout</button><button type="button" class="dwb-b pri" data-dwx="done">Done</button>`:`<button type="button" class="dwb-b" data-dwx="edit">${ic(ICN.cog)}Customize</button>`}</div></div>${edit&&hidden?`<div class="dwb-h"><span>Hidden cards</span>${hidden}</div>`:''}<div class="dwb-s" role="status" aria-live="polite">${A(note)}</div>`;note='';
+ const top=m.querySelector(':scope>.top');if(top)top.after(bar);else m.prepend(bar);bar.after(wrap)}
+/* ---- clicks: customize, undo/redo, collapse, per-card controls ---- */
+document.addEventListener('click',e=>{const el=e.target.closest&&e.target.closest('[data-dwx]');if(!el||view!='dash')return;e.stopPropagation();e.preventDefault();if(el.disabled)return;
+ const a=el.dataset.dwx,id=el.dataset.dwid,lay=L(),nm=id?(NAMES[id]||id):'';
+ if(a=='edit'){edit=true;go();return}if(a=='done'){edit=false;go();return}if(a=='undo'){undo();return}if(a=='redo'){redo();return}
+ if(a=='col'){const s=el.dataset.dws;lay.col=lay.col||{};lay.col[s]=!isCol(s);save();go();return}
+ const cur=[...document.querySelectorAll('.dw')].map(x=>x.dataset.dwid);
+ if(a=='reset')commit(()=>{lay.ord=[];lay.hid=['acc','ins'];lay.sp={};lay.sec={}},'Layout reset to the default.');
+ else if(a=='hd')commit(()=>{if(!lay.hid.includes(id))lay.hid.push(id)},'Card hidden. Restore it from Hidden cards.');
+ else if(a=='show')commit(()=>{lay.hid=lay.hid.filter(i=>i!=id)},'Card restored.');
+ else if(a=='sz')commit(()=>{const c=lay.sp[id]||DEF[id]||12;lay.sp[id]=SIZES[(SIZES.indexOf(c)+1)%SIZES.length]},'Card width changed.');
+ else if(a=='up'||a=='dn')commit(()=>{const sec=secOf(id),mine=cur.filter(i=>secOf(i)==sec),i=mine.indexOf(id),j=a=='up'?i-1:i+1;if(i<0||j<0||j>=mine.length)return;moveTo(id,mine[j],a=='up'?'b':'a',sec)},'Card moved.')},true);
+document.addEventListener('change',e=>{const s=e.target.closest&&e.target.closest('[data-dwsel]');if(!s||view!='dash')return;const id=s.dataset.dwsel;commit(()=>moveTo(id,null,'a',s.value),'Card moved to '+(SECS.find(x=>x[0]==s.value)||[0,''])[1]+'.')});
+/* place card `id` before/after card `t` (or at the end of section `sec` when t is null) and give it that section */
+function moveTo(id,t,pos,sec){const lay=L(),o=lastIds.filter(i=>i!=id);let at;
+ if(t&&o.includes(t)){at=o.indexOf(t)+(pos=='a'?1:0)}else{let last=-1;o.forEach((i,k)=>{if(secOf(i)==sec&&!lay.hid.includes(i))last=k});at=last+1||o.length}
+ o.splice(at,0,id);lay.ord=o;lay.sec=lay.sec||{};lay.sec[id]=sec}
+document.addEventListener('keydown',e=>{if(view!='dash'||!(e.ctrlKey||e.metaKey)||e.altKey)return;const t=e.target;if(t&&/^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName)||t&&t.isContentEditable)return;const k=e.key.toLowerCase();if(k=='z'&&!e.shiftKey){e.preventDefault();undo()}else if((k=='z'&&e.shiftKey)||k=='y'){e.preventDefault();redo()}});
+/* ---- press-and-hold dragging (mouse, pen and touch) ---- */
+const HOLD=350,MOVE=6,SKIP='button,a,input,select,textarea,label,summary,[contenteditable],[data-dwx]';
+let pd=null,ghost=null,ind=null,raf=0,swallow=false;
+function cleanup(){if(!pd)return;clearTimeout(pd.t);cancelAnimationFrame(raf);if(pd.w){pd.w.classList.remove('drag','arm')}document.body.classList.remove('dw-dragging','dw-hold');if(ghost){ghost.remove();ghost=null}if(ind){ind.remove();ind=null}pd=null}
+function target(x,y){const el=document.elementFromPoint(x,y);if(!el)return null;const c=el.closest&&el.closest('.dw');
+ if(c&&c!==pd.w){const r=c.getBoundingClientRect(),g=c.parentNode.getBoundingClientRect(),wide=r.width>g.width*.82,after=wide?y>r.top+r.height/2:x>r.left+r.width/2;return{t:c.dataset.dwid,pos:after?'a':'b',sec:c.parentNode.dataset.dwsec,r,wide,after}}
+ if(c===pd.w)return null;const s=el.closest&&el.closest('.dws');if(s){const r=s.getBoundingClientRect();return{t:null,pos:'a',sec:s.dataset.dws,r,sec_:1}}return null}
+function showInd(d){if(!ind){ind=document.createElement('div');ind.className='dw-ind';document.body.appendChild(ind)}if(!d){ind.style.display='none';return}ind.style.display='block';const r=d.r;
+ if(d.sec_){ind.style.cssText='display:block;left:'+r.left+'px;top:'+r.top+'px;width:'+r.width+'px;height:'+r.height+'px';ind.className='dw-ind box';return}
+ ind.className='dw-ind';if(d.wide)ind.style.cssText='display:block;left:'+r.left+'px;width:'+r.width+'px;height:4px;top:'+((d.after?r.bottom:r.top)-2)+'px';else ind.style.cssText='display:block;top:'+r.top+'px;height:'+r.height+'px;width:4px;left:'+((d.after?r.right:r.left)-2)+'px'}
+function begin(){pd.on=true;document.body.classList.add('dw-dragging');pd.w.classList.add('drag');ghost=document.createElement('div');ghost.className='dw-ghost';ghost.textContent='⋮⋮  '+pd.label;document.body.appendChild(ghost);try{window.getSelection().removeAllRanges()}catch(x){}
+ const tick=()=>{if(!pd||!pd.on)return;const h=window.innerHeight,y=pd.y;if(y<70)window.scrollBy(0,-Math.ceil((70-y)/5));else if(y>h-70)window.scrollBy(0,Math.ceil((y-(h-70))/5));if(pd.dirty){pd.dirty=0;pd.d=target(pd.x,pd.y);showInd(pd.d)}raf=requestAnimationFrame(tick)};raf=requestAnimationFrame(tick)}
+document.addEventListener('pointerdown',e=>{if(view!='dash'||(e.pointerType=='mouse'&&e.button!==0)||pd)return;const grip=e.target.closest&&e.target.closest('[data-dwgrip]'),w=e.target.closest&&e.target.closest('.dwg>.dw');if(!w)return;
+ if(edit&&!grip)return;if(!grip&&e.target.closest(SKIP))return;
+ const id=w.dataset.dwid,nm=(w.querySelector('.dw-t b')||w.querySelector('h2,h3,b')||{}).textContent||id;
+ pd={id,w,label:String(nm).trim().slice(0,40),sx:e.clientX,sy:e.clientY,x:e.clientX,y:e.clientY,grip:!!grip,on:false,armed:!!grip,touch:e.pointerType=='touch',d:null,dirty:0};
+ if(!grip){pd.t=setTimeout(()=>{if(!pd)return;pd.armed=true;w.classList.add('arm');document.body.classList.add('dw-hold');try{navigator.vibrate&&navigator.vibrate(12)}catch(x){}},HOLD)}},true);
+document.addEventListener('pointermove',e=>{if(!pd)return;pd.x=e.clientX;pd.y=e.clientY;const dist=Math.hypot(pd.x-pd.sx,pd.y-pd.sy);
+ if(!pd.on){if(!pd.armed){if(dist>MOVE)cleanup();return}if(dist<MOVE)return;begin()}
+ e.preventDefault();ghost.style.transform='translate('+(pd.x+14)+'px,'+(pd.y+14)+'px)';pd.dirty=1},{passive:false});
+document.addEventListener('touchmove',e=>{if(pd&&(pd.on||pd.armed))e.preventDefault()},{passive:false});
+document.addEventListener('contextmenu',e=>{if(pd&&(pd.armed||pd.on))e.preventDefault()});
+document.addEventListener('selectstart',e=>{if(pd&&pd.armed)e.preventDefault()});
+document.addEventListener('pointerup',()=>{if(!pd)return;const p=pd,was=p.on,d=was?target(p.x,p.y):null;cleanup();if(!was)return;swallow=true;setTimeout(()=>swallow=false,0);
+ if(d)commit(()=>moveTo(p.id,d.t,d.pos,d.sec),'Moved '+p.label+'.')},true);
+document.addEventListener('pointercancel',cleanup,true);
+document.addEventListener('keydown',e=>{if(e.key=='Escape'&&pd){cleanup()}},true);
+document.addEventListener('click',e=>{if(swallow){e.stopPropagation();e.preventDefault()}},true);
+const _g=go;go=function(){cleanup();_g.apply(this,arguments);try{if(view!='dash')edit=false;else build()}catch(e){console.error('DWG',e)}};
 const css=document.createElement('style');css.textContent=`
-html body .dwb{display:flex;flex-direction:column;gap:10px;margin:0 0 12px}
-html body .dwb-c{align-self:flex-end;display:inline-flex;align-items:center;gap:8px;border:1px solid #cddcf5;background:#fff!important;color:#1d4ed8!important;font-size:13px;font-weight:600;padding:8px 14px;border-radius:12px;cursor:pointer;box-shadow:none!important}
-html body .dwb-c:hover{background:#eef4ff!important;border-color:#93b4f5}html body .dwb-c svg{width:16px;height:16px}
-html body .dwb-e{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;padding:12px 16px;border-radius:16px;background:linear-gradient(135deg,#0a2766,#1347b8 60%,#2563eb);color:#fff;box-shadow:0 10px 26px #1d4ed84d}
-html body .dwb-e b{display:block;font-size:15px;color:#fff}html body .dwb-e span{font-size:13px;color:#c3d4fb}html body .dwb-a{display:flex;gap:8px}
-html body .dwb-e .b.s{background:#ffffff1f!important;color:#fff!important;border:1px solid #ffffff55!important}html body .dwb-e .b:not(.s){background:#fff!important;color:#1d4ed8!important}
-html body .dwb-h{display:flex;gap:8px;flex-wrap:wrap;align-items:center;padding:10px 14px;border-radius:14px;border:1px dashed #93b4f5;background:#f3f7ff}html body .dwb-h>span{font-size:11.5px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:#64748b}
-html body .dwb-h button{border:1px solid #cddcf5;background:#fff!important;color:#1d4ed8!important;font-size:13px;font-weight:600;padding:6px 12px;border-radius:99px;cursor:pointer;box-shadow:none!important}
+html body .dwb{display:flex;flex-direction:column;gap:8px;margin:0 0 12px}
+html body .dwb-r{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+html body .dwb-hint{font:400 13px Inter,system-ui,sans-serif;color:#64748b}
+html body .dwb-a{display:flex;gap:8px;flex-wrap:wrap}
+html body .dwb-b{display:inline-flex;align-items:center;gap:6px;height:36px;padding:0 12px;border:1px solid #cbd5e1;border-radius:8px;background:#fff!important;color:#1e293b!important;font:600 13px Inter,system-ui,sans-serif;cursor:pointer;box-shadow:none!important}
+html body .dwb-b:hover:not(:disabled){background:#f1f5f9!important;border-color:#94a3b8}html body .dwb-b:disabled{opacity:.45;cursor:default}html body .dwb-b.pri{background:#2563eb!important;border-color:#2563eb;color:#fff!important}
+html body .dwb-b:focus-visible,html body .dws-t:focus-visible,html body .dwb-h button:focus-visible{outline:2px solid #2563eb;outline-offset:2px}
+html body .dwb-h{display:flex;gap:8px;flex-wrap:wrap;align-items:center;padding:10px 14px;border-radius:10px;border:1px dashed #94a3b8;background:#f8fafc}html body .dwb-h>span{font:700 11.5px Inter;letter-spacing:.07em;text-transform:uppercase;color:#64748b}
+html body .dwb-h button{border:1px solid #cbd5e1;background:#fff!important;color:#2563eb!important;font:600 13px Inter;padding:6px 12px;border-radius:99px;cursor:pointer;box-shadow:none!important}
+html body .dwb-s{min-height:0;font:500 12.5px Inter;color:#15803d}html body .dwb-s:empty{display:none}
+html body .dwa{display:flex;flex-direction:column;gap:22px}
+html body .dws-h{display:flex;align-items:center;gap:10px;margin:0 0 10px;padding-bottom:6px;border-bottom:1px solid #e2e8f0}
+html body .dws-t{display:inline-flex;align-items:center;gap:8px;background:transparent!important;border:0!important;box-shadow:none!important;padding:2px 0!important;color:#1e293b!important;font:700 15px Inter,system-ui,sans-serif;letter-spacing:0;text-transform:none;cursor:pointer}
+html body .dws-t svg{transition:transform .15s}html body .dws.col .dws-t svg{transform:rotate(-90deg)}
+html body .dws-n{font:400 12.5px Inter;color:#94a3b8}
+html body .dws.col .dws-h{border-bottom-color:transparent;margin-bottom:0}
+html body .dws.empty .dwg{display:none}html body.dw-dragging .dws.empty .dwg,html body .dws.empty .dwg.edit{display:block;min-height:56px;border:1px dashed #94a3b8;border-radius:10px}
 html body .dwg{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:14px;align-items:start}
 html body .dw{grid-column:span var(--sp,12);min-width:0;position:relative}
 html body .dw>*:not(.dw-t){margin:0!important;width:100%;box-sizing:border-box;grid-column:auto!important}
-html body .dwg.edit .dw{outline:2px dashed #93b4f5;outline-offset:3px;border-radius:18px;background:#ffffff55}
-html body .dwg.edit .dw>*:not(.dw-t){pointer-events:none;opacity:.88}html body .dw.drag{opacity:.45}
-html body .dw-t{display:flex;align-items:center;gap:10px;padding:8px 10px;margin:0 0 8px!important;border-radius:12px;background:#1d4ed8;color:#fff;cursor:grab;font-size:13px;user-select:none}
+html body .dwg.edit .dw{outline:2px dashed #93b4f5;outline-offset:3px;border-radius:14px}
+html body .dwg.edit .dw>*:not(.dw-t){pointer-events:none;opacity:.9}
+html body .dw.arm{cursor:grabbing;box-shadow:0 0 0 2px #2563eb,0 10px 24px #0f172a26;border-radius:14px;transition:box-shadow .12s}
+html body .dw.drag{opacity:.4}html body.dw-hold{user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}html body.dw-dragging{cursor:grabbing;user-select:none}
+html body .dw-ind{position:fixed;z-index:9998;background:#2563eb;border-radius:3px;pointer-events:none;display:none}html body .dw-ind.box{background:#2563eb14;border:2px dashed #2563eb;border-radius:12px}
+html body .dw-ghost{position:fixed;left:0;top:0;z-index:9999;pointer-events:none;background:#1e293b;color:#fff;font:600 13px Inter,system-ui,sans-serif;padding:8px 12px;border-radius:8px;box-shadow:0 8px 22px #0f172a40;white-space:nowrap}
+html body .dw-t{display:flex;align-items:center;gap:10px;padding:8px 10px;margin:0 0 8px!important;border-radius:10px;background:#1e293b;color:#fff;cursor:grab;font-size:13px;user-select:none;touch-action:none}
 html body .dw-t b{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#fff;font-size:13px}html body .dw-g{font-size:16px;letter-spacing:-2px;opacity:.85}
-html body .dw-a{display:flex;gap:4px}html body .dw-a button{border:0;background:#ffffff26!important;color:#fff!important;min-width:30px;height:28px;padding:0 8px;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;box-shadow:none!important}html body .dw-a button:hover{background:#ffffff48!important}
-@media(max-width:900px){html body .dw{grid-column:span 12}}
+html body .dw-a{display:flex;gap:4px;flex-wrap:wrap;align-items:center}html body .dw-a button,html body .dw-a select{border:0;background:#ffffff26!important;color:#fff!important;min-width:30px;height:28px;padding:0 8px;border-radius:8px;font:600 12px Inter;cursor:pointer;box-shadow:none!important;width:auto}html body .dw-a select option{color:#1e293b}html body .dw-a button:hover:not(:disabled){background:#ffffff48!important}html body .dw-a button:disabled{opacity:.4;cursor:default}
+@media(max-width:1200px){html body .dw[data-sp="4"]{grid-column:span 6}html body .dw[data-sp="8"]{grid-column:span 12}}
+@media(max-width:900px){html body .dw{grid-column:span 12!important}html body .dwb-r{align-items:flex-start}}
 `;document.head.appendChild(css);
 })();
 
@@ -12053,7 +12121,7 @@ window.dbx={acc(c){view='cbd';go();try{window.scrollTo(0,0)}catch(e){}},cur(c,sc
 window.dbxBuy=()=>{fxwNew();fxwSel('type','buy');view='fdk';go()};window.dbxSell=()=>{fxwNew();fxwSel('type','sell');view='fdk';go()};
 /* ---------- dashboard wiring ---------- */
 function head(){const s=ST(),cs=ccList(),per=(window.F||window.T)?((window.F||'start')+' to '+(window.T||'today')):'All time';
- return `<div class="dbx-fo"><div class="dbx-fh"><div><h2>Financial overview</h2><small>${A((S.co&&S.co.name)||'Your company')} · ${A(br=='all'?'All branches':bn(br))} · ${A(per)}</small></div><div class="dbx-fl"><label>Currency<select onchange="dbx.set('cur',this.value)"><option value="all" ${s.cur=='all'?'selected':''}>All currencies (shown separately)</option>${cs.map(c=>`<option ${s.cur==c?'selected':''}>${A(c)}</option>`).join('')}</select></label><span class="dbx-ft" title="Change these in the header">Date range and branch follow the header filters</span></div></div>${kpis()}</div>`}
+ return `<div class="dbx-fo"><div class="dbx-fh"><div><h2>Financial overview</h2></div><div class="dbx-fl"><label>Currency<select onchange="dbx.set('cur',this.value)"><option value="all" ${s.cur=='all'?'selected':''}>All currencies (shown separately)</option>${cs.map(c=>`<option ${s.cur==c?'selected':''}>${A(c)}</option>`).join('')}</select></label><span class="dbx-ft" title="Change these in the header">Date range and branch follow the header filters</span></div></div>${kpis()}</div>`}
 const W=(id,label,html)=>`<div data-dwid="${id}" data-dwl="${label}">${html}</div>`;
 const _d=V.dash;V.dash=function(){let h=_d.apply(this,arguments);let L='';try{L=W('dbxfo','Financial overview',head())+W('dbxcb','Currency balances',curTable())+W('dbxcf','Cash flow trend',trend().html)+W('dbxai','AI cashbook insights',aiPanel())+W('dbxca','Cash & bank accounts',accTable())+W('dbxqr','Quick reports',qrPanel())}catch(e){console.error('DBX',e);return h}
  const t=document.createElement('template');t.innerHTML=h;const top=t.content.querySelector('.top');const f=document.createRange().createContextualFragment(L);const wb=t.content.querySelector('.dwb');if(top)top.after(f);else t.content.prepend(f);
