@@ -5730,7 +5730,7 @@ const oc=V.ctx;V.ctx=function(){let h=oc.apply(this,arguments);
  h=h.replace('<button class="plf" onclick="ctOpen()">+ New transaction</button>','<span style="display:flex;gap:8px;flex-wrap:wrap"><button class="plf" onclick="sdOpen()">+ Currency sale deal</button><button class="plo" onclick="ctOpen()">+ Multi-currency entry</button></span>');
  return h};
 /*UPDCHK*/
-(function(){const B='2026-10-20-dz';window.PB_BUILD=B;if(location.protocol=='file:')return;let nb=null,tm=0;
+(function(){const B='2026-10-20-ea';window.PB_BUILD=B;if(location.protocol=='file:')return;let nb=null,tm=0;
 const busy=()=>{const a=document.activeElement;return !!(document.querySelector('.ov')||(a&&/^(INPUT|TEXTAREA)$/.test(a.tagName)&&String(a.value||'').length>0))};
 function go2(){try{const k='pb_upd_'+nb,n=+(sessionStorage.getItem(k)||0);sessionStorage.setItem(k,n+1)}catch(e){}location.replace(location.pathname+'?v='+encodeURIComponent(nb))}
 function bar(){let d=document.getElementById('pbupd');if(!d){d=document.createElement('div');d.id='pbupd';d.setAttribute('role','button');d.style.cssText='position:fixed;left:50%;transform:translateX(-50%);top:10px;z-index:100000;background:#0b3d33;color:#fff;padding:11px 18px;border-radius:12px;font:700 13px Inter,system-ui,sans-serif;box-shadow:0 6px 20px rgba(0,0,0,.3);cursor:pointer;text-align:center;max-width:92vw';d.onclick=()=>{d.textContent='Updating…';go2()};document.body.appendChild(d)}d.textContent='A new version of PrimeBook is ready. Tap here to update.'}
@@ -13182,6 +13182,58 @@ html body .rdp-er{margin-top:10px}html body .rdp-i{background:none;border:0;colo
 @media(max-width:700px){html body .rdp-r,html body .rdp-r3,html body .rdp-r4{grid-template-columns:1fr}html body .rdp .rdp-pg{padding:14px 12px 120px}html body .rdp-st{grid-template-columns:1fr;gap:10px}html body .rdp-st>div{border-right:0;border-bottom:1px solid #cfe6d8;padding:0 0 10px}html body .rdp-ft{padding:10px 12px}}
 html[data-theme=dark] body .ov.rdp{background:#0a1530}html[data-theme=dark] body .rdp-card,html[data-theme=dark] body .rdp-ft,html[data-theme=dark] body .rdp-dd{background:#0f1f45;border-color:#223a73}html[data-theme=dark] body .rdp-hd h1,html[data-theme=dark] body .rdp-h h3,html[data-theme=dark] body .rdp-ch h3,html[data-theme=dark] body .rdp label,html[data-theme=dark] body .rdp-t,html[data-theme=dark] body .rdp-pr b,html[data-theme=dark] body .rdp-in input,html[data-theme=dark] body .rdp-in select{color:#e6edff!important}html[data-theme=dark] body .rdp-in{background:#0b1938;border-color:#2b4688}
 @media print{.rdp,.rdp-ft{display:none!important}}
+`;document.head.appendChild(css);
+})();
+
+/* ---- Customer portfolio: position by currency for every customer (Transactions > Customers) ---- */
+(function(){
+const E=x=>aesc(String(x==null?'':x)),N=v=>fmt(Math.abs(v)<.005?0:v);
+let q='',stf='all',pg=0;const PP=25;
+function posn(c,al){
+ const ent=cled(c.id,al),cur={};
+ ent.forEach(x=>{const k=x.ccy||S.base,[bd,bc]=cdc(x),[nd,nc]=cnat(x),o=cur[k]=cur[k]||{n:0,b:0};o.n+=nd-nc;o.b+=bd-bc});
+ const ar=[],dep=[];let arB=0,depB=0;
+ Object.keys(cur).sort((a,b)=>a==S.base?-1:b==S.base?1:a.localeCompare(b)).forEach(k=>{const o=cur[k];if(o.n>.004){ar.push([k,o.n,o.b]);arB+=o.b}else if(o.n<-.004){dep.push([k,-o.n,-o.b]);depB-=o.b}});
+ const fxs=(S.fx||[]).filter(f=>f.cust==c.id&&(br=='all'||f.br==br)),fc={};let fxB=0;
+ fxs.forEach(f=>{const o=fc[f.cur]=fc[f.cur]||{buy:0,sell:0};if(f.type=='buy')o.buy+=+f.amt||0;else o.sell+=+f.amt||0;fxB+=(+f.amt||0)*(+f.rate||1)});
+ const sv=ent.filter(x=>x.lines.some(y=>+y[0]==4100)).reduce((s,x)=>s+x.lines.filter(y=>+y[0]==4100).reduce((a,y)=>a+(+y[2]||0)-(+y[1]||0),0),0);
+ const A=invAlloc(c.id,al),terms=TD[c.terms]||0,t0=today();let od=false,part=false,open=false;
+ A.inv.forEach(i=>{const left=i.amt-i.paid;if(left>.004){open=true;if(i.paid>.004)part=true;const due=new Date(new Date(i.date+'T00:00:00Z').getTime()+terms*864e5).toISOString().slice(0,10);if(due<t0)od=true}});
+ const last=ent.reduce((m,x)=>x.date>m?x.date:m,'');
+ const status=!ent.length?'none':od?'overdue':part?'partial':open?'unpaid':dep.length?'credit':'settled';
+ return{c,ar,dep,arB,depB,fc,fxN:fxs.length,fxB,sv,status,last}}
+const pl=(n,s,m)=>n+' '+(n==1?s:m);
+const SL={overdue:'Overdue',partial:'Partly paid',unpaid:'Unpaid',credit:'Deposit held',settled:'Settled',none:'No activity'};
+const SO=['overdue','partial','unpaid','credit','settled','none'];
+function rows(){const al=S.j.filter(x=>br=='all'||x.br==br);return CUS().map(c=>posn(c,al))}
+const cl=(L,f)=>L.length?L.map(r=>`<span class="cpf-l"><b>${E(r[0])}</b> ${N(r[1])}${r[0]!=S.base?`<small>≈ ${E(S.base)} ${N(r[2])}</small>`:''}</span>`).join(''):'<span class="cpf-z">—</span>';
+function html(){
+ let R=rows();const all=R;
+ const cnt=k=>all.filter(r=>k=='all'||r.status==k).length;
+ const tot=f=>all.reduce((s,r)=>s+f(r),0);
+ const kp=(l,v,s)=>`<div class="cpf-k"><small>${l}</small><b>${v}</b><span>${s}</span></div>`;
+ const kpis=`<div class="cpf-kg">${kp('Receivable (AR)',E(S.base)+' '+N(tot(r=>r.arB)),pl(all.filter(r=>r.ar.length).length,'customer owes you','customers owe you'))}${kp('Deposits held',E(S.base)+' '+N(tot(r=>r.depB)),pl(all.filter(r=>r.dep.length).length,'customer has credit','customers have credit'))}${kp('Currency traded',E(S.base)+' '+N(tot(r=>r.fxB)),pl(tot(r=>r.fxN),'deal','deals'))}${kp('Services billed',E(S.base)+' '+N(tot(r=>r.sv)),'Service revenue')}${kp('Overdue',cnt('overdue'),cnt('overdue')?'Follow up with these customers':'Nobody is overdue')}</div>`;
+ const ql=q.trim().toLowerCase();if(stf!='all')R=R.filter(r=>r.status==stf);if(ql)R=R.filter(r=>cmatch(r.c,ql));
+ R=R.slice().sort((a,b)=>SO.indexOf(a.status)-SO.indexOf(b.status)||b.arB-a.arB||a.c.name.localeCompare(b.c.name));
+ const pages=Math.max(1,Math.ceil(R.length/PP));if(pg>=pages)pg=pages-1;const S1=R.slice(pg*PP,pg*PP+PP);
+ const chips=['all',...SO].map(k=>`<button type="button" class="${stf==k?'on':''}" aria-pressed="${stf==k}" data-cpf="f:${k}">${k=='all'?'All':SL[k]} <span>${cnt(k)}</span></button>`).join('');
+ const fcl=r=>{const k=Object.keys(r.fc);return k.length?k.map(c=>{const o=r.fc[c];return`<span class="cpf-l"><b>${E(c)}</b>${o.sell?' sold '+N(o.sell):''}${o.buy?' bought '+N(o.buy):''}</span>`}).join(''):'<span class="cpf-z">—</span>'};
+ const tbl=S1.length?`<div class="cpf-w"><table class="cpf-t"><thead><tr><th>Customer</th><th>Receivable (AR)</th><th>Deposits held</th><th>Currency deals</th><th class="n">Services</th><th>Payment status</th><th></th></tr></thead><tbody>${S1.map(r=>`<tr><td><b>${E(r.c.name)}</b><small>${E(r.c.phone||r.c.email||'')}${r.last?' · last activity '+E(r.last):''}</small></td><td>${cl(r.ar)}</td><td>${cl(r.dep)}</td><td>${fcl(r)}${r.fxN?`<small>${r.fxN} deal${r.fxN==1?'':'s'}</small>`:''}</td><td class="n">${r.sv>.004?N(r.sv):'<span class="cpf-z">—</span>'}</td><td><span class="cpf-s s-${r.status}">${SL[r.status]}</span></td><td><button type="button" class="cpf-b" data-cpf="o:${E(r.c.id)}">Statement</button></td></tr>`).join('')}</tbody></table></div>${pages>1?`<div class="cpf-pg"><button type="button" data-cpf="p:-1" ${pg?'':'disabled'} aria-label="Previous page">‹</button><span>Page ${pg+1} of ${pages} · ${R.length} customers</span><button type="button" data-cpf="p:1" ${pg<pages-1?'':'disabled'} aria-label="Next page">›</button></div>`:''}`:`<p class="cpf-em">${all.length?'No customers match.':'No customers yet. Add one from Customer List.'}</p>`;
+ return`<section class="cpf" aria-label="Customer portfolio"><div class="cpf-h"><div><h3>Customer portfolio</h3><p>What each customer owes you or holds with you, in every currency, with payment status. Amounts are worked out from your books.</p></div><button type="button" class="cpf-b" data-cpf="csv">Export CSV</button></div>${kpis}<div class="cpf-tl"><input id="cpfq" type="search" value="${E(q)}" placeholder="Search customer, phone or email" aria-label="Search customers" autocomplete="off"><div class="cpf-ch" role="group" aria-label="Payment status">${chips}</div></div>${tbl}<p class="cpf-fn">Receivable is what the customer still owes. Deposits held is credit you hold for them. Both are shown in the currency they were recorded in, with the ${E(S.base)} value beneath. Services is billed service revenue.</p></section>`}
+const o=V.ctx;V.ctx=function(){return html()+o.apply(this,arguments)};
+document.addEventListener('click',e=>{if(view!='ctx')return;const el=e.target.closest&&e.target.closest('[data-cpf]');if(!el)return;const [a,...r]=el.dataset.cpf.split(':'),v=r.join(':');
+ if(a=='f'){stf=v;pg=0;go()}else if(a=='p'){pg+=+v;go()}else if(a=='o'){sc=v;view='cstm';go()}
+ else if(a=='csv'){const R=rows().sort((x,y)=>x.c.name.localeCompare(y.c.name)),f=L=>L.map(r=>r[0]+' '+r[1].toFixed(2)).join('; ');const head=['Customer','Phone','Receivable (AR)','Receivable value ('+S.base+')','Deposits held','Deposits value ('+S.base+')','Currency deals','Currency traded ('+S.base+')','Services billed ('+S.base+')','Payment status'],q2=v=>'"'+String(v==null?'':v).replace(/"/g,'""')+'"',t='﻿'+[head.join(','),...R.map(r=>[r.c.name,r.c.phone||'',f(r.ar),r.arB.toFixed(2),f(r.dep),r.depB.toFixed(2),r.fxN,r.fxB.toFixed(2),r.sv.toFixed(2),SL[r.status]].map(q2).join(','))].join('\r\n');if(window.dlSave)dlSave('customer-portfolio.csv',t,'text/csv')}});
+document.addEventListener('input',e=>{if(view!='ctx'||!e.target||e.target.id!='cpfq')return;q=e.target.value;pg=0;const p=e.target.selectionStart;go();const n=document.getElementById('cpfq');if(n){n.focus();try{n.setSelectionRange(p,p)}catch(x){}}});
+const css=document.createElement('style');css.textContent=`html body .cpf{background:#fff;border:1px solid #E2E8F0;border-radius:12px;padding:18px 20px;margin:0 0 16px;font-family:Inter,system-ui,sans-serif;color:#1E293B}html body .cpf-h{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;flex-wrap:wrap}html body .cpf-h h3{margin:0;font:700 18px Inter;color:#1E293B;text-transform:none;letter-spacing:0}html body .cpf-h p{margin:4px 0 0;color:#64748B;font:400 13px/1.5 Inter;max-width:640px}
+html body .cpf-kg{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px;margin:14px 0}html body .cpf-k{border:1px solid #E2E8F0;border-radius:10px;padding:12px 14px;display:flex;flex-direction:column;gap:2px;background:#F8FAFC}html body .cpf-k small{color:#64748B;font:600 12px Inter}html body .cpf-k b{font:600 19px/1.3 Inter;color:#1E293B;font-variant-numeric:tabular-nums}html body .cpf-k span{color:#64748B;font:400 12px Inter}
+html body .cpf-tl{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin:0 0 12px}html body .cpf-tl input{flex:1;min-width:220px;max-width:360px;height:40px;border:1px solid #CBD5E1;border-radius:8px;padding:0 12px;font:400 14px Inter;background:#fff;color:#1E293B}html body .cpf-ch{display:flex;gap:8px;flex-wrap:wrap}html body .cpf-ch button{min-height:36px;padding:0 12px;border:1px solid #CBD5E1;border-radius:999px;background:#fff!important;color:#1E293B!important;font:500 13px Inter;cursor:pointer;box-shadow:none!important}html body .cpf-ch button.on{background:#EFF6FF!important;border-color:#2563EB;color:#2563EB!important;font-weight:600}html body .cpf-ch button span{color:#64748B;font-weight:600;margin-left:4px}
+html body .cpf-w{overflow-x:auto;border:1px solid #E2E8F0;border-radius:10px}html body .cpf-t{width:100%;border-collapse:collapse;min-width:860px;font:400 13.5px Inter}html body .cpf-t th{background:#F1F5F9!important;color:#475569!important;font:600 12px Inter;text-align:left;padding:10px 12px;text-transform:none!important;letter-spacing:0!important;border-bottom:1px solid #E2E8F0}html body .cpf-t th.n,html body .cpf-t td.n{text-align:right}html body .cpf-t td{padding:11px 12px;border-bottom:1px solid #EEF2F7;vertical-align:top;color:#1E293B}html body .cpf-t tr:last-child td{border-bottom:0}html body .cpf-t td small{display:block;color:#64748B;font:400 12px Inter}
+html body .cpf-l{display:block;font-variant-numeric:tabular-nums}html body .cpf-l b{font:600 12px Inter;color:#475569;margin-right:4px}html body .cpf-l small{display:inline;margin-left:6px}html body .cpf-z{color:#94A3B8}
+html body .cpf-s{display:inline-flex;align-items:center;gap:6px;font:600 12.5px Inter;color:#64748B;white-space:nowrap}html body .cpf-s::before{content:"";width:7px;height:7px;border-radius:50%;background:currentColor}html body .cpf-s.s-overdue{color:#B91C1C}html body .cpf-s.s-partial,html body .cpf-s.s-unpaid{color:#B45309}html body .cpf-s.s-credit{color:#1D4ED8}html body .cpf-s.s-settled{color:#15803D}
+html body .cpf-b{height:36px;padding:0 14px;border:1px solid #CBD5E1;border-radius:6px;background:#fff!important;color:#1E293B!important;font:600 13px Inter;cursor:pointer;box-shadow:none!important}html body .cpf-b:hover{border-color:#2563EB}
+html body .cpf-pg{display:flex;gap:12px;align-items:center;justify-content:flex-end;margin:10px 0 0;font:500 13px Inter;color:#64748B}html body .cpf-pg button{width:36px;height:36px;border:1px solid #CBD5E1;border-radius:6px;background:#fff!important;color:#1E293B!important;cursor:pointer}html body .cpf-pg button:disabled{opacity:.4}html body .cpf-em{margin:8px 0;color:#64748B;font:400 14px Inter}html body .cpf-fn{margin:12px 0 0;color:#64748B;font:400 12px/1.5 Inter}
+@media(max-width:1000px){html body .cpf-kg{grid-template-columns:1fr 1fr}}@media(max-width:560px){html body .cpf-kg{grid-template-columns:1fr}}
 `;document.head.appendChild(css);
 })();
 
