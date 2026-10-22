@@ -5739,7 +5739,7 @@ const oc=V.ctx;V.ctx=function(){let h=oc.apply(this,arguments);
  h=h.replace('<button class="plf" onclick="ctOpen()">+ New transaction</button>','<span style="display:flex;gap:8px;flex-wrap:wrap"><button class="plf" onclick="sdOpen()">+ Currency sale deal</button><button class="plo" onclick="ctOpen()">+ Multi-currency entry</button></span>');
  return h};
 /*UPDCHK*/
-(function(){const B='2026-10-22-eu';window.PB_BUILD=B;if(location.protocol=='file:')return;let nb=null,tm=0;
+(function(){const B='2026-10-22-ev';window.PB_BUILD=B;if(location.protocol=='file:')return;let nb=null,tm=0;
 const busy=()=>{const a=document.activeElement;return !!(document.querySelector('.ov')||(a&&/^(INPUT|TEXTAREA)$/.test(a.tagName)&&String(a.value||'').length>0))};
 function go2(){try{const k='pb_upd_'+nb,n=+(sessionStorage.getItem(k)||0);sessionStorage.setItem(k,n+1)}catch(e){}location.replace(location.pathname+'?v='+encodeURIComponent(nb))}
 function bar(){let d=document.getElementById('pbupd');if(!d){d=document.createElement('div');d.id='pbupd';d.setAttribute('role','button');d.style.cssText='position:fixed;left:50%;transform:translateX(-50%);top:10px;z-index:100000;background:#0b3d33;color:#fff;padding:11px 18px;border-radius:12px;font:700 13px Inter,system-ui,sans-serif;box-shadow:0 6px 20px rgba(0,0,0,.3);cursor:pointer;text-align:center;max-width:92vw';d.onclick=()=>{d.textContent='Updating…';go2()};document.body.appendChild(d)}d.textContent='A new version of PrimeBook is ready. Tap here to update.'}
@@ -8172,6 +8172,7 @@ let mode='cust',PID=null,PT='ov',F={seg:'all',q:'',st:'all',grp:'all',cty:'all',
 const COLS={name:'Customer',id:'ID',grp:'Type',st:'Status',phone:'Phone',contact:'Contact',cty:'Country',health:'Health',br:'Branch',credit:'Credit used',owed:'Receivable',adv:'Credit balance',bal:'Balance (all currencies)',od:'Overdue',last:'Last activity',vol:'Volume (90 days)',lim:'Limit'};
 const RESET=()=>{F={seg:'all',q:'',st:'all',grp:'all',cty:'all',ccy:'all',br:'all',vf:'all',bal:'all',act:'all',vmin:'',pg:0,pp:F.pp,so:'name',sd:1,more:0}};
 const verOf=c=>(c.docs||[]).some(d=>d.type=='ID / Passport'||d.type=='Trade licence');
+window.rlDirStats=()=>{const al=alOf(),cs=ents().filter(c=>!isSup(c)),r={n:cs.length,act:0,ar:0,adv:0,od:0,arN:0,advN:0,odN:0,ver:0};cs.forEach(c=>{if((c.status||'Active')=='Active')r.act++;if(verOf(c))r.ver++;const q=arSplit(al.filter(x=>x.cust==c.id));if(q.ar>.004){r.ar+=q.ar;r.arN++}if(q.adv>.004){r.adv+=q.adv;r.advN++}const o=info(c,al).od;if(o>.004){r.od+=o;r.odN++}});r.verP=r.n?Math.round(r.ver/r.n*100):100;return r};
 const grpOf=c=>isSup(c)?(c.cat||'Other'):(c.grp||'Individual');
 function refSearch(q){const s=q.toLowerCase(),ids=new Set();S.j.forEach(x=>{if(x.cust&&((x.ref||'')+' '+(x.memo||'')).toLowerCase().includes(s))ids.add(x.cust)});return ids}
 function list(){const ds=F.seg=='dup'?dupIds():null,al=alOf(),t=today(),q=F.q.trim().toLowerCase(),rids=q.length>=3?refSearch(q):new Set();
@@ -10495,10 +10496,10 @@ html[data-theme=dark] body .rd-in,html[data-theme=dark] body .rd-fg div{backgrou
 const A=x=>String(x==null?'':x).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const SIZES=[4,6,8,12];
 const SECS=[['ov','Financial overview'],['ac','Accounts'],['tx','Transactions'],['rp','Reports'],['mr','Settings & more']];
-const SEC0={hero:'ov',kpi:'ov',dxday:'ov',dbxfo:'ov',dbxcf:'ov',dbxai:'ov',dbxcb:'ac',dbxca:'ac',qa:'tx',rec:'tx',act:'tx',deals:'tx',dbxqr:'rp',kpt:'rp',brn:'rp',exp:'rp',rates:'mr',snp:'mr',acc:'mr',ins:'mr'};
-const ORD0=['hero','kpi','dxday','dbxfo','dbxcf','dbxai','dbxcb','dbxca','qa','rec','act','deals','dbxqr','kpt','brn','exp','rates','snp','acc','ins'];
+const SEC0={hero:'ov',kpi:'ov',dxday:'ov',dbxfo:'ov',dbxcf:'ov',dbxai:'ov',dbxcb:'ov',dbxca:'ac',qa:'ov',rec:'ov',act:'tx',deals:'tx',dbxqr:'rp',kpt:'rp',brn:'rp',exp:'rp',rates:'mr',snp:'mr',acc:'mr',ins:'mr'};
+const ORD0=['hero','kpi','dbxcb','rec','dbxcf','qa','dxday','dbxai','dbxfo','dbxca','act','deals','dbxqr','kpt','brn','exp','rates','snp','acc','ins'];
 const NAMES={hero:'Financial health',kpi:'Key figures',ins:'Smart insights',kpt:'Key performance indicators',qa:'Quick actions',deals:'Pending sales deals',rates:'Exchange rates',acc:'Account balances',brn:'Branch performance',act:'Action center',rec:'Recent transactions',exp:'Expense breakdown',snp:'Business snapshot'};
-const DEF={dxday:12,dbxfo:12,dbxcb:12,dbxcf:8,dbxai:4,dbxca:12,dbxqr:6,hero:12,kpi:12,ins:6,kpt:6,qa:12,deals:12,rates:12,acc:12,brn:8,act:6,rec:6,exp:4,snp:4};
+const DEF={dxday:8,dbxfo:12,dbxcb:8,dbxcf:8,dbxai:4,dbxca:12,dbxqr:6,hero:12,kpi:12,ins:6,kpt:6,qa:4,deals:12,rates:12,acc:12,brn:8,act:6,rec:4,exp:4,snp:4};
 const HEAD={'account balances':'acc','branch performance':'brn','action center':'act','recent transactions':'rec','expense breakdown':'exp','business snapshot':'snp'};
 let edit=false,note='',lastIds=[];const U=[],RD=[];let who='';
 const key=()=>((me()||{}).name)||'u';
@@ -13981,4 +13982,61 @@ html body .cdr-pn{display:flex;gap:6px;align-items:center}html body .cdr-pn butt
 @media(max-width:1100px){html body .cdr-kg{grid-template-columns:repeat(2,minmax(0,1fr))}html body:has(.cdr-h) .rl-tw{overflow-x:auto}}
 @media(max-width:640px){html body .cdr-kg{grid-template-columns:minmax(0,1fr)}html body .cdr-h h2{font-size:26px}html body .cdr-hb{width:100%}html body .cdr-b{flex:1;justify-content:center;min-height:44px}html body .cdr-k{padding:14px;gap:12px}html body .cdr-ic{width:40px;height:40px}html body .cdr-k b{font-size:22px}html body .cdr-bn{flex-wrap:wrap}html body:has(.cdr-h) .rl-tw td{height:64px;padding:0 12px}}
 `;document.head.appendChild(st)})();
+/*DTP*/(function(){
+const A=x=>String(x==null?'':x).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const n2=v=>Number(Math.abs(v)<.005?0:v).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2});
+const ic=p=>`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${p}</svg>`;
+const P={cash:'<rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18M16 14.5h2"/>',ar:'<path d="M7 3h8l4 4v14H7zM15 3v4h4M10 12h6M10 16h6"/>',cr:'<rect x="4" y="3" width="16" height="18" rx="2"/><path d="M12 8v8M9.5 10.2c.6-.8 1.5-1.2 2.5-1.2 1.4 0 2.5.7 2.5 1.8 0 2.4-5 1.3-5 3.7 0 1.1 1.1 1.8 2.5 1.8 1 0 2-.4 2.5-1.2"/>',od:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',plus:'<path d="M12 5v14M5 12h14"/>',fx:'<path d="M7 7h12l-3-3M17 17H5l3 3"/>',doc:'<path d="M7 3h8l4 4v14H7zM15 3v4h4M10 12h6M10 16h6"/>',i:'<circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8v.01"/>'};
+function stats(){
+ const al=S.j.filter(x=>br=='all'||x.br==br),t=today(),cc=['1000','1010'];
+ const cashOf=q=>q.reduce((s,x)=>s+x.lines.filter(y=>cc.includes(String(y[0]))).reduce((a,y)=>a+(+y[1]||0)-(+y[2]||0),0),0);
+ const d=new Date();d.setDate(1);d.setDate(0);const pe=d.toISOString().slice(0,10);
+ const cash=cashOf(al),prev=cashOf(al.filter(x=>x.date<=pe));
+ let c={n:0,act:0,ar:0,adv:0,od:0,arN:0,advN:0,odN:0,verP:100};try{c=window.rlDirStats()}catch(e){}
+ return{cash,prev,c}}
+function kpi(cls,icn,lab,val,sub,go,foot){return`<div class="dtp-k" data-go="${go}" role="link" tabindex="0"><span class="dtp-ki ${cls}">${ic(P[icn])}</span><div><small>${lab}</small><b><i>${A(S.base)}</i> ${n2(val)}</b><em>${sub}</em></div></div>`}
+function build(h){
+ const st=stats(),c=st.c,hr=new Date().getHours(),gr=hr<12?'Good morning':hr<18?'Good afternoon':'Good evening',cw=(typeof canW=='function')&&canW('cash');
+ const ch=Math.abs(st.prev)>.004?(st.cash-st.prev)/Math.abs(st.prev)*100:null;
+ const sub1=ch===null?'No balance at last month-end':`<span class="${ch>=0?'up':'dn'}">${ch>=0?'▲':'▼'} ${Math.abs(ch)>999?'999%+':Math.abs(ch).toFixed(1)+'%'}</span> vs. last month-end`;
+ const cn=n=>n+' customer'+(n==1?'':'s');
+ const head=`<div class="dtp-hh"><div><h1>${gr}, ${A(me().name)}</h1><p>Here's what's happening with your business today.</p></div><div class="dtp-ha noprint">${cw?`<button type="button" class="dtp-b pri" onclick="mfOpen()">${ic(P.plus)}New Transaction</button>`:''}<button type="button" class="dtp-b" data-go="ccy">${ic(P.fx)}Quick FX Rate</button><button type="button" class="dtp-b" data-go="rpt">${ic(P.doc)}View Reports</button></div></div>`;
+ const kp=`<div class="dtp-kg">${kpi('k1','cash','Total Cash &amp; Bank Balance',st.cash,sub1,'cash')}${kpi('k2','ar','Accounts Receivable',c.ar,cn(c.arN),'clist')}${kpi('k3','cr','Customer Credit Balances',c.adv,cn(c.advN),'clist')}${kpi('k4','od','Overdue Receivables',c.od,cn(c.odN),'clist')}</div>`
+  +((typeof canW=='function'&&canW('cust')&&c.n&&c.verP<100)?`<div class="dtp-bn" role="note"><span class="dtp-bi">${ic(P.i)}</span><div><b>Customer verification incomplete</b><span>${c.verP}% of your customers have completed identity verification.</span></div><button type="button" onclick="rlGo('cust');rlSeg('nodoc')">Verify Now →</button></div>`:'');
+ const t=document.createElement('template');t.innerHTML=h;const hero=t.content.querySelector('.dsh>.dsh-hero'),k=t.content.querySelector('.dsh>.dsh-kp');if(!hero||!k)return h;
+ const hp=hero.querySelector('.dsh-hr');hero.className='dsh-hero dtp-h';hero.innerHTML=head;if(hp)hero.querySelector('.dtp-ha').insertAdjacentElement('afterbegin',hp);
+ k.className='dsh-kp dtp-kp';k.innerHTML=kp;return t.innerHTML}
+const _d=V.dash;V.dash=function(){const h=_d.apply(this,arguments);try{return build(h)}catch(e){console.error('DTP',e);return h}};
+const s=document.createElement('style');s.textContent=`
+html body .dsh-hero.dtp-h{display:block;background:transparent!important;box-shadow:none!important;border:0;padding:4px 0 0;color:#0F172A}
+html body .dtp-hh{display:flex;justify-content:space-between;align-items:flex-end;gap:20px;flex-wrap:wrap}
+html body .dtp-hh h1{margin:0;font:600 32px/1.2 Inter,system-ui,sans-serif;color:#0F172A;letter-spacing:-.015em}
+html body .dtp-hh p{margin:6px 0 0;font:400 16px Inter,system-ui,sans-serif;color:#64748B}
+html body .dtp-ha{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+html body .dtp-b{display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 18px;border:1px solid #E2E8F0;background:#fff;color:#142D50;border-radius:10px;font:500 15px Inter,system-ui,sans-serif;cursor:pointer;box-shadow:0 1px 2px #0f172a0a}
+html body .dtp-b svg{width:18px;height:18px}html body .dtp-b:hover{background:#F8FAFC;border-color:#CBD5E1}
+html body .dtp-b.pri{background:#2563EB;border-color:#2563EB;color:#fff}html body .dtp-b.pri:hover{background:#1D4ED8}
+html body .dtp-ha .dsh-hr{margin-right:4px}html body .dtp-ha .dsh-hrw{background:#fff!important;border:1px solid #E2E8F0!important;color:#0F172A!important;padding:6px 12px!important;box-shadow:none!important;border-radius:10px}
+html body .dtp-ha .dsh-hrw *{color:inherit}html body .dtp-ha .dsh-ring{width:34px!important;height:34px!important}html body .dtp-ha .dsh-hrw span{display:none}
+html body .dsh-kp.dtp-kp{display:block}
+html body .dtp-kg{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}
+html body .dtp-k{display:flex;gap:16px;align-items:flex-start;background:#fff;border:1px solid #E2E8F0;border-radius:14px;padding:22px;cursor:pointer;box-shadow:0 1px 2px #0f172a08;transition:box-shadow .15s,border-color .15s;min-width:0}
+html body .dtp-k:hover{border-color:#CBD5E1;box-shadow:0 6px 18px #0f172a10}html body .dtp-k:focus-visible{outline:2px solid #2563EB;outline-offset:2px}
+html body .dtp-k>div{min-width:0}
+html body .dtp-ki{flex:none;width:44px;height:44px;border-radius:12px;display:grid;place-items:center}html body .dtp-ki svg{width:22px;height:22px}
+html body .dtp-ki.k1{background:#EAF1FF;color:#2563EB}html body .dtp-ki.k2{background:#EEF2FF;color:#4F63D2}html body .dtp-ki.k3{background:#F3EAFE;color:#7C3AED}html body .dtp-ki.k4{background:#FEF3E2;color:#B45309}
+html body .dtp-k small{display:block;font:500 15px Inter,system-ui,sans-serif;color:#475569}
+html body .dtp-k b{display:block;margin-top:6px;font:700 28px/1.15 Inter,system-ui,sans-serif;color:#0F172A;font-variant-numeric:tabular-nums;letter-spacing:-.01em;white-space:nowrap}
+html body .dtp-k b i{font:600 16px Inter,sans-serif;font-style:normal;color:#64748B;margin-right:2px}
+html body .dtp-k em{display:block;margin-top:6px;font:400 14px Inter,system-ui,sans-serif;font-style:normal;color:#64748B}
+html body .dtp-k em .up{color:#15803D;font-weight:600}html body .dtp-k em .dn{color:#B91C1C;font-weight:600}
+html body .dtp-bn{display:flex;align-items:center;gap:14px;margin-top:16px;padding:14px 20px;border:1px solid #DCE6F8;background:#F4F8FF;border-radius:12px;flex-wrap:wrap}
+html body .dtp-bi{flex:none;width:32px;height:32px;border-radius:50%;background:#2563EB;color:#fff;display:grid;place-items:center}html body .dtp-bi svg{width:18px;height:18px}
+html body .dtp-bn>div{flex:1;min-width:220px}html body .dtp-bn b{display:block;font:600 15px Inter,sans-serif;color:#0F172A}html body .dtp-bn span:not(.dtp-bi){font:400 14px Inter,sans-serif;color:#475569}
+html body .dtp-bn button{border:0;background:none;color:#2563EB;font:600 15px Inter,sans-serif;cursor:pointer;min-height:44px;padding:0 4px}html body .dtp-bn button:hover{text-decoration:underline}
+@media(max-width:1180px){html body .dtp-kg{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:640px){html body .dtp-kg{grid-template-columns:minmax(0,1fr)}html body .dtp-hh h1{font-size:26px}html body .dtp-ha{width:100%}html body .dtp-b{flex:1;justify-content:center}html body .dtp-k{padding:16px}html body .dtp-k b{font-size:24px}}
+html body .dbx-t th{background:#F8FAFC!important;color:#475569!important;font:600 13px Inter,system-ui,sans-serif!important;letter-spacing:0!important;text-transform:none!important;border-bottom:1px solid #E2E8F0!important}html body .dbx-t td{font-size:15px!important;height:56px}html body .dbx-p,html body .dxd,html body .dbx-fo{border-color:#E2E8F0!important;border-radius:14px!important}
+`;document.head.appendChild(s);
+})();
 </script></body></html>
