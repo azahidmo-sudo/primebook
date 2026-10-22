@@ -5735,7 +5735,7 @@ const oc=V.ctx;V.ctx=function(){let h=oc.apply(this,arguments);
  h=h.replace('<button class="plf" onclick="ctOpen()">+ New transaction</button>','<span style="display:flex;gap:8px;flex-wrap:wrap"><button class="plf" onclick="sdOpen()">+ Currency sale deal</button><button class="plo" onclick="ctOpen()">+ Multi-currency entry</button></span>');
  return h};
 /*UPDCHK*/
-(function(){const B='2026-10-22-ep';window.PB_BUILD=B;if(location.protocol=='file:')return;let nb=null,tm=0;
+(function(){const B='2026-10-22-eq';window.PB_BUILD=B;if(location.protocol=='file:')return;let nb=null,tm=0;
 const busy=()=>{const a=document.activeElement;return !!(document.querySelector('.ov')||(a&&/^(INPUT|TEXTAREA)$/.test(a.tagName)&&String(a.value||'').length>0))};
 function go2(){try{const k='pb_upd_'+nb,n=+(sessionStorage.getItem(k)||0);sessionStorage.setItem(k,n+1)}catch(e){}location.replace(location.pathname+'?v='+encodeURIComponent(nb))}
 function bar(){let d=document.getElementById('pbupd');if(!d){d=document.createElement('div');d.id='pbupd';d.setAttribute('role','button');d.style.cssText='position:fixed;left:50%;transform:translateX(-50%);top:10px;z-index:100000;background:#0b3d33;color:#fff;padding:11px 18px;border-radius:12px;font:700 13px Inter,system-ui,sans-serif;box-shadow:0 6px 20px rgba(0,0,0,.3);cursor:pointer;text-align:center;max-width:92vw';d.onclick=()=>{d.textContent='Updating…';go2()};document.body.appendChild(d)}d.textContent='A new version of PrimeBook is ready. Tap here to update.'}
@@ -13856,4 +13856,67 @@ html body .bsr.two .bsr-cols,html body .bsr-cols{grid-template-columns:minmax(0,
 html body .bsr-rec{position:static;box-shadow:none;border-radius:8px;break-inside:avoid}html body .bsr-sb i{display:none}html body .bsr-r:hover td{background:none}html body .bsr-cc{border:0}}`;
 document.head.appendChild(st)})();
 
+/*CAQ*/(()=>{const st=document.createElement('style');st.id='caq-css';st.textContent=`
+html body .ca-tabs.tpls{display:inline-flex;gap:4px;padding:4px;border-radius:12px;background:#EEF2F7;border:0;box-shadow:none;margin:0 0 14px}
+html body .ca-tabs .tcard{border-radius:9px;padding:9px 16px;color:#475569;gap:10px;font-family:Inter,system-ui,sans-serif}
+html body .ca-tabs .tcard svg{width:20px;height:20px}
+html body .ca-tabs .tcard b{font:600 13.5px Inter,system-ui,sans-serif;text-transform:none;letter-spacing:0}
+html body .ca-tabs .tcard span{font:400 11.5px Inter,system-ui,sans-serif;opacity:.8;letter-spacing:0;text-transform:none}
+html body .ca-tabs .tcard.reg.on,html body .ca-tabs .tcard.walk.on{background:#fff!important;color:#1D4ED8!important;box-shadow:0 1px 3px #0f172a1f!important}
+html body .ca-tabs .tcard.walk.on{color:#B45309!important}
+html body .p.tpl.ca2>.th{background:#fff;border:1px solid #E2E8F0;border-radius:14px;box-shadow:none;padding:16px 20px;color:#0F172A;gap:12px 14px}
+html body .ca2>.th h3{color:#0F172A!important;font:700 18px Inter,system-ui,sans-serif;letter-spacing:-.01em}
+html body .ca2>.th h3 .fiic,html body .ca2>.th h3 .fiic[data-tone]{background:#EFF6FF!important;box-shadow:none;color:#2563EB!important;border-radius:10px}
+html body .ca2>.th h3 .fiic svg{stroke:#2563EB!important;color:#2563EB!important}
+html body .ca2>.th p{color:#64748B;font:500 13px Inter,system-ui,sans-serif;text-shadow:none}
+html body .ca2 .ca-code{background:#EFF6FF;border:1px solid #BFDBFE;color:#1D4ED8;font:600 12.5px ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.04em;padding:4px 12px}
+html body .ca-code svg{stroke:#1D4ED8!important;color:#1D4ED8!important}
+html body .ca2 .ca-find{background:#fff;border:1px solid #E2E8F0;border-radius:14px;padding:14px 18px;margin:0 0 14px}
+html body .ca2 .ca-find>label{font:600 12.5px Inter,system-ui,sans-serif;color:#475569;text-transform:none;letter-spacing:0;display:block;margin:0 0 8px}
+html body .ca-grid{gap:14px}
+html body .ca-grid fieldset{border:1px solid #E2E8F0!important;border-radius:14px!important;box-shadow:none;padding:20px 22px 22px!important}
+html body .ca-sh .ci{background:#EFF6FF!important;color:#2563EB!important;border-radius:10px}html body .ca-sh .ci svg{stroke:#2563EB!important}
+html body .ca-sh b{font:600 15px Inter,system-ui,sans-serif;color:#0F172A;text-transform:none;letter-spacing:0}
+html body .ca-sh small{font:400 12.5px Inter,system-ui,sans-serif;color:#64748B}
+html body .ca2 label,html body .ca2 .fg>label{font:600 12.5px Inter,system-ui,sans-serif!important;color:#475569;text-transform:none!important;letter-spacing:0!important}
+html body .ca2 .ca-req:after{content:' *';color:#DC2626}
+html body .ca2 .fg input:not([type=checkbox]):not([type=hidden]),html body .ca2 .fg select,html body .ca2 .ca-find input,html body .ca2 .ca-tg{height:44px;border:1px solid #CBD5E1!important;border-radius:10px!important;background:#fff!important;color:#0F172A;font:500 14px Inter,system-ui,sans-serif;box-shadow:none}
+html body .ca2 .fg input::placeholder,html body .ca2 .ca-find input::placeholder{color:#94A3B8;font-weight:400}
+html body .ca2 .fg input:focus,html body .ca2 .fg select:focus,html body .ca2 .ca-find input:focus,html body .ca2 .ca-tg:focus{outline:0;border-color:#2563EB!important;box-shadow:0 0 0 3px #2563EB24!important}
+html body .ca2 .hasfic .fic{position:absolute!important;left:13px!important;top:auto!important;bottom:0!important;height:44px!important;width:18px!important;min-width:0!important;margin:0!important;padding:0!important;background:none!important;border:0!important;box-shadow:none!important;border-radius:0!important;transform:none!important;color:#94A3B8;display:flex;align-items:center;justify-content:center}
+html body .ca2 .hasfic .fic svg{width:17px;height:17px;stroke:currentColor}
+html body .ca2 .hasfic input.wfic,html body .ca2 .hasfic select.wfic{padding-left:40px!important}
+html body .ca2 .hasfic:focus-within .fic{color:#2563EB}
+html body .ca2 .rg-bad .fic{bottom:auto!important}
+html body .ca2 .ca-seg button{height:44px;border:1px solid #CBD5E1;border-radius:10px;background:#fff;color:#475569;font:600 13.5px Inter,system-ui,sans-serif}
+html body .ca2 .ca-seg button.on{background:#EFF6FF!important;border-color:#2563EB!important;color:#1D4ED8!important;box-shadow:0 0 0 3px #2563EB1a!important}
+html body .ca2 .ca-seg button svg{stroke:currentColor;color:inherit}
+html body .ca-sh .ca-stl{font:600 12.5px Inter,system-ui,sans-serif;color:#475569}
+html body .ca-sh .ca-stl select{height:36px;min-width:130px;border-radius:99px!important;padding:0 14px!important;color:#0F172A!important;border-color:#CBD5E1!important;background:#fff!important}html body .ca-sh .ca-stl .fic.dot{display:none!important}
+html body .ca2 .obh b{font:600 14px Inter,system-ui,sans-serif;color:#0F172A;text-transform:none;letter-spacing:0}
+html body .ca2 .obh small{color:#64748B;font:400 12.5px Inter,system-ui,sans-serif}
+html body .ca2 .obt table{border:1px solid #E2E8F0;border-radius:12px;background:#fff}
+html body .ca2 .obt thead,html body .ca2 .obt thead tr,html body .ca2 .obt thead th{background:#F8FAFC!important;color:#64748B!important;border-bottom:1px solid #E2E8F0!important;font:600 11.5px Inter,system-ui,sans-serif;letter-spacing:.04em}
+html body .ca2 .obt tfoot td{background:#F8FAFC;color:#0F172A;font:600 13px Inter,system-ui,sans-serif;border-top:1px solid #E2E8F0}
+html body .ca2 .obt input,html body .ca2 .obt .obcb{height:40px;border:1px solid #CBD5E1!important;border-radius:9px!important;font:500 13.5px Inter,system-ui,sans-serif!important;color:#0F172A}
+html body .ca2 .obsg{border:1px solid #CBD5E1;border-radius:9px;background:#F8FAFC}
+html body .ca2 .obsg button.on{background:#2563EB!important;color:#fff!important}
+html body .ca2 .obx{border-radius:8px;background:#FEF2F2;color:#B91C1C;border:0}
+html body .ca2 .oba{border:1.5px dashed #93C5FD!important;background:#F8FBFF!important;color:#1D4ED8!important;border-radius:10px;font:600 13px Inter,system-ui,sans-serif;padding:9px 14px;cursor:pointer}
+html body .ca2 .obf{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap;margin-top:12px}
+html body .ca2 .obf .obd{width:210px;max-width:100%}
+html body .ca2 .obn2{color:#64748B;font:400 12px Inter,system-ui,sans-serif;margin-top:8px}
+html body .ca2 .tf{background:#fff;border:1px solid #E2E8F0;border-radius:14px;box-shadow:0 -4px 18px #0f172a10;padding:12px 18px}
+html body .ca2 .tf span{color:#64748B;font:400 12.5px Inter,system-ui,sans-serif}
+html body .ca2 .tf button{background:#2563EB!important;color:#fff!important;border-radius:10px;box-shadow:0 4px 12px #2563EB44;font:600 14px Inter,system-ui,sans-serif;padding:11px 22px;text-transform:none;letter-spacing:0}
+html body .ca2 .tf button:hover{background:#1D4ED8!important}
+html body .ca2 .ca-yi svg,html body .ca2 .ca-ya{color:#2563EB}html body .ca2 .ca-yi:hover,html body .ca2 .ca-yi.sel{background:#EFF6FF}html body .ca2 .ca-ya{background:#EFF6FF}
+[data-theme=dark] html body .ca2>.th,html[data-theme=dark] body .p.tpl.ca2>.th,html[data-theme=dark] body .ca-grid fieldset,html[data-theme=dark] body .ca2 .ca-find,html[data-theme=dark] body .ca2 .tf{background:#111B2E!important;border-color:#26334A!important}
+html[data-theme=dark] body .ca2>.th h3,html[data-theme=dark] body .ca-sh b,html[data-theme=dark] body .ca2 .obh b{color:#E2E8F0!important}
+html[data-theme=dark] body .ca2 .fg input:not([type=checkbox]):not([type=hidden]),html[data-theme=dark] body .ca2 .fg select,html[data-theme=dark] body .ca2 .ca-find input,html[data-theme=dark] body .ca2 .ca-tg{background:#0B1424!important;border-color:#334155!important;color:#E2E8F0}
+html[data-theme=dark] body .ca2 .obt thead,html[data-theme=dark] body .ca2 .obt thead th,html[data-theme=dark] body .ca2 .obt tfoot td{background:#0F1A2E!important;color:#94A3B8!important}
+@media(max-width:900px){html body .ca2 .tf{flex-direction:column;align-items:stretch}html body .ca2 .tf button{justify-content:center}html body .ca-tabs.tpls{display:flex;width:100%}html body .ca-tabs .tcard{flex:1;justify-content:center}html body .ca-tabs .tcard span{display:none}}
+@media(max-width:700px){html body .ca-grid .fg,html body .ca-grid fieldset.w2 .fg,html body .ca-grid fieldset.w2 .fg:not(.ca-id4),html body .ca-grid fieldset.w2 .fg.ca-id4{grid-template-columns:minmax(0,1fr)!important}html body .ca-sh{flex-wrap:wrap}html body .ca-sh .ca-stl{margin:6px 0 0!important;width:100%!important;justify-content:space-between}html body .ca-sh .ca-stl select{flex:1}html body .ca-grid fieldset{padding:16px!important}html body .ca2 .obf .obd{width:100%}}
+@media(max-width:700px){html body .ca2 .obt{overflow-x:auto}html body .ca2 .obt table{min-width:640px}}
+`;document.head.appendChild(st)})();
 </script></body></html>
