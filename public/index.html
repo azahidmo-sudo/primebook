@@ -512,6 +512,8 @@ const uid=p=>p+Date.now().toString(36)+Math.random().toString(36).slice(2,5);
 const fj=(all)=>S.j.filter(x=>(br=='all'||x.br==br)&&(!F||x.date>=F)&&(!T||x.date<=T));
 const bal=(c,l)=>l.reduce((s,x)=>s+x.lines.filter(y=>y[0]==c).reduce((a,y)=>a+y[1]-y[2],0),0);
 const r2=v=>Math.round((v+Number.EPSILON)*100)/100;
+/* Customer balances: a customer who has paid more than they owe is a liability (deposit/advance), not a negative receivable. */
+window.arSplit=l=>{const m={};l.forEach(x=>{let n=0;x.lines.forEach(y=>{if(String(y[0])=='1200')n+=(+y[1]||0)-(+y[2]||0)});if(n)m[x.cust||'_']=(m[x.cust||'_']||0)+n});let ar=0,adv=0;for(const k in m){const v=Math.round(m[k]*100)/100;if(v>.004)ar+=v;else if(v<-.004)adv-=v}return{ar:Math.round(ar*100)/100,adv:Math.round(adv*100)/100}};window.arG=l=>arSplit(l).ar;window.advG=l=>arSplit(l).adv;
 const post=(o)=>{let L=(o.lines||[]).map(y=>{let d=+y[1]||0,c=+y[2]||0;if(!isFinite(d)||!isFinite(c))throw PE('Calculation error: an amount is not a valid number.');d=r2(d);c=r2(c);if(d<0){c-=d;d=0}if(c<0){d-=c;c=0}if(d>0&&c>0){const n=d-c;d=n>0?n:0;c=n<0?-n:0}return[y[0],d,c]}).filter(y=>y[1]>0||y[2]>0);
 if(L.length<2)throw PE('An entry needs at least two lines with amounts.');if(L.some(y=>y[1]>1e12||y[2]>1e12))throw PE('Amount is too large.');
 if(L.some(y=>typeof CH!=='undefined'&&CH[y[0]]===undefined))throw PE('Unknown account '+L.find(y=>CH[y[0]]===undefined)[0]+'.');
@@ -562,7 +564,7 @@ function delCcy(c){if(Object.keys(S.rates).length<2)return alert('Keep at least 
 
 const V={
 dash(){const n=P=='7'?7:30,D=d=>ld(Date.now()-d*864e5),cut=D(n),al=S.j.filter(x=>br=='all'||x.br==br),l=P=='all'?al:al.filter(x=>x.date>=cut),pv=al.filter(x=>x.date<cut&&x.date>=D(2*n)),days=Array.from({length:n},(_,i)=>D(n-1-i));
-const R=x=>-rg(x,4000,5000),E=x=>rg(x,5000,7000),by=d=>al.filter(x=>x.date==d),dr=days.map(d=>R(by(d))),de=days.map(d=>E(by(d))),dn=dr.map((v,i)=>v-de[i]),p1=R(l)-E(l),p0=R(pv)-E(pv),upto=d=>al.filter(x=>x.date<=d),cs=days.map(d=>bal(1000,upto(d))+bal(1010,upto(d))),as=days.map(d=>bal(1200,upto(d))),ps=days.map(d=>-bal(2000,upto(d))),cash=bal(1000,al)+bal(1010,al),ar=bal(1200,al),ap=-bal(2000,al),pr=P!='all',u0=upto(cut),dt=al.filter(x=>x.date==D(0)&&/^(Bought|Sold)/.test(x.memo)).length;
+const R=x=>-rg(x,4000,5000),E=x=>rg(x,5000,7000),by=d=>al.filter(x=>x.date==d),dr=days.map(d=>R(by(d))),de=days.map(d=>E(by(d))),dn=dr.map((v,i)=>v-de[i]),p1=R(l)-E(l),p0=R(pv)-E(pv),upto=d=>al.filter(x=>x.date<=d),cs=days.map(d=>bal(1000,upto(d))+bal(1010,upto(d))),as=days.map(d=>bal(1200,upto(d))),ps=days.map(d=>-bal(2000,upto(d))),cash=bal(1000,al)+bal(1010,al),ar=arG(al),ap=-bal(2000,al),pr=P!='all',u0=upto(cut),dt=al.filter(x=>x.date==D(0)&&/^(Bought|Sold)/.test(x.memo)).length;
 const cmp=v=>Math.abs(v)>=1e6?(v/1e6).toFixed(1)+'M':Math.abs(v)>=1e3?(v/1e3).toFixed(1)+'k':v.toFixed(0),nzv=v=>Math.abs(v)<.005?0:v;
 const pill=(v,b,mode)=>{const d=v-b;if(!pr)return'';if(Math.abs(d)<.005)return `<span class="pill nu">No change</span>`;const up=d>0,t=Math.abs(b)>.005&&mode!='a'?Math.abs(d/b*100).toFixed(1)+'%':cmp(Math.abs(d));return `<span class="pill ${mode=='n'?'nu':up?'up':'dn'}">${up?'\u25b2':'\u25bc'} ${t}</span>`};
 const spark=(v,c)=>{const mn=Math.min(...v),mx=Math.max(...v),r=mx-mn,pts=v.map((y,i)=>[i*(96/Math.max(1,v.length-1)),r?34-((y-mn)/r)*30:18]);return `<svg viewBox="0 0 96 36"><path d="M${pts.map(q=>q[0].toFixed(1)+' '+q[1].toFixed(1)).join(' L')}" fill="none" stroke="${c}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`};
@@ -584,7 +586,7 @@ return `<div class="dw"><div><h3>Welcome back, ${me().name}</h3><p>${new Date().
 <div class="gm"><div class="p"><div class="card-h"><h3>Revenue and expenses</h3><div class="lg2"><span><i style="background:var(--ac)"></i>Revenue</span><span><i style="background:var(--gd)"></i>Expenses</span><span>${lab}</span></div></div>${line}</div><div class="p"><div class="card-h"><h3>Revenue mix</h3></div>${donut(mix,fmt(R(l)))}</div></div>
 <div class="g3"><div class="p"><div class="card-h"><h3>Forex rate board</h3><span class="lnk" data-go="fx">Open Forex</span></div>${tb(['Currency','We buy','We sell','In stock'],rb.map(r=>[r[0],r[1],r[2],r[4]]))}</div><div class="p"><div class="card-h"><h3>Currency exposure</h3><span class="mu">${dt} deal(s) today</span></div>${donut(expo,fmt(fxv))}</div><div class="p"><div class="card-h"><h3>Cash by branch</h3></div>${bc.map(x=>`<div class="hb wide"><span>${x[0]}</span><u><i class="${x[1]<0?'neg':''}" style="width:${Math.abs(x[1])/bm*100}%"></i></u><b>${fmt(nzv(x[1]))}</b></div>`).join('')}<div class="st2" style="margin-top:10px"><div><span>Inventory at cost</span><b>${fmt(nzv(iv))}</b></div><div><span>Stock items</span><b>${S.items.length}</b></div></div></div></div>
 <div class="gm"><div class="p"><div class="card-h"><h3>Recent activity</h3><span class="lnk" data-go="jr">Journal report</span></div>${tb(['Date','Type','Branch','Memo','Amount'],rec.map(x=>[x.date,`<span class="tg">${tag(x)}</span>`,bn(x.br),x.memo,x.lines.reduce((a,y)=>a+y[1],0)]))}</div><div><div class="p"><div class="card-h"><h3>Needs attention</h3></div><ul class="al">${al2.map(a=>`<li class="${a[1]}">${a[0]}</li>`).join('')||'<li class="mu">All clear.</li>'}</ul></div><div class="p"><div class="card-h"><h3>Top debtors</h3></div>${tb(['Customer','Owes you'],cb)}</div></div></div>`},
-dash0(){const l=fj(),cash=bal(1000,l),fx=bal(1100,l),ar=bal(1200,l),ap=-bal(2000,l),inv=bal(1300,l),pl=-l.reduce((s,x)=>s+x.lines.filter(y=>y[0]>=4000).reduce((a,y)=>a+y[1]-y[2],0),0);
+dash0(){const l=fj(),cash=bal(1000,l),fx=bal(1100,l),ar=arG(l),ap=-bal(2000,l),inv=bal(1300,l),pl=-l.reduce((s,x)=>s+x.lines.filter(y=>y[0]>=4000).reduce((a,y)=>a+y[1]-y[2],0),0);
 const k=(a,b)=>`<div class="p k"><span>${a}</span><b class="${b<0?'neg':''}">${fmt(b)}</b></div>`;
 return `<div class="g">${k('Cash ('+S.base+')',cash)}${k('Currency stock at cost',fx)}${k('Inventory at cost',inv)}${k('Customers owe you',ar)}${k('You owe suppliers',ap)}${k('Net profit',pl)}</div>
 <div class="p"><h3>Recent transactions</h3>${tb(['Date','Branch','Memo','Amount'],l.slice(-8).reverse().map(x=>[x.date,bn(x.br),x.memo,x.lines.reduce((a,y)=>a+y[1],0)]))}</div>`},
@@ -942,7 +944,7 @@ const fmt=v=>S.base+' '+Number(v).toLocaleString(undefined,{minimumFractionDigit
 const n=P=='7'?7:30,D=d=>ld(Date.now()-d*864e5),cut=D(n),al=S.j.filter(x=>br=='all'||x.br==br),inP=x=>P=='all'||x.date>=cut,l=al.filter(inP),pv=al.filter(x=>x.date<cut&&x.date>=D(2*n)),pr=P!='all';
 const R=x=>-rg(x,4000,5000),E=x=>rg(x,5000,7000),nz=v=>Math.abs(v)<.005?0:v;
 const cmp=v=>Math.abs(v)>=1e6?(v/1e6).toFixed(1)+'M':Math.abs(v)>=1e3?(v/1e3).toFixed(1)+'k':v.toFixed(0);
-const cashOf=q=>bal(1000,q)+bal(1010,q),cash=cashOf(al),ar=bal(1200,al),ap=-bal(2000,al),p1=R(l)-E(l),p0=R(pv)-E(pv);
+const cashOf=q=>bal(1000,q)+bal(1010,q),cash=cashOf(al),ar=arG(al),ap=-bal(2000,al),p1=R(l)-E(l),p0=R(pv)-E(pv);
 const upto=d=>al.filter(x=>x.date<=d),days=Array.from({length:n},(_,i)=>D(n-1-i)),cs=days.map(d=>cashOf(upto(d)));
 const pill=(v,b)=>{if(!pr)return'';const d=v-b;if(Math.abs(d)<.005)return'<span class="pill nu">No change</span>';const t=Math.abs(b)>.005?Math.abs(d/b*100).toFixed(1)+'%':cmp(Math.abs(d));return`<span class="pill ${d>0?'up':'dn'}">${d>0?'▲':'▼'} ${t}</span>`};
 const kp=(lab,v,pl,g,ic)=>`<div class="zk" data-go="${g}"><div class="zi">${ic}</div><div><span>${lab}</span><b class="${nz(v)<0?'neg':''}"><small class="cu">${S.base}</small> ${fmt(nz(v)).slice(S.base.length+1)}</b><em>${pl||''}</em></div></div>`;
@@ -966,7 +968,7 @@ const trend=`<svg viewBox="0 0 ${W2} ${H2}" class="ch">${[0,.5,1].map(f=>{const 
 const PAL=['var(--ac)','var(--gd)','#3f9b7a','#8fc3ad','#7a6a3a','#5d7a6e'],mix=[['Forex trading',-bal(4200,l)],['Merchandise',-bal(4000,l)],['Services',-bal(4100,l)],['Other income',-bal(4300,l)]].filter(q=>q[1]>.004);
 const dn=(parts,tot)=>{const r=60,C=2*Math.PI*r,sum=parts.reduce((a,q)=>a+q[1],0);let off=0;const arcs=sum?parts.map((q,i)=>{const w=q[1]/sum*C,e=`<circle cx="80" cy="80" r="${r}" fill="none" stroke="${PAL[i%6]}" stroke-width="22" stroke-dasharray="${w.toFixed(2)} ${(C-w).toFixed(2)}" stroke-dashoffset="${(-off).toFixed(2)}" transform="rotate(-90 80 80)"><title>${q[0]} ${fmt(q[1])}</title></circle>`;off+=w;return e}).join(''):`<circle cx="80" cy="80" r="${r}" fill="none" stroke="var(--ac2)" stroke-width="22"/>`;return`<div class="donut"><svg viewBox="0 0 160 160">${arcs}<text x="80" y="76" text-anchor="middle" class="ax">Total</text><text x="80" y="98" text-anchor="middle" style="font:700 17px 'Inter','Segoe UI',sans-serif;fill:var(--tx)">${cmp(tot)}</text></svg><div class="dl2">${parts.map((q,i)=>`<div><i style="background:${PAL[i%6]}"></i>${q[0]}<b>${fmt(q[1])}</b></div>`).join('')||'<span class="mu">No income in this period.</span>'}</div></div>`};
 /* branches */
-const brs=S.br.map(b=>{const jb=S.j.filter(x=>x.br==b.id),lb=P=='all'?jb:jb.filter(x=>x.date>=cut),rv=R(lb),ex=E(lb);return{n:b.name,id:b.id,c:cashOf(jb),ar:bal(1200,jb),ap:-bal(2000,jb),rv,ex,np:rv-ex}}),bt=k=>brs.reduce((a,b)=>a+b[k],0),bmx=Math.max(1,...brs.map(b=>Math.abs(b.c)));
+const brs=S.br.map(b=>{const jb=S.j.filter(x=>x.br==b.id),lb=P=='all'?jb:jb.filter(x=>x.date>=cut),rv=R(lb),ex=E(lb);return{n:b.name,id:b.id,c:cashOf(jb),ar:arG(jb),ap:-bal(2000,jb),rv,ex,np:rv-ex}}),bt=k=>brs.reduce((a,b)=>a+b[k],0),bmx=Math.max(1,...brs.map(b=>Math.abs(b.c)));
 const brRows=brs.map(b=>`<tr class="${b.id==br?'cur':''}"><td><b>${b.n}</b></td><td class="n">${fmt(nz(b.c))}</td><td class="n">${fmt(nz(b.ar))}</td><td class="n">${fmt(nz(b.ap))}</td><td class="n">${fmt(nz(b.rv))}</td><td class="n">${fmt(nz(b.ex))}</td><td class="n ${b.np<0?'neg':''}"><b>${fmt(nz(b.np))}</b></td></tr>`).join('')+`<tr class="gt"><td>All branches</td>${['c','ar','ap','rv','ex','np'].map(k=>`<td class="n">${fmt(nz(bt(k)))}</td>`).join('')}</tr>`;
 /* recent */
 const tag=x=>/^(Bought|Sold)/.test(x.memo)?'Forex':/^(Moved|Received|Cash transfer)/.test(x.memo)?'Transfer':/^INV-/.test(x.memo)?'Invoice':x.jt?'Journal':'Entry',rec=al.slice().sort((a,b)=>b.date.localeCompare(a.date)||b.id-a.id).slice(0,10);
@@ -2783,7 +2785,7 @@ H.brsave=o=>{if(!brCan())return deny('brm');const b=S.br.find(x=>x.id==o.id),n=(
 function brCopy(){const r=[['Branch','Manager','Users','Entries 30d','Cash','Currency stock','Cash limit']].concat(S.br.map(brM).map(m=>[m.b.name,m.b.mgr||'',m.us,m.n30,m.cash.toFixed(2),m.stock.toFixed(2),m.lim||'']));const t=r.map(x=>x.join('\t')).join('\n');try{navigator.clipboard.writeText(t).then(()=>alert('Branch summary copied. Paste it into Excel or Sheets.'),()=>alert(t))}catch(e){alert(t)}}
 
 /* ---------- Group dashboards, each built for its own work ---------- */
-const mS=()=>today().slice(0,8)+'01',BL=()=>S.j.filter(x=>br=='all'||x.br==br),dcs=(c,l)=>l.reduce((s,x)=>s+x.lines.filter(y=>String(y[0])==String(c)).reduce((a,y)=>a+y[1]-y[2],0),0),mo=(c,l)=>dcs(c,l.filter(x=>x.date>=mS()));
+const mS=()=>today().slice(0,8)+'01',BL=()=>S.j.filter(x=>br=='all'||x.br==br),dcs=(c,l)=>String(c)=='1200'?arG(l):l.reduce((s,x)=>s+x.lines.filter(y=>String(y[0])==String(c)).reduce((a,y)=>a+y[1]-y[2],0),0),mo=(c,l)=>dcs(c,l.filter(x=>x.date>=mS()));
 const dbl=(l,x)=>l.filter(r=>r.date>=mS()&&(br=='all'||r.br==br)),cnt=(k)=>(S.docs||[]).filter(d=>d.k==k&&(br=='all'||d.br==br));
 const pn=id=>{const c=S.cust.find(x=>x.id==id);return c?aesc(c.name):aesc(id||'—')};
 const wrap=(t,body)=>`<div class="p"><h3>${t}</h3>${body}</div>`;
@@ -3407,6 +3409,7 @@ const flag=j=>{const f=[];if(Math.abs(sm(j.lines,1)-sm(j.lines,2))>.005)f.push('
 const jr=al.slice(-8).reverse();
 const lat=`<div class="w"><table class="fit"><tr><th>Date</th><th>Branch</th><th>Memo</th><th class="n">Amount</th><th>Audit</th></tr>${jr.map(j=>`<tr><td>${j.date}</td><td>${bn(j.br)}</td><td>${aesc(j.memo||'')}</td><td class="n">${fmt(tot(j))}</td><td>${flag(j)}</td></tr>`).join('')||'<tr><td colspan="5" class="mu">No entries yet.</td></tr>'}</table></div>`;
 
+const advN=advG(al),advH=advN>.004?`<div class="p" style="margin:0 0 12px;border-left:4px solid #2563EB"><b>Customer deposits held: ${S.base} ${fmt(advN)}</b><div style="color:#64748B;font-size:13px;margin-top:2px">Customers who have paid in advance. This is money you owe them, so it is a liability and is not netted against receivables.</div></div>`:'';
 const CI={'jr':'scale','bs':'bars','chk':'shield','cbd':'cash','bkd':'bank','dcl':'cal','tbl':'alert'},CIC=['Debits equal credits','Accounting equation','Integrity check','Negative cash','Unmatched bank lines','Day not closed today','Duplicate entries','Unusually large entries','Future-dated entries','Entries without a memo','Weekend postings','Unusual balances'],CIN=['scale','bars','shield','cash','bank','cal','copy','up','cal','doc','hist','alert'];
 const ctH=CT.map((c,i)=>`<div class="fc ${c[3]}" data-go="${c[4]}">${fiI(c[3]=='ok'?'check':CIN[i],c[3])}<div><b>${c[0]}</b><span>${c[1]}</span></div><u>${c[2]?c[2]:'Clear'}</u></div>`).join('');
 const nIssue=CT.filter(c=>c[3]!='ok').length;
@@ -3474,7 +3477,7 @@ const fdSpark=(v,col,id)=>{v=v.length>1?v:[0,0];const W=130,H=36,mx=Math.max(...
 const fdTabs=(cur,arr,v)=>`<div class="fi-tabs noprint">${arr.map(([k,t])=>`<button type="button" class="${k==cur?'on':''}" onclick="${v}='${k}';go()">${t}</button>`).join('')}</div>`;
 V.dash=function(){
 const al=BL(),t=today(),m0=mS(),ms=dxMonths(7),cur=ms[ms.length-1],prv=ms[ms.length-2],iso=d=>d.toISOString().slice(0,10),DAY=864e5;
-const upto=(d,codes)=>al.reduce((s,x)=>x.date>d?s:s+x.lines.filter(y=>codes.includes(String(y[0]))).reduce((a,y)=>a+y[1]-y[2],0),0);
+const upto=(d,codes)=>codes.length==1&&codes[0]=='1200'?arG(al.filter(x=>x.date<=d)):al.reduce((s,x)=>x.date>d?s:s+x.lines.filter(y=>codes.includes(String(y[0]))).reduce((a,y)=>a+y[1]-y[2],0),0);
 const me_=m=>m+'-31',inM=m=>al.filter(x=>x.date.slice(0,7)==m);
 const cashS=ms.map(m=>upto(me_(m),['1000','1010'])),arS=ms.map(m=>upto(me_(m),['1200'])),apS=ms.map(m=>-upto(me_(m),['2000']));
 const P=l=>{const rev=-rg(l,4000,5000),cg=rg(l,5000,6000),ox=rg(l,6000,7000);return{rev:dxN(rev),cg:dxN(cg),ox:dxN(ox),gp:dxN(rev-cg),np:dxN(rev-cg-ox)}};
@@ -5735,7 +5738,7 @@ const oc=V.ctx;V.ctx=function(){let h=oc.apply(this,arguments);
  h=h.replace('<button class="plf" onclick="ctOpen()">+ New transaction</button>','<span style="display:flex;gap:8px;flex-wrap:wrap"><button class="plf" onclick="sdOpen()">+ Currency sale deal</button><button class="plo" onclick="ctOpen()">+ Multi-currency entry</button></span>');
  return h};
 /*UPDCHK*/
-(function(){const B='2026-10-22-eq';window.PB_BUILD=B;if(location.protocol=='file:')return;let nb=null,tm=0;
+(function(){const B='2026-10-22-er';window.PB_BUILD=B;if(location.protocol=='file:')return;let nb=null,tm=0;
 const busy=()=>{const a=document.activeElement;return !!(document.querySelector('.ov')||(a&&/^(INPUT|TEXTAREA)$/.test(a.tagName)&&String(a.value||'').length>0))};
 function go2(){try{const k='pb_upd_'+nb,n=+(sessionStorage.getItem(k)||0);sessionStorage.setItem(k,n+1)}catch(e){}location.replace(location.pathname+'?v='+encodeURIComponent(nb))}
 function bar(){let d=document.getElementById('pbupd');if(!d){d=document.createElement('div');d.id='pbupd';d.setAttribute('role','button');d.style.cssText='position:fixed;left:50%;transform:translateX(-50%);top:10px;z-index:100000;background:#0b3d33;color:#fff;padding:11px 18px;border-radius:12px;font:700 13px Inter,system-ui,sans-serif;box-shadow:0 6px 20px rgba(0,0,0,.3);cursor:pointer;text-align:center;max-width:92vw';d.onclick=()=>{d.textContent='Updating…';go2()};document.body.appendChild(d)}d.textContent='A new version of PrimeBook is ready. Tap here to update.'}
@@ -7939,7 +7942,7 @@ const oc=V.cstm;V.cstm=function(){let h=oc.apply(this,arguments);try{const c=S.c
 .c3-ov{position:fixed;inset:0;z-index:90;background:#070d22b0;display:grid;place-items:center}.c3-md{width:min(560px,94vw);background:#fff;border-radius:20px;overflow:hidden;box-shadow:0 40px 100px -20px #000c}.c3-md h4{margin:0;padding:16px 22px;background:linear-gradient(120deg,#181f2e,#232c40);color:#f2f6fc;font:700 19px 'Inter',Georgia,serif}.c3-md textarea{width:calc(100% - 44px);margin:16px 22px 0;height:210px;border:1px solid #d2e1f3;border-radius:12px;padding:12px;font:13.5px/1.5 'Inter',sans-serif;color:#232c40}.c3-md .f{display:flex;gap:10px;justify-content:flex-end;padding:14px 22px}
 `;document.head.appendChild(st);
 const esc=x=>String(x==null?'':x).replace(/[&<>"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m])),F=v=>fmt(v),B=S.base;
-const addD=(d,n)=>{const x=new Date(d+'T00:00:00Z');x.setUTCDate(x.getUTCDate()+n);return x.toISOString().slice(0,10)},BL=()=>S.j.filter(x=>br=='all'||x.br==br),dcs=(c,l)=>l.reduce((s,x)=>s+x.lines.filter(y=>String(y[0])==String(c)).reduce((a,y)=>a+y[1]-y[2],0),0),dB=(a,b)=>Math.round((new Date(b)-new Date(a))/864e5);
+const addD=(d,n)=>{const x=new Date(d+'T00:00:00Z');x.setUTCDate(x.getUTCDate()+n);return x.toISOString().slice(0,10)},BL=()=>S.j.filter(x=>br=='all'||x.br==br),dcs=(c,l)=>String(c)=='1200'?arG(l):l.reduce((s,x)=>s+x.lines.filter(y=>String(y[0])==String(c)).reduce((a,y)=>a+y[1]-y[2],0),0),dB=(a,b)=>Math.round((new Date(b)-new Date(a))/864e5);
 function arItems(al){const out=[];CUS().forEach(c=>{if(c.id=='c1')return;const ent=cled(c.id,al).slice().sort((x,y)=>x.date.localeCompare(y.date)||x.id-y.id),op=[];let rem=0;ent.forEach(x=>{const[d,k]=cdc(x);rem+=k;if(d>0)op.push([x.date,d])});const t=TD[c.terms]||0;op.forEach(([dt,q])=>{const u=Math.min(q,rem);rem-=u;const left=q-u;if(left>.004)out.push({c,left,date:dt,due:addD(dt,t)})})});return out}
 function apItems(al){const out=[];S.cust.filter(c=>c.type=='Supplier').forEach(c=>{const e=al.filter(x=>x.cust==c.id&&x.lines.some(y=>y[0]==2000)).sort((a,b)=>a.date.localeCompare(b.date)||a.id-b.id),op=[];let rem=0;e.forEach(x=>{const cr=x.lines.filter(y=>y[0]==2000).reduce((a,y)=>a+y[2],0),dr=x.lines.filter(y=>y[0]==2000).reduce((a,y)=>a+y[1],0);rem+=dr;if(cr>0)op.push([x.date,cr])});const t=TD[c.terms]||0;op.forEach(([dt,q])=>{const u=Math.min(q,rem);rem-=u;const left=q-u;if(left>.004)out.push({c,left,date:dt,due:addD(dt,t)})})});return out}
 function wk(due,t){const d=dB(t,due);return d<0?0:Math.min(5,Math.floor(d/7)+1)}
@@ -9933,7 +9936,7 @@ const mk=d=>d.slice(0,7),months=n=>{const a=[];for(let i=n-1;i>=0;i--){const d=n
 const pc=(a,b)=>Math.abs(b)>.004?(a-b)/Math.abs(b)*100:null;
 const delta=(v,inv)=>v===null?'<em class="dsh-d nu">new</em>':`<em class="dsh-d ${Math.abs(v)<.05?'nu':((v>=0)!=!!inv)?'up':'dn'}">${v>=0?'▲':'▼'} ${Math.abs(v)>999?'999%+':Math.abs(v).toFixed(1)+'%'}</em>`;
 /* ---- the numbers, all from the ledger ---- */
-function model(){const al=S.j.filter(x=>br=='all'||x.br==br),t=today(),ms=months(7),cur=ms[6],prv=ms[5],f=(q,c)=>q.reduce((s,x)=>s+x.lines.filter(y=>String(y[0])==String(c)).reduce((a,y)=>a+y[1]-y[2],0),0);
+function model(){const al=S.j.filter(x=>br=='all'||x.br==br),t=today(),ms=months(7),cur=ms[6],prv=ms[5],f=(q,c)=>String(c)=='1200'?arG(q):q.reduce((s,x)=>s+x.lines.filter(y=>String(y[0])==String(c)).reduce((a,y)=>a+y[1]-y[2],0),0);
  const cashCodes=['1000','1010'],cashOf=q=>cashCodes.reduce((s,c)=>s+f(q,c),0),upto=d=>al.filter(x=>x.date<=d),inM=m=>al.filter(x=>mk(x.date)==m);
  const eom=m=>{const d=new Date(+m.slice(0,4),+m.slice(5),0);return m+'-'+String(d.getDate()).padStart(2,'0')};
  const P=q=>{const rev=-rg(q,4000,5000),cg=rg(q,5000,6000),ox=rg(q,6000,7000);return{rev,gp:rev-cg,np:rev-cg-ox,exp:cg+ox}};
@@ -10003,7 +10006,7 @@ function layer(){const m=model(),I=insights(m),H=health(m,I),B=S.base,h=new Date
   /* Key performance indicators: this month against last month, from the ledger */
  const sg=(q,c)=>m.f(q,c),eom0=m.ms.map(k=>m.eom(k)),isNow=i=>i==m.ms.length-1;
  const bal_=(fn)=>m.ms.map((k,i)=>fn(m.upto(isNow(i)?m.t:eom0[i]))),flow_=(fn)=>m.ms.map(k=>fn(m.inM(k)));
- const IND=[['Inventory','Now vs. last month-end',bal_(q=>sg(q,1300)),1,'std'],['Currency stock','Now vs. last month-end',bal_(q=>sg(q,1100)),1,'std'],['Receivables','Now vs. last month-end',bal_(q=>sg(q,1200)),0,'clist'],['Payables','Now vs. last month-end',bal_(q=>-sg(q,2000)),0,'clist'],['Sales','This month vs. last month',flow_(q=>-(sg(q,4000)+sg(q,4100))),1,'rpt'],['Expenses','This month vs. last month',flow_(q=>rg(q,5000,7000)),0,'rpt'],['Total bank balance','Now vs. last month-end',bal_(q=>sg(q,1010)),1,'bkd']].map(([n,per,ser,up,go])=>{const cur=ser[ser.length-1],prv=ser[ser.length-2],ch=pc(cur,prv),good=ch===null||Math.abs(ch)<.05?null:(ch>0)==!!up;return{n,per,ser,cur,prv,ch,good,go}});
+ const IND=[['Inventory','Now vs. last month-end',bal_(q=>sg(q,1300)),1,'std'],['Currency stock','Now vs. last month-end',bal_(q=>sg(q,1100)),1,'std'],['Receivables','Now vs. last month-end',bal_(q=>sg(q,1200)),0,'clist'],['Customer deposits','Paid in advance, owed back',bal_(q=>advG(q)),0,'clist'],['Payables','Now vs. last month-end',bal_(q=>-sg(q,2000)),0,'clist'],['Sales','This month vs. last month',flow_(q=>-(sg(q,4000)+sg(q,4100))),1,'rpt'],['Expenses','This month vs. last month',flow_(q=>rg(q,5000,7000)),0,'rpt'],['Total bank balance','Now vs. last month-end',bal_(q=>sg(q,1010)),1,'bkd']].map(([n,per,ser,up,go])=>{const cur=ser[ser.length-1],prv=ser[ser.length-2],ch=pc(cur,prv),good=ch===null||Math.abs(ch)<.05?null:(ch>0)==!!up;return{n,per,ser,cur,prv,ch,good,go}});
  const arrow=(x)=>x.ch===null?'<span class="dsh-ar nu">–</span>':`<span class="dsh-ar ${x.good===null?'nu':x.good?'ok':'bad'}">${x.ch>=0?'↑':'↓'}</span>`;
  const chTxt=x=>x.ch===null?'new':Math.abs(x.ch)>999?'999%+':Math.abs(x.ch).toFixed(1)+'%';
  const top4=['Payables','Sales','Expenses','Total bank balance'].map(n=>IND.find(x=>x.n==n));
@@ -10063,7 +10066,7 @@ const svg=(p,c)=>`<svg viewBox="0 0 24 24" class="rx-i ${c||''}" fill="none" str
 const allowed=()=>RC.filter(x=>typeof rpaAllowed!='function'||rpaAllowed(x[0]));
 const ld_=d=>d.toISOString().slice(0,10);
 function suggest(){const L=S.j.filter(x=>br=='all'||x.br==br),S_=[],has=n=>allowed().some(x=>x[0]==n),add=(n,why)=>{if(has(n)&&!S_.some(s=>s[0]==n))S_.push([n,why])};
- const ar=bal(1200,L),ap=-bal(2000,L);let unb=0;L.forEach(x=>{if(Math.abs(x.lines.reduce((s,y)=>s+y[1]-y[2],0))>.005)unb++});
+ const ar=arG(L),ap=-bal(2000,L);let unb=0;L.forEach(x=>{if(Math.abs(x.lines.reduce((s,y)=>s+y[1]-y[2],0))>.005)unb++});
  if(unb)add('Integrity Check',unb+' unbalanced entr'+(unb==1?'y':'ies')+' need review');
  const m=today().slice(0,7);if(L.some(x=>x.date.slice(0,7)==m))add('Profit and Loss','You have activity this month');
  if(ar>.004)add('Receivables Ageing',S.base+' '+fmt(ar)+' is owed to you');
@@ -13661,12 +13664,12 @@ const prior=()=>{const a=pdt(asAt()),y=a.getUTCFullYear(),m=a.getUTCMonth();
 const CLS={ca:'Current Assets',nca:'Non-Current Assets',cl:'Current Liabilities',ncl:'Non-Current Liabilities',eq:'Equity'};
 const cls=c=>{c=+c;if(c<2000)return c<1600?'ca':'nca';if(c<3000)return c<2500?'cl':'ncl';return'eq'};
 const inBr=x=>br=='all'||x.br==br;
-const calc=d=>{const m={};S.j.forEach(x=>{if(!inBr(x)||x.date>d)return;x.lines.forEach(y=>{const c=String(y[0]);m[c]=(m[c]||0)+(+y[1]||0)-(+y[2]||0)})});return m};
+const calc=d=>{const m={},L=[];S.j.forEach(x=>{if(!inBr(x)||x.date>d)return;L.push(x);x.lines.forEach(y=>{const c=String(y[0]);m[c]=(m[c]||0)+(+y[1]||0)-(+y[2]||0)})});const q=arSplit(L);if(q.ar||q.adv||m['1200']){m['1200']=q.ar;if(q.adv)m['2150']=(m['2150']||0)-q.adv}return m};
 const rf=()=>{const ec=rcur||S.base;return ec==S.base||!S.rates[ec]?1:1/((S.rates[ec].b+S.rates[ec].s)/2)};
 const ecur=()=>(rcur&&S.rates[rcur])?rcur:S.base;
 const sm=(a,k)=>a.reduce((t,r)=>t+r[k],0);
 const model=()=>{const a=asAt(),p=prior(),M1=calc(a),M0=calc(p),secs={ca:[],nca:[],cl:[],ncl:[],eq:[]};
- [...new Set([...Object.keys(CH),...Object.keys(M1),...Object.keys(M0)])].filter(c=>+c<4000).sort((x,y)=>x-y).forEach(c=>{const s=+c<2000?1:-1;secs[cls(c)].push({c,n:CH[c]||('Account '+c),cur:s*(M1[c]||0),pri:s*(M0[c]||0)})});
+ [...new Set([...Object.keys(CH),...Object.keys(M1),...Object.keys(M0)])].filter(c=>+c<4000).sort((x,y)=>x-y).forEach(c=>{const s=+c<2000?1:-1;secs[cls(c)].push({c,n:CH[c]||(c=='2150'?'Customer Deposits & Advances':'Account '+c),cur:s*(M1[c]||0),pri:s*(M0[c]||0)})});
  const pl=m=>-Object.keys(m).filter(c=>+c>=4000).reduce((t,c)=>t+m[c],0);
  secs.eq.push({c:'',id:'PL',n:'Current period earnings (net profit to date)',cur:pl(M1),pri:pl(M0)});
  const T_={};Object.keys(secs).forEach(k=>{T_[k]=[sm(secs[k],'cur'),sm(secs[k],'pri')]});
