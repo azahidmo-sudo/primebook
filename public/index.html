@@ -5757,7 +5757,7 @@ const oc=V.ctx;V.ctx=function(){let h=oc.apply(this,arguments);
  h=h.replace('<button class="plf" onclick="ctOpen()">+ New transaction</button>','<span style="display:flex;gap:8px;flex-wrap:wrap"><button class="plf" onclick="sdOpen()">+ Currency sale deal</button><button class="plo" onclick="ctOpen()">+ Multi-currency entry</button></span>');
  return h};
 /*UPDCHK*/
-(function(){const B='2026-10-23-ez';window.PB_BUILD=B;if(location.protocol=='file:')return;let nb=null,tm=0;
+(function(){const B='2026-10-23-fa';window.PB_BUILD=B;if(location.protocol=='file:')return;let nb=null,tm=0;
 const busy=()=>{const a=document.activeElement;return !!(document.querySelector('.ov')||(a&&/^(INPUT|TEXTAREA)$/.test(a.tagName)&&String(a.value||'').length>0))};
 function go2(){try{const k='pb_upd_'+nb,n=+(sessionStorage.getItem(k)||0);sessionStorage.setItem(k,n+1)}catch(e){}location.replace(location.pathname+'?v='+encodeURIComponent(nb))}
 function bar(){let d=document.getElementById('pbupd');if(!d){d=document.createElement('div');d.id='pbupd';d.setAttribute('role','button');d.style.cssText='position:fixed;left:50%;transform:translateX(-50%);top:10px;z-index:100000;background:#0b3d33;color:#fff;padding:11px 18px;border-radius:12px;font:700 13px Inter,system-ui,sans-serif;box-shadow:0 6px 20px rgba(0,0,0,.3);cursor:pointer;text-align:center;max-width:92vw';d.onclick=()=>{d.textContent='Updating…';go2()};document.body.appendChild(d)}d.textContent='A new version of PrimeBook is ready. Tap here to update.'}
@@ -11176,7 +11176,7 @@ html body .tw-md footer{display:flex;gap:10px;align-items:center;justify-content
 `;document.head.appendChild(c3)}
 /* ---- page ---- */
 /* ---- Daily transactions page (same workspace, own header) ---- */
-function dtxPage(m,acs){const d=dD(),t0=today(),scope=S.br.filter(b=>br=='all'||b.id==br);
+function dtxClose(m,acs){const d=dD(),t0=today(),scope=S.br.filter(b=>br=='all'||b.id==br);
  const rows=m.rows,inD=r=>r.date==d,pre=r=>r.date<d;
  const AC=acs.map(a=>{const mine=rows.filter(r=>r.aid==a.id),op=r2(mine.filter(pre).reduce((s,r)=>s+r.inn-r.out,0)),on=mine.filter(inD),dep=r2(on.filter(r=>!r.xf).reduce((s,r)=>s+r.inn,0)),wd=r2(on.filter(r=>!r.xf).reduce((s,r)=>s+r.out,0)),ti=r2(on.filter(r=>r.xf).reduce((s,r)=>s+r.inn,0)),to=r2(on.filter(r=>r.xf).reduce((s,r)=>s+r.out,0)),cl=r2(op+dep-wd+ti-to);
   const rec=(S.closings||[]).find(c=>c.acc==a.id&&c.date==d),q=(S.clq||[]).find(c=>c.acc==a.id&&c.date==d&&c.st=='Pending approval');
@@ -11221,7 +11221,49 @@ function dtxPage(m,acs){const d=dD(),t0=today(),scope=S.br.filter(b=>br=='all'||
  const sign=recs.length?`<ol class="dx2-tl">${recs.map(c=>`<li><i></i><div><b>${A(c.accLabel||c.acc)}</b><span>Prepared by ${A(c.by||'')}${c.at?' · '+A(c.at):''}</span><span>${c.apprBy?'Approved by '+A(c.apprBy):'Approval not required'}</span></div><em class="${Math.abs(+c.base||0)<.005?'ok':(+c.base<0?'bad':'wn')}">${Math.abs(+c.base||0)<.005?'Balanced':(+c.base<0?'−':'+')+mf(Math.abs(+c.base))}</em></li>`).join('')}</ol>`:'<p class="dx-em">No account has been closed for this date yet.</p>';
  const bar=`<header class="cbz-h noprint dx-h"><div class="cbz-hl"><h1>Daily transactions</h1><p class="tw-sub">${A(br=='all'?'All branches':brNm(br))} · <span class="tw-dy ${dayClosed&&!nb?'cl':''}">${dayClosed&&!nb?'Day closed':act.length?'Day open ('+closedN+' of '+act.length+' accounts closed)':'No activity'}</span></p></div><div class="cbz-hr"><label class="dx-dt">Business date<input type="date" id="twdate" value="${A(d)}" max="${A(t0)}"></label>${d!=t0?'<button type="button" class="tw-b" data-tw="today">Today</button>':''}<button type="button" class="tw-b" data-tw="closing">Daily closing</button>${canW('cash')&&window.cbxMenu?window.cbxMenu().replace('Add transaction','New entry'):''}</div></header>`;
  const side=(h,s,x)=>`<section class="dx2-p"><div class="dx-ph"><h3>${h}</h3>${s?`<span>${s}</span>`:''}</div>${x}</section>`;
- return`<div class="cbm dx2"><div class="cx-h prm" style="display:none"></div>${bar}${hero}<div class="dx2-body"><div class="dx2-main">${flt}${groups}${workspace(m)}</div><div class="dx2-rail" role="complementary" aria-label="Exceptions and sign-off">${side('Exceptions &amp; actions',nb?nb+' blocking':'',`<ul class="dx-ex">${exl}</ul>`)}${side('Sign-off',A(d),sign)}</div></div></div>`}
+ return`<div class="cbm dx2"><div class="cx-h prm" style="display:none"></div>${bar}${hero}<div class="dx2-body"><div class="dx2-main">${flt}${groups}${window.__dxNw?'':workspace(m)}</div><div class="dx2-rail" role="complementary" aria-label="Exceptions and sign-off">${side('Exceptions &amp; actions',nb?nb+' blocking':'',`<ul class="dx-ex">${exl}</ul>`)}${side('Sign-off',A(d),sign)}</div></div></div>`}
+const cdk={reg:'Register',ent:'Entries',clo:'Daily closing',rep:'Cash reports'};
+const cdN=v=>Math.abs(v)<.005?0:v,cdM=v=>(v<0?'−':'')+mf(Math.abs(cdN(v)));
+function dtxPage(m,acs){const d=dD(),t0=today(),B=A(S.base),tb=window.__dxt&&cdk[window.__dxt]?window.__dxt:'reg';
+ const rowsOf=a=>m.rows.filter(r=>r.aid==a.id).slice().sort((x,y)=>x.date.localeCompare(y.date)||String(x.id).localeCompare(String(y.id),undefined,{numeric:true}));
+ const cls=(S.closings||[]).filter(c=>!c.reopened&&(br=='all'||c.br==br));
+ const W=wsItems(),nW=W.filter(x=>x.st=='pend'||x.st=='appr'||x.st=='rej').length;
+ let selA=acs.find(a=>a.id==window.__dxa)||acs[0];
+ const hdr=`<header class="cdk-h noprint"><div><span class="cdk-ey">Cash desk</span><h1>Daily transactions</h1><p>Cash and bank movements, daily closings and variances. Amounts are ${B} ledger values; each account keeps its own currency.</p></div><div class="cdk-hr"><label class="cdk-dt">Business date<input type="date" id="twdate" value="${A(d)}" max="${A(t0)}"></label>${d!=t0?'<button type="button" class="cdk-b" data-tw="today">Today</button>':''}${canW('cash')&&window.cbxMenu?window.cbxMenu().replace('Add transaction','New entry'):''}<button type="button" class="cdk-b dk" onclick="dxCloseDay()">${'<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18M16 15h2"/></svg>'} Close a day</button></div></header>`;
+ const tabs=`<div class="cdk-tabs noprint" role="tablist" aria-label="Daily transactions sections">${Object.keys(cdk).map(k=>`<button type="button" role="tab" aria-selected="${tb==k}" class="${tb==k?'on':''}" onclick="dxTab('${k}')">${cdk[k]}${k=='ent'&&nW?` <em>${nW}</em>`:''}</button>`).join('')}</div>`;
+ const kc=(l,v,c)=>`<div class="cdk-k"><small>${l}</small><b class="${c||''}">${v}</b></div>`;
+ let body='';
+ if(tb=='reg'){
+  if(!selA)body='<div class="cdk-card"><p class="cdk-em">No cash or bank accounts yet.</p></div>';
+  else{const R=rowsOf(selA),pre=R.filter(r=>r.date<d),on=R.filter(r=>r.date==d),op=r2(pre.reduce((s,r)=>s+r.inn-r.out,0)),ti=r2(on.reduce((s,r)=>s+r.inn,0)),to=r2(on.reduce((s,r)=>s+r.out,0)),bk=r2(op+ti-to);let run=op;const L=on.map(r=>{run=r2(run+r.inn-r.out);return{...r,run}}).reverse(),cc=A(selA.ccy||S.base);
+   body=`<div class="cdk-sel noprint"><select id="dxacc" aria-label="Account" onchange="dxAcc(this.value)">${acs.map(a=>`<option value="${A(a.id)}" ${a.id==selA.id?'selected':''}>${A(a.name)} · ${A(a.ccy||S.base)}</option>`).join('')}</select></div>
+   <div class="cdk-btns noprint"><button type="button" class="cdk-b" data-cbxa="exp">↑ Cash out</button><button type="button" class="cdk-b dk" data-cbxa="inc">↓ Cash in</button></div>
+   <div class="cdk-kg">${kc('Opening balance',cc+' '+cdM(op))}${kc('Total in',cc+' '+mf(ti),'in')}${kc('Total out',cc+' '+mf(to),'out')}${kc('Book balance',cc+' '+cdM(bk))}</div>
+   <div class="cdk-card"><h2>Movements <small>${A(d)} · ${A(selA.name)}</small></h2>${L.length?`<div class="cdk-w"><table class="cdk-t"><thead><tr><th>Date</th><th>Voucher</th><th>Description</th><th class="n">In</th><th class="n">Out</th><th class="n">Balance</th></tr></thead><tbody>${L.map(r=>`<tr><td class="mu">${A(r.date)}</td><td><b>${A(r.vno||r.ref||('#'+r.id))}</b></td><td>${A(r.memo||r.tt||'')}</td><td class="n in">${r.inn?mf(r.inn):''}</td><td class="n out">${r.out?mf(r.out):''}</td><td class="n"><b>${cdM(r.run)}</b></td></tr>`).join('')}</tbody></table></div>`:`<p class="cdk-em">No movements on ${A(d)} for this account. Change the business date to see another day.</p>`}</div>`}
+ }else if(tb=='ent'){body=workspace(m)}
+ else if(tb=='clo'){
+  const t10=addD(t0,-9),daysA=a=>[...new Set(rowsOf(a).filter(r=>r.date>=t10).map(r=>r.date))],cl10=cls.filter(c=>c.date>=t10);
+  const mon=acs.map(a=>{const ds=daysA(a),done=cls.filter(c=>c.acc==a.id).map(c=>c.date),wait=ds.filter(x=>!done.includes(x)).length,vr=cls.filter(c=>c.acc==a.id&&c.date>=t10&&Math.abs(+c.base||0)>.004).length,last=done.sort().pop()||'';return{a,n:ds.length,wait,vr,last}}).filter(x=>x.n||x.last);
+  const dn=new Set(cl10.map(c=>c.acc+'|'+c.date)).size,aw=mon.reduce((s,x)=>s+x.wait,0),vn=cl10.filter(c=>Math.abs(+c.base||0)>.004).length;
+  const hist=cls.slice().sort((x,y)=>String(y.at||y.date).localeCompare(String(x.at||x.date))).slice(0,25);
+  const pill=(t,c)=>`<span class="cdk-p ${c}">${t}</span>`;
+  const lines=(c,f)=>(c.rows||[]).map(r=>`<div>${A(r.ccy||S.base)} ${f(r)}</div>`).join('')||'—';
+  body=`<div class="cdk-kg3">${kc('Days closed',dn)}${kc('Days awaiting close',aw,aw?'wn':'')}${kc('Closings with variance',vn,vn?'out':'')}</div>
+  <div class="cdk-card"><h2>Monitoring <small>last 10 days</small></h2>${mon.length?mon.map(x=>`<div class="cdk-mr"><div><b>${A(x.a.name)}</b><small>Last closed: ${x.last?A(x.last):'never'}</small></div><div class="cdk-ps">${pill(x.n+' active day'+(x.n==1?'':'s'),'')}${x.wait?pill(x.wait+' awaiting close','wn'):pill('Up to date','ok')}${x.vr?pill(x.vr+' variance','bad'):''}</div></div>`).join(''):'<p class="cdk-em">No account activity in the last 10 days.</p>'}</div>
+  <div class="cdk-card"><h2>Closing history</h2>${hist.length?`<div class="cdk-w"><table class="cdk-t"><thead><tr><th>Date</th><th>Account</th><th class="n">Expected</th><th class="n">Counted</th><th class="n">Difference</th><th>Closed by</th></tr></thead><tbody>${hist.map(c=>{const v=+c.base||0;return`<tr><td class="mu">${A(c.date)}</td><td><b>${A(c.accLabel||c.acc)}</b></td><td class="n">${lines(c,r=>cdM(+r.exp||0))}</td><td class="n">${lines(c,r=>r.counted==null?'—':cdM(+r.counted))}</td><td class="n ${Math.abs(v)<.005?'in':'out'}">${Math.abs(v)<.005?'Balanced':cdM(v)}</td><td class="mu">${A(c.by||'')}</td></tr>`}).join('')}</tbody></table></div>`:'<p class="cdk-em">No closings recorded yet.</p>'}</div>
+  <h2 class="cdk-h2">Closing centre <small>${A(d)}</small></h2>`+(()=>{window.__dxNw=1;try{return dtxClose(m,acs)}finally{window.__dxNw=0}})().replace(/<header class="cbz-h noprint dx-h">[\s\S]*?<\/header>/,'');
+ }else{
+  const f30=addD(t0,-29),fl=m.rows.filter(r=>!r.xf&&r.date>=f30&&r.date<=t0),days={};fl.forEach(r=>{const g=days[r.date]||(days[r.date]={i:0,o:0});g.i+=r.inn;g.o+=r.out});
+  const ci=r2(fl.reduce((s,r)=>s+r.inn,0)),co=r2(fl.reduce((s,r)=>s+r.out,0)),net=r2(ci-co),dk=Object.keys(days).sort().reverse();
+  const bals=acs.map(a=>({a,b:r2(rowsOf(a).filter(r=>r.date<=t0).reduce((s,r)=>s+r.inn-r.out,0))}));
+  const vm={};cls.filter(c=>c.date>=f30).forEach(c=>{const g=vm[c.acc]||(vm[c.acc]={n:0,v:0,l:c.accLabel||c.acc});g.n++;g.v+=+c.base||0});
+  body=`<div class="cdk-kg3">${kc('Cash in (30 days)',B+' '+mf(ci),'in')}${kc('Cash out (30 days)',B+' '+mf(co),'out')}${kc('Net movement',B+' '+cdM(net))}</div><p class="cdk-fn">Transfers between your own accounts are left out. Values are ${B} ledger values, not a sum of foreign balances.</p>
+  <div class="cdk-card"><h2>Daily cash flow</h2>${dk.length?`<div class="cdk-w"><table class="cdk-t"><thead><tr><th>Date</th><th class="n">Cash in</th><th class="n">Cash out</th><th class="n">Net</th></tr></thead><tbody>${dk.map(k=>{const g=days[k];return`<tr><td class="mu">${A(k)}</td><td class="n in">${mf(r2(g.i))}</td><td class="n out">${mf(r2(g.o))}</td><td class="n"><b>${cdM(r2(g.i-g.o))}</b></td></tr>`}).join('')}</tbody></table></div>`:'<p class="cdk-em">No cash movements in the last 30 days.</p>'}</div>
+  <div class="cdk-2"><div class="cdk-card"><h2>Book balances</h2>${bals.length?`<div class="cdk-w"><table class="cdk-t"><thead><tr><th>Account</th><th class="n">Book balance</th></tr></thead><tbody>${bals.map(x=>`<tr><td><b>${A(x.a.name)}</b> <span class="mu">${A(x.a.ccy||S.base)}</span></td><td class="n"><b>${cdM(x.b)}</b></td></tr>`).join('')}</tbody></table></div>`:'<p class="cdk-em">No accounts.</p>'}</div>
+  <div class="cdk-card"><h2>Cash variances by account</h2>${Object.keys(vm).length?`<div class="cdk-w"><table class="cdk-t"><thead><tr><th>Account</th><th class="n">Closings</th><th class="n">Total variance</th></tr></thead><tbody>${Object.values(vm).map(g=>`<tr><td><b>${A(g.l)}</b></td><td class="n">${g.n}</td><td class="n ${Math.abs(g.v)<.005?'in':'out'}">${cdM(r2(g.v))}</td></tr>`).join('')}</tbody></table></div>`:'<p class="cdk-em">No closings in the last 30 days.</p>'}</div></div>`}
+ return`<div class="cbm dxt"><div class="cx-h prm" style="display:none"></div>${hdr}${tabs}${body}</div>`}
+window.dxTab=k=>{if(!cdk[k])return;window.__dxt=k;go()};window.dxAcc=v=>{window.__dxa=v;go()};
+window.dxCloseDay=()=>{window.__dxt='clo';go();setTimeout(()=>{const el=document.querySelector('.dx2-ac .dx2-b.pri');if(el)el.scrollIntoView({behavior:'smooth',block:'center'})},60)};
 window.dxCl=id=>{dca=id;dcd=dD();window.__dcn=null;window.__crc=null;view='dcl';go()};window.dxCcy=c=>{window.__dxc=c;go()};
 document.addEventListener('change',e=>{if(view!='dtx'||!e.target||e.target.id!='twdate')return;ddt=e.target.value&&e.target.value<=today()?e.target.value:'';wk='';go()});
 function page(){const m=model(),acs=accounts(),ins=insights(m,acs),c=STO();
@@ -14172,6 +14214,60 @@ html body .crc-hint{min-height:0;padding:0 20px;font:500 13.5px Inter,sans-serif
 html body .crc-ft{padding:14px 20px;background:#fff}html body .crc-tot b{font:700 22px Inter,sans-serif;color:#0F172A}
 html body .crc-ft label{font:500 14px Inter,sans-serif;color:#475569}
 @media(max-width:900px){html body .crc input.crc-q{width:88px}}
+`;document.head.appendChild(s)})();
+/*CDK*/(function(){try{if(!document.getElementById('cdkf')){const l=document.createElement('link');l.id='cdkf';l.rel='stylesheet';l.href='https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&display=swap';document.head.appendChild(l)}}catch(e){}
+const s=document.createElement('style');s.textContent=`
+html body .dxt{background:#FAF9F7;border-radius:18px;padding:28px 28px 40px;font-family:Inter,system-ui,sans-serif;color:#1B2233;--sf:'Fraunces',Georgia,'Iowan Old Style','Times New Roman',serif}
+html body .dxt .cdk-h{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap;margin:0 0 22px}
+html body .dxt .cdk-ey{display:block;font:600 12px Inter,sans-serif;letter-spacing:.2em;text-transform:uppercase;color:#A67C3D}
+html body .dxt .cdk-h h1{font:500 38px/1.1 var(--sf);margin:6px 0 8px;color:#1B2233;letter-spacing:-.01em}
+html body .dxt .cdk-h p{margin:0;font-size:15px;color:#667085;max-width:620px}
+html body .dxt .cdk-hr{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+html body .dxt .cdk-dt{display:flex;flex-direction:column;font:600 11px Inter,sans-serif;color:#667085;gap:3px;text-transform:uppercase;letter-spacing:.08em}
+html body .dxt .cdk-dt input{font:500 14px Inter,sans-serif;border:1px solid #E4E2DD;border-radius:10px;background:#fff;padding:8px 10px;color:#1B2233;text-transform:none;letter-spacing:0}
+html body .dxt .cdk-b,html body .dxt .cbx-btn{display:inline-flex;align-items:center;gap:8px;font:600 14px Inter,sans-serif;border:1px solid #E4E2DD;background:#fff;color:#1B2233;border-radius:12px;padding:10px 18px;cursor:pointer;box-shadow:0 1px 2px #1b223310}
+html body .dxt .cdk-b.dk,html body .dxt .cbx-btn{background:#172033;color:#fff;border-color:#172033}
+html body .dxt .cdk-b:hover{filter:brightness(.97)}html body .dxt .cdk-b:focus-visible,html body .dxt .cdk-tabs button:focus-visible{outline:2px solid #A67C3D;outline-offset:2px}
+html body .dxt .cdk-tabs{display:inline-flex;gap:4px;background:#F0EEE9;border-radius:14px;padding:5px;margin:0 0 22px;max-width:100%;overflow-x:auto}
+html body .dxt .cdk-tabs button{border:0;background:transparent;font:500 15px Inter,sans-serif;color:#667085;padding:9px 18px;border-radius:10px;cursor:pointer;white-space:nowrap}
+html body .dxt .cdk-tabs button.on{background:#fff;color:#1B2233;font-weight:600;box-shadow:0 1px 3px #1b22331a}
+html body .dxt .cdk-tabs em{font-style:normal;font-size:11.5px;background:#A67C3D;color:#fff;border-radius:99px;padding:1px 7px;margin-left:4px}
+html body .dxt .cdk-sel select{width:100%;font:500 15px Inter,sans-serif;border:1px solid #E4E2DD;border-radius:12px;background:#fff;padding:12px 14px;color:#1B2233}
+html body .dxt .cdk-btns{display:flex;gap:10px;margin:12px 0 20px;flex-wrap:wrap}
+html body .dxt .cdk-kg{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;margin:0 0 22px}
+html body .dxt .cdk-kg3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin:0 0 22px}
+html body .dxt .cdk-k{background:#fff;border:1px solid #EDEBE6;border-radius:16px;padding:20px 22px;box-shadow:0 1px 2px #1b223308,0 8px 20px -14px #1b223333}
+html body .dxt .cdk-k small{display:block;font:600 12px Inter,sans-serif;letter-spacing:.1em;text-transform:uppercase;color:#667085;margin-bottom:10px}
+html body .dxt .cdk-k b{font:700 24px Inter,sans-serif;color:#1B2233;font-variant-numeric:tabular-nums;word-break:break-word}
+html body .dxt .in{color:#3F7D5C}html body .dxt .out{color:#B8372F}html body .dxt .wn{color:#B7791F}html body .dxt .mu{color:#667085}
+html body .dxt .cdk-card{background:#fff;border:1px solid #EDEBE6;border-radius:16px;padding:24px 26px;margin:0 0 20px;box-shadow:0 1px 2px #1b223308,0 8px 20px -14px #1b223333}
+html body .dxt h1,html body .dxt h2{font-family:var(--sf)!important;text-transform:none!important;letter-spacing:-.01em!important;color:#1B2233!important}
+html body .dxt .cdk-h h1{font-weight:500!important;font-size:38px!important}
+html body .dxt .cdk-tabs button{background:transparent!important;color:#667085!important;box-shadow:none!important;border:0!important}
+html body .dxt .cdk-tabs button.on{background:#fff!important;color:#1B2233!important;box-shadow:0 1px 3px #1b22331a!important}
+html body .dxt .cdk-t thead th,html body .dxt .cdk-t th{background:transparent!important;color:#667085!important;text-transform:none!important;letter-spacing:0!important;font-size:14px!important;font-weight:500!important}
+html body .dxt .cbx-btn{background:#fff!important;color:#1B2233!important;border:1px solid #E4E2DD!important;border-radius:12px!important}
+html body .dxt .cbx-btn .cbx-plus{background:transparent!important;color:#1B2233!important}
+html body .dxt .cdk-b.dk{background:#172033!important;color:#fff!important}
+html body .dxt .cdk-card h2,html body .dxt .cdk-h2{font:600 22px var(--sf);margin:0 0 16px;color:#1B2233}
+html body .dxt .cdk-h2{margin:28px 0 14px}
+html body .dxt .cdk-card h2 small,html body .dxt .cdk-h2 small{font:500 13px Inter,sans-serif;color:#667085;margin-left:8px}
+html body .dxt .cdk-w{overflow-x:auto}
+html body .dxt .cdk-t{width:100%;border-collapse:collapse;font-size:14.5px}
+html body .dxt .cdk-t th{text-align:left;font:500 14px Inter,sans-serif;color:#667085;padding:12px 10px;border-bottom:1px solid #E4E2DD}
+html body .dxt .cdk-t td{padding:14px 10px;border-bottom:1px solid #EFEDE8;vertical-align:top;font-variant-numeric:tabular-nums}
+html body .dxt .cdk-t tr:last-child td{border-bottom:0}html body .dxt .cdk-t .n{text-align:right}
+html body .dxt .cdk-em{color:#667085;font-size:14px;margin:4px 0}
+html body .dxt .cdk-fn{font-size:12.5px;color:#667085;margin:-10px 0 18px}
+html body .dxt .cdk-mr{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;border:1px solid #EDEBE6;border-radius:14px;padding:14px 18px;margin:0 0 12px}
+html body .dxt .cdk-mr b{display:block;font-size:15.5px}html body .dxt .cdk-mr small{color:#667085;font-size:13px}
+html body .dxt .cdk-ps{display:flex;gap:8px;flex-wrap:wrap}
+html body .dxt .cdk-p{font:500 13px Inter,sans-serif;padding:6px 12px;border-radius:99px;background:#F0EEE9;color:#667085}
+html body .dxt .cdk-p.ok{background:#E6F0EA;color:#3F7D5C}html body .dxt .cdk-p.wn{background:#FBEFDD;color:#B7791F}html body .dxt .cdk-p.bad{background:#FBE9E7;color:#B8372F}
+html body .dxt .cdk-2{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+html body .dxt .dx2,html body .dxt .dx2-hero{font-family:Inter,sans-serif}
+@media(max-width:1000px){html body .dxt .cdk-kg{grid-template-columns:repeat(2,minmax(0,1fr))}html body .dxt .cdk-2{grid-template-columns:1fr}}
+@media(max-width:640px){html body .dxt{padding:18px 14px 30px}html body .dxt .cdk-kg,html body .dxt .cdk-kg3{grid-template-columns:1fr}html body .dxt .cdk-h h1{font-size:30px}html body .dxt .cdk-b{padding:9px 14px}}
 `;document.head.appendChild(s)})();
 /*DX2*/(function(){const s=document.createElement('style');s.textContent=`
 html body .dx2{font-family:Inter,system-ui,sans-serif;color:#0F172A}
