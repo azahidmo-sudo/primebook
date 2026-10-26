@@ -5811,7 +5811,7 @@ const oc=V.ctx;V.ctx=function(){let h=oc.apply(this,arguments);
  h=h.replace('<button class="plf" onclick="ctOpen()">+ New transaction</button>','<span style="display:flex;gap:8px;flex-wrap:wrap"><button class="plf" onclick="sdOpen()">+ Currency sale deal</button><button class="plo" onclick="ctOpen()">+ Multi-currency entry</button></span>');
  return h};
 /*UPDCHK*/
-(function(){const B='2026-10-26-fd';window.PB_BUILD=B;if(location.protocol=='file:')return;let nb=null,tm=0;
+(function(){const B='2026-10-26-fe';window.PB_BUILD=B;if(location.protocol=='file:')return;let nb=null,tm=0;
 const busy=()=>{const a=document.activeElement;return !!(document.querySelector('.ov')||(a&&/^(INPUT|TEXTAREA)$/.test(a.tagName)&&String(a.value||'').length>0))};
 function go2(){try{const k='pb_upd_'+nb,n=+(sessionStorage.getItem(k)||0);sessionStorage.setItem(k,n+1)}catch(e){}location.replace(location.pathname+'?v='+encodeURIComponent(nb))}
 function bar(){let d=document.getElementById('pbupd');if(!d){d=document.createElement('div');d.id='pbupd';d.setAttribute('role','button');d.style.cssText='position:fixed;left:50%;transform:translateX(-50%);top:10px;z-index:100000;background:#0b3d33;color:#fff;padding:11px 18px;border-radius:12px;font:700 13px Inter,system-ui,sans-serif;box-shadow:0 6px 20px rgba(0,0,0,.3);cursor:pointer;text-align:center;max-width:92vw';d.onclick=()=>{d.textContent='Updating…';go2()};document.body.appendChild(d)}d.textContent='A new version of PrimeBook is ready. Tap here to update.'}
@@ -11297,10 +11297,11 @@ function dtxPage(m,acs){const d=dD(),t0=today(),B=A(S.base),tb=window.__dxt&&cdk
  const tabs=`<div class="cdk-tabs noprint" role="tablist" aria-label="Daily transactions sections">${Object.keys(cdk).map(k=>`<button type="button" role="tab" aria-selected="${tb==k}" class="${tb==k?'on':''}" onclick="dxTab('${k}')">${cdk[k]}${k=='ent'&&nW?` <em>${nW}</em>`:''}${k=='apc'&&window.apwCount&&apwCount()?` <em>${apwCount()}</em>`:''}</button>`).join('')}</div>`;
  const kc=(l,v,c)=>`<div class="cdk-k"><small>${l}</small><b class="${c||''}">${v}</b></div>`;
  let body='';
- if(tb=='reg'){
+ if(tb=='reg'&&window.cdrPage&&!(window.__dxa&&acs.some(a=>a.id==window.__dxa))){body=cdrPage(d,acs)}
+ else if(tb=='reg'){
   if(!selA)body='<div class="cdk-card"><p class="cdk-em">No cash or bank accounts yet.</p></div>';
   else{const R=rowsOf(selA),pre=R.filter(r=>r.date<d),on=R.filter(r=>r.date==d),op=r2(pre.reduce((s,r)=>s+r.inn-r.out,0)),ti=r2(on.filter(r=>!r.xf).reduce((s,r)=>s+r.inn,0)),to=r2(on.filter(r=>!r.xf).reduce((s,r)=>s+r.out,0)),xi=r2(on.filter(r=>r.xf).reduce((s,r)=>s+r.inn,0)),xo=r2(on.filter(r=>r.xf).reduce((s,r)=>s+r.out,0)),bk=r2(op+ti-to+xi-xo),q=(window.__dxq||'').trim().toLowerCase(),clo=cls.find(c=>c.acc==selA.id&&c.date==d);let run=op;const L0=on.map(r=>{run=r2(run+r.inn-r.out);return{...r,run}}).reverse(),L=q?L0.filter(r=>((r.memo||'')+' '+(r.vno||'')+' '+(r.ref||'')+' '+(r.tt||'')).toLowerCase().includes(q)):L0,cc=A(selA.ccy||S.base);window.__dxrows=L.map(r=>[r.date,r.vno||r.ref||r.id,r.tt||'',r.memo||'',r.inn||'',r.out||'',r.run]);
-   body=`<div class="cdk-sel noprint"><select id="dxacc" aria-label="Account" onchange="dxAcc(this.value)">${acs.map(a=>`<option value="${A(a.id)}" ${a.id==selA.id?'selected':''}>${A(a.name)} · ${A(a.ccy||S.base)}</option>`).join('')}</select></div>
+   body=`<div class="cdk-sel noprint"><select id="dxacc" aria-label="Account" onchange="dxAcc(this.value)"><option value="">All accounts</option>${acs.map(a=>`<option value="${A(a.id)}" ${a.id==selA.id?'selected':''}>${A(a.name)} · ${A(a.ccy||S.base)}</option>`).join('')}</select></div>
    <div class="cdk-btns noprint"><button type="button" class="cdk-b" data-cbxa="exp">↑ Cash out</button><button type="button" class="cdk-b dk" data-cbxa="inc">↓ Cash in</button></div>
    <div class="cdk-kg cdk-kg6">${kc('Opening balance',cc+' '+cdM(op))}${kc('Cash in',cc+' '+mf(ti),'in')}${kc('Cash out',cc+' '+mf(to),'out')}${kc('Transfers in',cc+' '+mf(xi))}${kc('Transfers out',cc+' '+mf(xo))}${kc('Expected book balance',cc+' '+cdM(bk))}</div>
    <div class="cdk-cl">${clo?`<span>Physical count <b>${cc} ${cdM(clo.rows&&clo.rows[0]&&clo.rows[0].counted!=null?+clo.rows[0].counted:bk+(+clo.base||0))}</b></span><span>Closing variance <b class="${Math.abs(+clo.base||0)<.005?'in':'out'}">${Math.abs(+clo.base||0)<.005?'Balanced':cdM(+clo.base||0)}</b></span><span>Closed by <b>${A(clo.by||'')}</b></span>`:`<span>Not closed yet for ${A(d)}. Count the cash and use Close a day.</span>`}</div>
@@ -14995,6 +14996,65 @@ html body .crc.cpc-blind::before{content:'Blind count: the expected amount stays
 @media (max-width:640px){html body .cpc-g{grid-template-columns:1fr}html body .cpc-tl li{grid-template-columns:1fr}}
 @media print{html body .cpc-pk{border:0;padding:0}}`;document.head.appendChild(css);
 })();
+/* ---------- Detailed daily transaction register: every posted movement, per account, with running balance ---------- */
+(function(){
+const A=s=>aesc(String(s==null?'':s)),r2=v=>Math.round((+v+Number.EPSILON)*100)/100;
+const F=v=>Number(r2(v)).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2});
+const toast=(m,b)=>window.rpToast?rpToast(m,b):alert(m);
+const hm=at=>{if(!at)return'';const d=new Date(at);if(isNaN(d))return'';return String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0')};
+const nm=a=>String(a.name||a.label||'').replace(/ – bank$/,'');
+const F0=()=>window.__cdrf=window.__cdrf||{ty:'',cc:'',q:'',open:{}};
+function typeOf(e,i,o){const tt=String(e.tt||''),memo=String(e.memo||'');
+ if(/^opening/i.test(tt))return'Opening';if(/closing variance/i.test(tt))return'Cash over/short';if(/reversal/i.test(tt))return'Reversal';
+ const liq=e.lines.every(y=>y[0]==1000||y[0]==1010);if(/transfer/i.test(tt)||/^(bank |cash )?transfer/i.test(memo)||(liq&&e.lines.length==2&&e.lines.every(y=>y[0]==1000||y[0]==1010)))return'Transfer';
+ if(/forex|exchange|currency|remit/i.test(tt))return'Exchange';
+ if(o>0&&/payment|supplier|bill|purchase/i.test(tt+' '+memo))return'Payment';
+ return i>0?'Deposit':'Withdrawal'}
+function build(d){const base=(typeof S.base=='string'?S.base:'CAD'),A0=accts().filter(a=>(a.kind=='Cash'||a.kind=='Bank')&&!a.off&&(br=='all'||a.br==br)),ids=new Set(A0.map(a=>a.id));
+ const byId={};A0.forEach(a=>byId[a.id]=a);const rows=[],pos={};
+ const J=S.j.filter(e=>e.date==d&&ids.has(aId(e))).slice().sort((x,y)=>String(x.at||'').localeCompare(String(y.at||''))||(+x.id)-(+y.id));
+ const touched=new Set();J.forEach(e=>{Object.keys(cpos([e])).forEach(k=>touched.add(k))});
+ A0.forEach(a=>{dayRows(a.id,d).forEach(r=>{const k=a.id+'#'+r.ccy;if(Math.abs(r.open)<.005&&!touched.has(k))return;pos[k]=r2(r.open);rows.push({k,t:'',o:0,a,ccy:r.ccy,desc:'Opening balance',ty:'Opening',inn:null,out:null,bal:r2(r.open),e:null})})});
+ J.forEach(e=>{const m=cpos([e]);Object.keys(m).forEach(k=>{const q=m[k];if(!byId[q.id])return;const i=r2(q.i),o=r2(q.o);if(Math.abs(i)<.005&&Math.abs(o)<.005)return;pos[k]=r2((pos[k]||0)+i-o);rows.push({k,t:hm(e.at),a:byId[q.id],ccy:q.ccy,desc:e.memo||e.tt||'Entry',ty:typeOf(e,i,o),inn:i>0?i:null,out:o>0?o:null,bal:pos[k],e})})});
+ return{rows,pos,accs:A0}}
+function view(d,acs){const f=F0(),B=build(d),all=B.rows;
+ const types=[...new Set(all.map(r=>r.ty))],ccys=[...new Set(all.map(r=>r.ccy))];
+ const sel=window.__dxa&&acs.some(a=>a.id==window.__dxa)?window.__dxa:'';
+ const q=(f.q||'').trim().toLowerCase();
+ const L=all.filter(r=>(!sel||r.a.id==sel)&&(!f.ty||r.ty==f.ty)&&(!f.cc||r.ccy==f.cc)&&(!q||(r.desc+' '+nm(r.a)+' '+(r.e?(r.e.vno||r.e.ref||''):'')).toLowerCase().includes(q)));
+ window.__cdrRows=L;
+ const pc={};B.rows.filter(r=>(!sel||r.a.id==sel)).forEach(r=>{const c=pc[r.ccy]=pc[r.ccy]||{o:0,i:0,u:0,n:0,k:{}};if(r.ty=='Opening'&&r.e==null){c.o+=r.bal}else{c.i+=r.inn||0;c.u+=r.out||0;c.n++}c.k[r.k]=r.bal});
+ pc.__=0;delete pc.__;
+ Object.values(pc).forEach(c=>{c.c=Object.values(c.k).reduce((s,v)=>s+v,0)});
+ const kg=Object.keys(pc).length?`<div class="cdr-w"><table class="cdr-t"><thead><tr><th>Currency</th><th class="n">Opening</th><th class="n">Inflow</th><th class="n">Outflow</th><th class="n">Closing</th><th class="n">Entries</th></tr></thead><tbody>${Object.keys(pc).map(c=>{const x=pc[c];return`<tr><td><b>${A(c)}</b></td><td class="n">${F(x.o)}</td><td class="n in">${F(x.i)}</td><td class="n out">${F(x.u)}</td><td class="n"><b>${F(x.c)}</b></td><td class="n">${x.n}</td></tr>`}).join('')}</tbody></table></div>`:'';
+ const sh=L.slice(0,500),op=window.__cdrx||{};
+ const tb=sh.map((r,ix)=>{const id='r'+ix,e=r.e,o=!!op[(e?e.id:'o')+'|'+r.k];
+  const det=e&&o?`<tr class="cdr-d"><td></td><td colspan="7"><div class="cdr-dl"><b>${A(e.vno||'Entry #'+e.id)}</b>${e.by?' · entered by '+A(e.by):''}${e.apw?' · approved: '+A(e.apprBy||''):''}${e.ref?' · ref '+A(e.ref):''}<table class="cdr-t cdr-m"><thead><tr><th>Account</th><th class="n">Debit (${A(S.base)})</th><th class="n">Credit (${A(S.base)})</th></tr></thead><tbody>${e.lines.map(y=>`<tr><td>${A(y[0])} ${A(CH[y[0]]||'')}</td><td class="n">${y[1]?F(y[1]):''}</td><td class="n">${y[2]?F(y[2]):''}</td></tr>`).join('')}</tbody></table></div></td></tr>`:'';
+  return`<tr class="cdr-r ${e?'':'op'}" ${e?`data-cdrx="${A(e.id+'|'+r.k)}" tabindex="0"`:''}><td class="mu">${r.t||'—'}</td><td><b>${A(nm(r.a))}</b></td><td>${A(r.desc)}${e&&(e.vno||e.by)?`<small>${[e.vno?A(e.vno):'',e.by?A(e.by):''].filter(Boolean).join(' · ')}</small>`:''}</td><td><span class="cdr-ty ${r.ty.replace(/\W/g,'').toLowerCase()}">${A(r.ty)}</span></td><td>${A(r.ccy)}</td><td class="n in">${r.inn==null?'—':F(r.inn)}</td><td class="n out">${r.out==null?'—':F(r.out)}</td><td class="n"><b>${F(r.bal)}</b></td></tr>${det}`}).join('');
+ return`<div class="cdr-sel noprint"><label>Account<select id="dxacc" aria-label="Account" onchange="dxAcc(this.value)"><option value="">All accounts</option>${acs.map(a=>`<option value="${A(a.id)}" ${a.id==sel?'selected':''}>${A(a.name)} · ${A(a.ccy||S.base)}</option>`).join('')}</select></label>
+ <label>Type<select onchange="cdrSet('ty',this.value)"><option value="">All types</option>${types.map(t=>`<option ${t==f.ty?'selected':''}>${A(t)}</option>`).join('')}</select></label>
+ <label>Currency<select onchange="cdrSet('cc',this.value)"><option value="">All currencies</option>${ccys.map(t=>`<option ${t==f.cc?'selected':''}>${A(t)}</option>`).join('')}</select></label>
+ <label class="grow">Search<input type="search" id="cdrq" value="${A(f.q)}" placeholder="Description, account or voucher" oninput="cdrQ(this.value)"></label>
+ <span class="cdr-ac"><button type="button" class="cdk-b" onclick="cdrCsv()">Export CSV</button><button type="button" class="cdk-b" onclick="window.print()">Print</button></span></div>
+ <div class="cdk-card"><h2>Position by currency <small>${A(d)}</small></h2>${kg||'<p class="cdk-em">No cash or bank balance or movement on this date.</p>'}<p class="cdr-fn">Each currency is shown in its own units and is never added to another currency.</p></div>
+ <div class="cdk-card"><h2>Detailed register <small>${A(d)} · ${L.filter(r=>r.e).length} transaction${L.filter(r=>r.e).length==1?'':'s'}</small></h2><p class="cdr-fn">Every posted movement is listed on its own, with the running balance of its account. Click a row to see its journal. Drafts and items waiting for approval appear after posting.</p>${sh.length?`<div class="cdr-w"><table class="cdr-t cdr-main"><thead><tr><th>Time</th><th>Account</th><th>Description</th><th>Type</th><th>Currency</th><th class="n">Inflow</th><th class="n">Outflow</th><th class="n">Balance</th></tr></thead><tbody>${tb}</tbody></table></div>${L.length>500?`<p class="cdr-fn">Showing the first 500 of ${L.length} rows. Narrow the filters or export the CSV.</p>`:''}`:'<p class="cdk-em">Nothing matches these filters.</p>'}</div>`}
+window.cdrPage=view;
+window.cdrSet=(k,v)=>{F0()[k]=v;go()};
+window.cdrQ=v=>{F0().q=v;go();setTimeout(()=>{const e=document.getElementById('cdrq');if(e){e.focus();e.setSelectionRange(v.length,v.length)}},0)};
+document.addEventListener('click',e=>{const r=e.target.closest&&e.target.closest('[data-cdrx]');if(!r||e.target.closest('button,a,input,select'))return;const k=r.dataset.cdrx,o=window.__cdrx=window.__cdrx||{};o[k]=!o[k];go()});
+document.addEventListener('keydown',e=>{if((e.key=='Enter'||e.key==' ')&&e.target.dataset&&e.target.dataset.cdrx){e.preventDefault();e.target.click()}});
+window.cdrCsv=()=>{const R=window.__cdrRows||[],hd=['Time','Account','Description','Type','Currency','Inflow','Outflow','Balance','Voucher','Entered by'],d=(window.dD?dD():today());
+ const rows=[hd,...R.map(r=>[r.t,nm(r.a),r.desc,r.ty,r.ccy,r.inn==null?'':r.inn,r.out==null?'':r.out,r.bal,r.e?(r.e.vno||''):'',r.e?(r.e.by||''):''])];
+ const t=rows.map(r=>r.map(v=>'"'+String(v==null?'':v).replace(/"/g,'""')+'"').join(',')).join('\r\n'),a=document.createElement('a');a.href=URL.createObjectURL(new Blob([t],{type:'text/csv'}));a.download='register-'+d+'.csv';document.body.appendChild(a);a.click();a.remove()};
+const css=document.createElement('style');css.textContent=`
+html body .cdr-sel{display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end;margin:0 0 12px}html body .cdr-sel label{display:grid;gap:4px;font:600 11.5px Inter;color:#64748b}html body .cdr-sel label.grow{flex:1;min-width:200px}html body .cdr-sel select,html body .cdr-sel input{border:1px solid #cbd5e1;border-radius:8px;padding:8px 10px;font:400 13px Inter;background:#fff;color:#14284a}html body .cdr-ac{display:flex;gap:8px;margin-left:auto}
+html body .cdr-w{overflow:auto}html body .cdr-t{width:100%;border-collapse:collapse;font:400 13px Inter;color:#14284a}html body .cdr-t th{text-align:left;font:700 11px Inter;letter-spacing:.05em;text-transform:uppercase;color:#64748b;padding:8px;border-bottom:1px solid #e2e8f0;white-space:nowrap}html body .cdr-t td{padding:9px 8px;border-bottom:1px solid #f1f5f9;vertical-align:top}html body .cdr-t .n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}html body .cdr-t .in{color:#166534}html body .cdr-t .out{color:#b91c1c}html body .cdr-t td small{display:block;color:#64748b;font:400 11.5px Inter}html body .cdr-t .mu{color:#64748b;font-variant-numeric:tabular-nums}
+html body .cdr-r[data-cdrx]{cursor:pointer}html body .cdr-r[data-cdrx]:hover{background:#f8fafc}html body .cdr-r.op{background:#f8fafc;color:#51627f}html body .cdr-d td{background:#f8fafc}html body .cdr-dl{padding:6px 4px;font:400 12.5px Inter}html body .cdr-m{margin-top:6px;max-width:560px}
+html body .cdr-ty{display:inline-block;border-radius:99px;padding:2px 9px;font:600 11.5px Inter;background:#eef2f9;color:#51627f}html body .cdr-ty.deposit{background:#dcfce7;color:#166534}html body .cdr-ty.withdrawal,html body .cdr-ty.payment{background:#fee2e2;color:#991b1b}html body .cdr-ty.transfer{background:#dbeafe;color:#1e40af}html body .cdr-ty.opening{background:#e2e8f0;color:#475569}html body .cdr-ty.exchange{background:#fef3c7;color:#92400e}
+html body .cdr-fn{margin:6px 0 10px;color:#64748b;font:400 12.5px Inter}
+@media print{html body .cdr-sel,html body .cdr-ac{display:none}}`;document.head.appendChild(css);
+})();
+
 
 
 </script></body></html>
