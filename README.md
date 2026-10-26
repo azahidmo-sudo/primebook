@@ -12,3 +12,12 @@ Clients sign in at `/portal`. They can only read the records published for their
 Cash In/Out, transfers, customer receipts and supplier payments entered by roles other than Owner or Manager are posted only after an Owner or Manager approves them in Daily transactions > Approval centre. Versions, comments and decisions are kept; posted entries are never edited (use a reversing entry).
 Optional but recommended: run `supabase/approval-workflow.sql` once in Supabase. It adds an append-only, hash-chained copy of the audit trail (`pb_apw_audit`) that the app fills automatically. Test it with `supabase/tests/approval-audit.test.sh`.
 Limit: staff roles are stored inside the books data and share one cloud login, so role rules are enforced by the app, not by the database.
+
+## Daily closing control (branch-day close, lock, reopen)
+Daily transactions > Daily closing now opens with a control section: a state per branch and day (Open, Counting, Reconciling, Pending approval, Closed, Locked, Reopened), a readiness checklist whose blockers link to the screen that fixes them, variance records (reason, evidence, maker, checker), reopen requests that another manager or owner must approve, a carry-forward bridge, an all-branches roll-up and a printable audit pack.
+- A day can only be closed when every blocking check passes. A variance above its threshold needs a reason, evidence and a second person.
+- Locking a day stores an immutable snapshot with a hash. The audit pack is drawn from that snapshot, and a changed snapshot is reported.
+- Reopening needs a reason and approval from someone other than the requester. The old closing, its variance entries and the lock are kept in the history.
+- Policy (Owner only): blind count, dual-count threshold, variance thresholds by branch and currency, suspense limit, bank-line SLA, cutoff time and holidays by branch.
+- Closing events use the same hash-chained audit as the Approval centre, mirrored to `pb_apw_audit` when `supabase/approval-workflow.sql` has been run.
+Limits: role rules are enforced in the app, not by the database. Remittance orders and FX deals keep their own approvals.
