@@ -35,3 +35,18 @@ One global type layer (end of `public/index.html`, `ty-sys`): Inter throughout, 
 
 ## Daily cash report (Cashbook → Daily Cash Report)
 Printable report in the company-document layout: company header, Receipts and Payments split into Cash / Non-cash / Total, cash reconciliation (opening, receipts, payments, transfers out, expected, counted, over/(short), status against the closing tolerance, closing carried forward), the denomination count saved at closing, notes and signature lines. One report per currency (currencies are never combined), till/account selector, previous/next day, per-account table, other-currencies summary, transaction listing, CSV export and print/PDF. Read-only: it reads the day's entries and the saved closing; it posts nothing.
+## Daily Closing System (reconciliations, closing reports, next-day opening)
+Daily transactions > Daily closing > **Reconciliations** and **Closing reports** extend the closing control above.
+- **Bank reconciliation:** statement balance, reference and reconciling items (for example uncleared cheques). The difference to the books must be zero or have a reason.
+- **Safe:** any cash sub-account named "Safe" or "Vault" is counted and reconciled like the till.
+- **Currency stock count:** each currency is counted on its own, with a witness. A difference needs a reason and reference, then a stock adjustment raised by one person and approved by another manager or owner (Dr/Cr 6500 Cash Over/Short against 1100 at average cost).
+- **Settlement agents (for example Taaj System):** each agent has its own receivable account ("Due from …"). Its balance is matched to the agent statement every day. A receipt from an agent that credits income instead of the agent account blocks the close.
+- **Closing rates:** daily rates with their source, entered by an owner, manager or accountant and approved by another manager or owner. If there is no daily rate, the approved monthly FX closing rate is used, then the board mid rate.
+- **Readiness:** all of the above are added as readiness checks. Owners can switch the bank, stock and agent requirements off. A day can no longer be locked while any blocker remains, and nothing can be posted to a locked branch day.
+- **Snapshot:** locking stores the closing data in the snapshot, so the reports for a locked day never change.
+- **Next-day opening:** the next day's opening balances are compared with the last locked close, and any change made to a locked day is reported as a blocker.
+- **Closing reports:** opening balances, transaction register (CSV), account closing and trial balance, cash variance, bank, safe, multi-currency stock with closing rates and unrealized FX, remittance settlement, income and expense, exceptions, branch summary, staff activity with separation-of-duty checks, next-day opening, and journal-entry trace.
+
+Income and expense are closed to P&L in the snapshot and the next-day opening (presented as current earnings). No daily closing journal is posted, so monthly and yearly income statements keep working.
+Currency stock is stored as a current position, so the split by currency for earlier dates comes from locked snapshots.
+Tests: `tests/daily-closing` (Playwright, 55 checks). Edit `dcs.src.js`, run `build.py`, serve `public/` on port 8766 and run `suite.py`.
