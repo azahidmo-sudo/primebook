@@ -21,3 +21,11 @@ Daily transactions > Daily closing now opens with a control section: a state per
 - Policy (Owner only): blind count, dual-count threshold, variance thresholds by branch and currency, suspense limit, bank-line SLA, cutoff time and holidays by branch.
 - Closing events use the same hash-chained audit as the Approval centre, mirrored to `pb_apw_audit` when `supabase/approval-workflow.sql` has been run.
 Limits: role rules are enforced in the app, not by the database. Remittance orders and FX deals keep their own approvals.
+
+## Receivables dashboard (Parties → Receivables)
+Customer receivables by currency, aging, customer, branch and period, built on the existing ledger.
+- Original-currency balances are never added together. Totals are base-currency (CAD) equivalents at the rate each item was booked, with the current board rate and its date shown beside them.
+- Invoices, payments, unapplied credit and customer advances (GL 2150) are tracked separately. Payments are applied oldest-invoice-first, the same rule as the customer statement.
+- Tie-out card proves the customer sub-ledger equals GL 1200, and flags duplicate receipt references.
+- Click any customer or invoice for balances, allocation, GL posting, audit trail and full transaction history. CSV export on customers, invoices, payments and a customer's history.
+- Payments are recorded through the existing receipt flow and its maker-checker approval (Approval centre). The dashboard is read-only.
