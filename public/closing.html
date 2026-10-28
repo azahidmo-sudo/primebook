@@ -1,0 +1,1140 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; connect-src 'self' https://htrlqotaetdwccervhmd.supabase.co; img-src 'self' data:; base-uri 'none'; form-action 'none'">
+<title>Daily Closing · PrimeBook</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,500;8..60,600&display=swap">
+<style>
+
+/* Layout: a back-office ledger desk. Sticky control strip (date, branch, staff, status) + workflow rail,
+   then one working view at a time. Figures in mono, headings in a quiet serif. */
+:root{
+  --bg:#F4F6F9; --panel:#FFFFFF; --ink:#152033; --ink-2:#4A5568; --ink-3:#7A8699; --line:#DDE3EC; --line-2:#EEF1F5;
+  --accent:#1F4FD1; --accent-soft:#E8EEFC; --accent-ink:#173C9E;
+  --ok:#17784A; --ok-soft:#E3F3EA; --warn:#9A5B07; --warn-soft:#FCF0DC; --bad:#B42318; --bad-soft:#FDE8E6; --info:#1F4FD1; --info-soft:#E8EEFC;
+  --band:#0F1B2E; --band-ink:#E7ECF5; --band-2:#1A2942;
+  --f-display:"Source Serif 4",Georgia,"Times New Roman",serif;
+  --f-body:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0D1420; --panel:#141E2E; --ink:#E6ECF5; --ink-2:#B3BFD1; --ink-3:#8593A8; --line:#26344A; --line-2:#1C2839;
+  --accent:#7EA2FF; --accent-soft:#1B2A4C; --accent-ink:#A9C0FF;
+  --ok:#5CCB8F; --ok-soft:#14301F; --warn:#F0B35A; --warn-soft:#352711; --bad:#FF8A7E; --bad-soft:#3A1815; --info:#7EA2FF; --info-soft:#1B2A4C;
+  --band:#09101B; --band-ink:#E7ECF5; --band-2:#16233A; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0D1420; --panel:#141E2E; --ink:#E6ECF5; --ink-2:#B3BFD1; --ink-3:#8593A8; --line:#26344A; --line-2:#1C2839;
+  --accent:#7EA2FF; --accent-soft:#1B2A4C; --accent-ink:#A9C0FF;
+  --ok:#5CCB8F; --ok-soft:#14301F; --warn:#F0B35A; --warn-soft:#352711; --bad:#FF8A7E; --bad-soft:#3A1815; --info:#7EA2FF; --info-soft:#1B2A4C;
+  --band:#09101B; --band-ink:#E7ECF5; --band-2:#16233A; color-scheme:dark}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{background:var(--bg);color:var(--ink);font:400 14px/1.5 var(--f-body);-webkit-font-smoothing:antialiased}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--band)}
+h1,h2,h3{font-family:var(--f-display);font-weight:600;text-wrap:balance;margin:0;letter-spacing:-.005em}
+h2{font-size:22px} h3{font-size:17px}
+p{margin:0}
+.mono,.n,td.n,th.n{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+.wrap{max-width:1320px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+/* control strip */
+.band{background:var(--band);color:var(--band-ink);position:sticky;top:env(safe-area-inset-top,0px);z-index:20;border-bottom:1px solid var(--band-2)}
+.band .wrap{display:flex;flex-wrap:wrap;align-items:center;gap:12px 20px;padding-block:12px}
+.brand{display:flex;flex-direction:column;gap:2px;margin-right:auto;min-width:0}
+.brand b{font:600 17px var(--f-display);letter-spacing:.01em}
+.brand small{font:500 11px var(--f-body);letter-spacing:.14em;text-transform:uppercase;color:#9FB0CC}
+.ctl{display:flex;flex-direction:column;gap:3px;min-width:0}
+.ctl label{font:500 10.5px var(--f-body);letter-spacing:.12em;text-transform:uppercase;color:#9FB0CC}
+.ctl select,.ctl input{background:var(--band-2);color:var(--band-ink);border:1px solid #2C3D5C;border-radius:6px;font:500 13px var(--f-body);padding:6px 8px;min-height:34px;max-width:100%}
+.ctl select:focus-visible,.ctl input:focus-visible{outline:2px solid #7EA2FF;outline-offset:1px}
+.pill{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:3px 10px;font:600 12px var(--f-body);white-space:nowrap}
+.pill::before{content:"";width:7px;height:7px;border-radius:50%;background:currentColor}
+.p-ok{background:var(--ok-soft);color:var(--ok)}.p-warn{background:var(--warn-soft);color:var(--warn)}.p-bad{background:var(--bad-soft);color:var(--bad)}.p-info{background:var(--info-soft);color:var(--info)}.p-mute{background:var(--line-2);color:var(--ink-2)}
+.band .pill{font-size:12.5px;padding:5px 12px}
+/* workflow rail */
+.rail{background:var(--panel);border-bottom:1px solid var(--line)}
+.rail ol{list-style:none;margin:0;padding:12px 0;display:grid;grid-template-columns:repeat(9,minmax(0,1fr));gap:6px;counter-reset:s}
+.rail li{counter-increment:s;display:flex;flex-direction:column;gap:6px;min-width:0}
+.rail li .bar{height:4px;border-radius:2px;background:var(--line)}
+.rail li.done .bar{background:var(--ok)} .rail li.cur .bar{background:var(--accent)}
+.rail li span{font:500 12px/1.3 var(--f-body);color:var(--ink-3)}
+.rail li span::before{content:counter(s) ". ";font-family:var(--f-mono)}
+.rail li.done span{color:var(--ink-2)} .rail li.cur span{color:var(--accent-ink);font-weight:600}
+/* nav */
+.nav{display:flex;gap:2px;overflow-x:auto;border-bottom:1px solid var(--line);background:var(--panel)}
+.nav a{padding:11px 14px;color:var(--ink-2);text-decoration:none;font:500 14px var(--f-body);border-bottom:2px solid transparent;white-space:nowrap}
+.nav a:hover{color:var(--ink)} .nav a[aria-current="page"]{color:var(--accent-ink);border-bottom-color:var(--accent);font-weight:600}
+.nav a:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
+main{padding-block:20px 48px}
+.view{display:flex;flex-direction:column;gap:18px}
+.sec{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:18px 20px;display:flex;flex-direction:column;gap:12px;min-width:0}
+.sec-h{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:6px 14px}
+.sec-h p{color:var(--ink-3);font-size:13px}
+.lede{color:var(--ink-2);max-width:72ch}
+.eyebrow{font:600 11px var(--f-body);letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3)}
+.grid2{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:18px}
+.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}
+.kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.kpi{border:1px solid var(--line);border-radius:8px;padding:12px 14px;display:flex;flex-direction:column;gap:4px;background:var(--panel);min-width:0}
+.kpi small{font:600 11px var(--f-body);letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3)}
+.kpi b{font:500 21px var(--f-mono);font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.kpi span{font-size:12.5px;color:var(--ink-3)}
+/* tables */
+.tw{overflow-x:auto;border:1px solid var(--line);border-radius:8px}
+table{border-collapse:collapse;width:100%;font-size:13px}
+th{background:var(--line-2);color:var(--ink-2);font:600 11.5px var(--f-body);letter-spacing:.03em;text-align:left;padding:8px 10px;white-space:nowrap;border-bottom:1px solid var(--line)}
+td{padding:8px 10px;border-bottom:1px solid var(--line-2);vertical-align:top}
+tr:last-child td{border-bottom:0}
+td.n,th.n{text-align:right;white-space:nowrap}
+tfoot td{font-weight:600;background:var(--line-2);border-top:1px solid var(--line)}
+tr.sub td{background:var(--bg);font-weight:600;color:var(--ink-2)}
+.mu{color:var(--ink-3)} .pos{color:var(--ok)} .neg{color:var(--bad)} .wn{color:var(--warn)}
+.ref{font:500 12.5px var(--f-mono);white-space:nowrap}
+.tag{display:inline-block;font:600 11px var(--f-mono);padding:1px 6px;border-radius:4px;background:var(--line-2);color:var(--ink-2)}
+.dr{color:var(--ink)} .cr{color:var(--ink-2)}
+/* checks */
+.checks{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
+.checks li{display:grid;grid-template-columns:22px 1fr auto;gap:8px;align-items:start;padding:8px 0;border-bottom:1px solid var(--line-2)}
+.checks li:last-child{border-bottom:0}
+.ic{width:20px;height:20px;border-radius:50%;display:grid;place-items:center;font:700 12px var(--f-mono)}
+.ic.ok{background:var(--ok-soft);color:var(--ok)} .ic.bad{background:var(--bad-soft);color:var(--bad)} .ic.warn{background:var(--warn-soft);color:var(--warn)} .ic.info{background:var(--info-soft);color:var(--info)}
+/* buttons and forms */
+.btns{display:flex;flex-wrap:wrap;gap:8px}
+button{font:600 13.5px var(--f-body);border-radius:7px;padding:8px 14px;cursor:pointer;border:1px solid var(--line);background:var(--panel);color:var(--ink);min-height:36px}
+button:hover{border-color:var(--ink-3)}
+button.pri{background:var(--accent);border-color:var(--accent);color:#fff}
+:root:not([data-theme="light"]) button.pri{color:var(--panel)}
+@media (prefers-color-scheme: light){:root:not([data-theme="dark"]) button.pri{color:#fff}}
+:root[data-theme="light"] button.pri{color:#fff}
+button.ghost{background:transparent}
+button.dg{color:var(--bad);border-color:var(--bad-soft)}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+input,select,textarea{font:400 13.5px var(--f-body);color:var(--ink);background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:6px 8px;min-height:34px;max-width:100%}
+input.qty{width:76px;text-align:right;font-family:var(--f-mono)}
+textarea{width:100%;min-height:58px;resize:vertical}
+.field{display:flex;flex-direction:column;gap:4px;min-width:0}
+.field label{font:600 12px var(--f-body);color:var(--ink-2)}
+.note{border-radius:8px;padding:10px 12px;font-size:13px;display:flex;gap:10px;align-items:flex-start}
+.note.info{background:var(--info-soft);color:var(--accent-ink)} .note.warn{background:var(--warn-soft);color:var(--warn)} .note.ok{background:var(--ok-soft);color:var(--ok)} .note.bad{background:var(--bad-soft);color:var(--bad)}
+.note b{font-weight:600}
+.callout{border-left:3px solid var(--accent);background:var(--accent-soft);padding:12px 14px;border-radius:0 8px 8px 0;color:var(--ink)}
+.callout h3{font-size:16px;margin-bottom:4px}
+.log{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;font-size:13px}
+.log li{display:grid;grid-template-columns:52px 1fr;gap:10px;padding:7px 0;border-bottom:1px solid var(--line-2)}
+.log li:last-child{border-bottom:0}
+.log time{font:500 12px var(--f-mono);color:var(--ink-3)}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:40;max-width:min(560px,calc(100% - 32px));padding:10px 16px;border-radius:8px;font-size:13.5px;box-shadow:0 8px 24px rgba(10,20,40,.25)}
+.toast.ok{background:var(--ok);color:#fff}.toast.bad{background:var(--bad);color:#fff}
+:root:not([data-theme="light"]) .toast{color:var(--panel)}
+@media (prefers-color-scheme: light){:root:not([data-theme="dark"]) .toast{color:#fff}}
+:root[data-theme="light"] .toast{color:#fff}
+.rep-nav{display:flex;flex-wrap:wrap;gap:6px}
+.rep-nav button{font-weight:500;font-size:12.5px;padding:5px 10px;min-height:30px}
+.je{border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.je-h{display:flex;flex-wrap:wrap;gap:4px 14px;align-items:baseline;padding:9px 12px;background:var(--line-2);border-bottom:1px solid var(--line)}
+.je-h .d{color:var(--ink-2);font-size:13px;flex:1 1 280px;min-width:0}
+.je table{font-size:12.5px} .je td,.je th{padding:6px 12px}
+.je .bal{padding:6px 12px;font-size:12px;border-top:1px solid var(--line-2)}
+.stack{display:flex;flex-direction:column;gap:12px}
+.matrix td{text-align:center} .matrix td:first-child{text-align:left}
+.y{color:var(--ok);font-weight:700} .x{color:var(--ink-3)}
+pre.mermaid{background:var(--panel);margin:0;overflow-x:auto}
+.formula{font:500 12.5px/1.7 var(--f-mono);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:10px 12px;overflow-x:auto;white-space:pre}
+.sample{font:600 10.5px var(--f-body);letter-spacing:.1em;text-transform:uppercase;color:var(--warn);background:var(--warn-soft);padding:2px 7px;border-radius:4px}
+@media (max-width:1100px){.kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.grid3{grid-template-columns:1fr}}
+@media (max-width:900px){.grid2{grid-template-columns:1fr}.rail ol{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media (max-width:560px){.rail ol{grid-template-columns:repeat(2,minmax(0,1fr))}.kpis{grid-template-columns:1fr 1fr}.kpi b{font-size:17px}.sec{padding:14px}.brand{flex-basis:100%}.band .wrap{gap:10px 12px}}
+@media (prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
+
+/* ---- shared with the sample app ---- */
+[hidden]{display:none!important}
+.nav button{background:transparent;border:0;border-bottom:2px solid transparent;border-radius:0;padding:11px 14px;color:var(--ink-2);font:500 14px var(--f-body);white-space:nowrap;min-height:0}
+.nav button:hover{color:var(--ink);border-color:transparent}
+.nav button[aria-current="page"]{color:var(--accent-ink);border-bottom-color:var(--accent);font-weight:600}
+button:disabled,input:disabled{opacity:.5;cursor:not-allowed}
+.fgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px 12px}
+.fgrid .field input,.fgrid .field select{width:100%}
+.field select,.field input{width:100%}
+.mini{display:flex;gap:6px;flex-wrap:wrap;align-items:center}.mini input{flex:1 1 110px;min-width:0}
+.note button{margin-left:6px;min-height:30px;padding:4px 10px}
+@media (max-width:560px){.fgrid{grid-template-columns:1fr}.band{position:static}}
+.feat{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px}
+.ft{display:flex;flex-direction:column;align-items:flex-start;gap:4px;text-align:left;padding:12px 14px;border:1px solid var(--line);border-radius:10px;background:var(--panel);min-height:0;font-weight:400}
+.ft:hover{border-color:var(--accent);background:var(--accent-soft)}
+.ft b{font:600 14px var(--f-body);color:var(--ink)}.ft span{font-size:12.5px;color:var(--ink-2);line-height:1.45}.ft em{font-style:normal;font:600 12px var(--f-body);color:var(--accent-ink);margin-top:2px}
+.sec{scroll-margin-top:170px}
+@media (max-width:560px){.sec{scroll-margin-top:12px}}
+
+/* ---- web platform: band additions ---- */
+.w-v{color:var(--band-ink);font:500 14px var(--f-body);display:inline-flex;align-items:center;gap:6px;min-height:34px}
+.w-r{font:600 11px var(--f-body);letter-spacing:.06em;text-transform:uppercase;color:#9FB0CC;border:1px solid var(--band-2);border-radius:999px;padding:1px 8px}
+.w-acts{flex-direction:row!important;gap:6px;align-items:flex-end;margin-left:auto}
+.w-btn{background:transparent;color:var(--band-ink);border:1px solid #33476A;min-height:32px;padding:4px 12px;font:500 13px var(--f-body);border-radius:8px}
+.w-btn:hover{background:var(--band-2);border-color:#4A6290;color:#fff}
+
+/* ---- web platform: sign-in and setup screens ---- */
+#gate{min-height:100vh;background:radial-gradient(900px 420px at 85% -10%,#DCE6FA,transparent 60%),var(--bg)}
+.g-wrap{max-width:760px;margin:0 auto;padding:48px 16px 40px;display:flex;flex-direction:column;align-items:center;gap:18px}
+.g-brand{text-align:center}.g-brand b{display:block;font:600 22px var(--f-display);color:var(--ink)}.g-brand small{font:500 11px var(--f-body);letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3)}
+.g-card{width:100%;max-width:430px;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:24px;box-shadow:0 10px 30px rgba(21,32,51,.07);display:flex;flex-direction:column;gap:12px}
+.g-card.g-wide{max-width:760px}
+.g-card h1{font-size:22px}.g-card p{margin:0}
+.g-card .field{display:flex;flex-direction:column;gap:4px}
+.g-card .btns{margin-top:4px}.g-card .btns .pri{min-width:140px}
+.g-links{font-size:13px;color:var(--ink-3)}
+.lnk{background:none;border:0;padding:0;min-height:0;color:var(--accent-ink);font:500 13px var(--f-body);text-decoration:underline;text-underline-offset:2px;cursor:pointer}
+.g-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap}
+.g-books{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px}
+.g-book{display:flex;flex-direction:column;align-items:flex-start;gap:4px;text-align:left;padding:14px;border:1px solid var(--line);border-radius:10px;background:var(--panel);min-height:0;font-weight:400}
+.g-book:hover{border-color:var(--accent);background:var(--accent-soft)}
+.g-book b{font:600 16px var(--f-body);color:var(--ink)}.g-book span{font-size:12.5px;color:var(--ink-2)}.g-book em{font-style:normal;font:600 12px var(--f-body);color:var(--accent-ink)}
+.g-new{border-top:1px solid var(--line-2);padding-top:12px}
+.g-new summary{cursor:pointer;font:600 14px var(--f-body);color:var(--accent-ink);margin-bottom:10px}
+.g-foot{font-size:12px;color:var(--ink-3);text-align:center}.g-foot a{color:var(--ink-2)}
+@media (max-width:560px){.g-wrap{padding-top:24px}.g-card{padding:18px}.w-acts{margin-left:0}}
+
+</style>
+</head>
+<body>
+<div id="gate"></div>
+<div id="shell" hidden>
+<div class="band"><div class="wrap">
+  <div class="brand"><b>BRIMAPAY · Daily Closing</b><small>PrimeBook · base currency CAD</small></div>
+  <div class="ctl"><label for="c-date">Business date</label><select id="c-date"></select></div>
+  <div class="ctl"><label>Branch</label><span id="c-book" class="w-v"></span></div>
+  <div class="ctl"><label>Signed in</label><span id="c-who" class="w-v"></span></div>
+  <div class="ctl"><label>Day status</label><span id="c-status"></span></div>
+  <div class="ctl"><label>Books</label><span id="c-sync"></span></div>
+  <div class="ctl w-acts"><button type="button" class="w-btn" data-gs="books">Switch book</button><button type="button" class="w-btn" data-gs="signout">Sign out</button></div>
+</div></div>
+<div class="rail"><div class="wrap"><ol id="rail" aria-label="Closing workflow"></ol></div></div>
+<nav class="nav" aria-label="Sections"><div class="wrap" id="nav" style="display:flex;gap:2px;overflow-x:auto"></div></nav>
+<main class="wrap"><div id="app"></div></main>
+</div>
+<div id="toast" class="toast" role="status" hidden></div>
+<script>
+/* =====================================================================
+   BRIMAPAY Daily Closing – ledger engine (pure, no DOM).
+   A book holds many business days for one branch. Every action goes
+   through act(user, action, payload) which checks role, separation of
+   duties and day state, then posts balanced journals and logs an
+   append-only, hash-chained audit entry.
+   ===================================================================== */
+const r2=v=>Math.round(((+v||0)+Number.EPSILON)*100)/100;
+const r6=v=>+(+v||0).toFixed(8);
+const BASE='CAD';let BRANCH='Vancouver',BCODE='VAN';
+const USERS={
+  farhan:{name:'Farhan',role:'Teller',title:'Teller · Preparer'},
+  amina:{name:'Amina',role:'Manager',title:'Branch Manager · Approver'},
+  daniel:{name:'Daniel',role:'Finance',title:'Finance · Head-office accountant'},
+  sara:{name:'Sara',role:'Auditor',title:'Internal auditor · Read only'}};
+const ACC=[
+ ['1000','Cash on Hand – Till','CAD','A','Cash'],
+ ['1005','Safe – CAD','CAD','A','Cash'],
+ ['1010','Bank – RBC Operating','CAD','A','Bank'],
+ ['1100','FX Stock – USD','USD','A','FX stock'],
+ ['1101','FX Stock – AED','AED','A','FX stock'],
+ ['1102','FX Stock – ETB','ETB','A','FX stock'],
+ ['1103','FX Stock – KES','KES','A','FX stock'],
+ ['1210','Due from Taaj System','CAD','A','Settlement asset'],
+ ['3000',"Owner's Capital",'CAD','E','Equity'],
+ ['3900','Retained Earnings (P&L summary)','CAD','E','Equity'],
+ ['4100','Remittance Commission Income','CAD','I','Income'],
+ ['4200','Realized FX Gain/Loss','CAD','I','Income'],
+ ['4210','Unrealized FX Gain/Loss','CAD','I','Income'],
+ ['6100','Office Supplies','CAD','X','Expense'],
+ ['6200','Rent','CAD','X','Expense'],
+ ['6300','Utilities','CAD','X','Expense'],
+ ['6400','Bank Charges','CAD','X','Expense'],
+ ['6500','Cash Over/Short','CAD','X','Expense']].map(a=>({code:a[0],name:a[1],ccy:a[2],cls:a[3],grp:a[4],bs:'ALE'.includes(a[3])}));
+const AC=Object.fromEntries(ACC.map(a=>[a.code,a]));
+const CCYS=['USD','AED','ETB','KES'];
+const FXA={USD:'1100',AED:'1101',ETB:'1102',KES:'1103'};
+const EXPC=['6100','6200','6300','6400'];
+const BOARD={USD:{b:1.35,s:1.395},AED:{b:0.365,s:0.381},ETB:{b:0.0093,s:0.0103},KES:{b:0.0101,s:0.0108}};
+const SRC_BOARD='Branch rate board (Treasury, published 08:45 PT)';
+const CASH_DENOMS=[100,50,20,10,5,2,1,0.25,0.1,0.05];
+const START='2026-10-27';
+const OPEN0={'1000':{fc:1514,cad:1514},'1005':{fc:10000,cad:10000},'1010':{fc:18250,cad:18250},
+ '1100':{fc:2000,cad:2720},'1101':{fc:5000,cad:1860},'1102':{fc:120000,cad:1152},'1103':{fc:250000,cad:2625},
+ '1210':{fc:3200,cad:3200},'3000':{fc:-40000,cad:-40000},'3900':{fc:-1321,cad:-1321}};
+const PERM={open:['Teller','Manager'],record:['Teller','Manager'],count:['Teller','Manager'],stmt:['Teller','Manager'],completeRecon:['Teller','Manager'],
+ reopenRecon:['Teller','Manager'],reason:['Teller','Manager'],raiseAdj:['Teller','Manager'],approveAdj:['Manager','Finance'],rateSet:['Manager','Finance'],rateAp:['Manager','Finance'],
+ submit:['Teller','Manager'],approve:['Manager'],returnDay:['Manager','Finance'],lock:['Manager','Finance'],next:['Manager','Finance'],reverse:['Manager','Finance'],editOpening:[],postLocked:['Teller','Manager']};
+const LABEL={open:'open the day',record:'record transactions',count:'enter counts',stmt:'enter statements',completeRecon:'complete reconciliations',reopenRecon:'reopen reconciliations',reason:'explain variances',
+ raiseAdj:'raise adjustments',approveAdj:'approve adjustments',rateSet:'set closing rates',rateAp:'approve closing rates',submit:'submit the day',approve:'approve the day',returnDay:'return the day',
+ lock:'lock the day',next:'generate the next-day opening',reverse:'reverse transactions',editOpening:'edit opening balances',postLocked:'post transactions'};
+const TXTYPES={
+ buy:{t:'Currency purchase',d:'Buy foreign currency from a customer; pay CAD from the till.'},
+ sell:{t:'Currency sale',d:'Sell foreign currency to a customer; receive CAD into the till.'},
+ payout:{t:'Taaj remittance payout',d:'Pay a Taaj remittance to a beneficiary in cash. Taaj owes us the amount plus commission.'},
+ settle:{t:'Taaj settlement received',d:'Taaj pays what it owes us, in cash or to the bank. Reduces Due from Taaj; not income.'},
+ expense:{t:'Expense',d:'Pay a running cost from the till or the bank.'},
+ tosafe:{t:'Till to safe',d:'Move CAD cash from the till into the safe.'},
+ fromsafe:{t:'Safe to till',d:'Move CAD cash from the safe into the till.'},
+ deposit:{t:'Bank deposit',d:'Deposit CAD cash from the till into the bank.'},
+ withdraw:{t:'Bank withdrawal',d:'Withdraw CAD from the bank into the till.'}};
+function fnv(s){let h=0x811c9dc5;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619)>>>0}return h.toString(16).padStart(8,'0')}
+function fm(v){v=r2(+v||0);if(Math.abs(v)<.005)v=0;return(v<0?'−':'')+Math.abs(v).toLocaleString('en-CA',{minimumFractionDigits:2,maximumFractionDigits:2})}
+function rf(v){v=+v||0;let s=v.toFixed(6).replace(/0+$/,'');const d=(s.split('.')[1]||'').length;return d<4?v.toFixed(4):s}
+const addD=(d,n)=>{const x=new Date(d+'T00:00:00Z');x.setUTCDate(x.getUTCDate()+n);return x.toISOString().slice(0,10)};
+const cap=s=>s.charAt(0).toUpperCase()+s.slice(1);
+const L=(a,d,c,fc,rate)=>({a,d:r2(d),c:r2(c),fc:fc==null?r2(d-c):r6(fc),rate:rate||1});
+const newDay=(date,opening,prev)=>({date,status:'Not opened',opening,openFrom:prev||null,js:[],counts:null,bank:null,taaj:null,rates:{},reasons:{},adjs:[],recDone:false,
+ opened:null,submitted:null,approved:null,locked:null,returned:null,next:null,clock:8*60+50});
+
+function Book(state){
+ const B=state||{v:2,days:[newDay(START,JSON.parse(JSON.stringify(OPEN0)),{ref:'DC-VAN-20261026',date:'2026-10-26',approvedBy:'Amina',approvedAt:'2026-10-26 18:22',locked:true})],cur:0,seq:{TX:0,ADJ:0},audit:[]};
+ const E={B};
+ E.day=i=>B.days[i==null?B.cur:i];
+ E.prevLocked=D=>{const i=B.days.indexOf(D);if(i<=0)return!!(D.openFrom&&D.openFrom.locked);return B.days[i-1].status=='Locked'};
+ E.ts=(D,at)=>{if(at)return D.date+' '+at;if(E.real)return D.date+' '+new Date().toLocaleTimeString('en-GB',{timeZone:'America/Vancouver',hour:'2-digit',minute:'2-digit',hour12:false});const h=Math.floor(D.clock/60)%24,m=D.clock%60;D.clock+=3;return D.date+' '+String(h).padStart(2,'0')+':'+String(m).padStart(2,'0')};
+ E.log=(D,uid,action,result,ref,detail,at)=>{const u=USERS[uid],prev=B.audit.length?B.audit[B.audit.length-1].hash:'00000000';
+  const e={seq:(B.audit.length?B.audit[B.audit.length-1].seq:0)+1,date:D.date,at:E.ts(D,at),user:u.name,role:u.title,action,result,ref:ref||'',detail:detail||'',acct:E.acct||''};e.hash=fnv(prev+JSON.stringify(e));B.audit.push(e);return e};
+ E.bal=(D,code,withCL)=>{const o=(D.opening||{})[code]||{fc:0,cad:0};let fc=o.fc,cad=o.cad;D.js.forEach(j=>{if(j.type=='CL'&&!withCL)return;j.lines.forEach(l=>{if(l.a==code){cad+=l.d-l.c;fc+=l.fc}})});return{fc:r6(fc),cad:r2(cad)}};
+ E.avg=(D,c)=>{const b=E.bal(D,FXA[c]);return b.fc>1e-9?b.cad/b.fc:BOARD[c].b};
+ E.ok=j=>Math.abs(r2(j.lines.reduce((s,l)=>s+l.d,0))-r2(j.lines.reduce((s,l)=>s+l.c,0)))<.005;
+ E.post=(D,j)=>{if(!E.ok(j))throw new Error('Journal '+j.ref+' does not balance. Nothing was posted.');D.js.push(j);return j};
+ E.tillTotal=D=>D.counts?r2(CASH_DENOMS.reduce((s,d)=>s+d*(+D.counts.till[d]||0),0)):null;
+ E.held=D=>CCYS.filter(c=>{const b=E.bal(D,FXA[c]);const o=(D.opening||{})[FXA[c]]||{fc:0};return Math.abs(b.fc)>1e-9||Math.abs(o.fc)>1e-9});
+ E.rateOf=(D,c)=>{const r=D.rates[c];return r&&r.st=='Approved'?r:null};
+ E.recs=D=>recs(E,D);E.checks=D=>checks(E,D);E.blockers=D=>checks(E,D).filter(c=>!c.ok&&c.sev=='block');
+ E.pnl=D=>{const inc=ACC.filter(a=>a.cls=='I').map(a=>({a,v:r2(-E.bal(D,a.code).cad)})),exp=ACC.filter(a=>a.cls=='X').map(a=>({a,v:r2(E.bal(D,a.code).cad)}));
+  const ti=r2(inc.reduce((s,x)=>s+x.v,0)),te=r2(exp.reduce((s,x)=>s+x.v,0));return{inc,exp,ti,te,net:r2(ti-te)}};
+ E.fxRows=D=>CCYS.map(c=>{const code=FXA[c],o=(D.opening||{})[code]||{fc:0,cad:0},b=E.bal(D,code),R=D.rates[c]||{},cr=+R.r||BOARD[c].b,avg=b.fc>1e-9?b.cad/b.fc:0,val=r2(b.fc*cr);
+  let bought=0,sold=0,adj=0;D.js.forEach(j=>j.lines.forEach(l=>{if(l.a!=code)return;if(j.type=='ADJ')adj+=l.fc;else if(l.fc>0)bought+=l.fc;else sold-=l.fc}));
+  return{c,code,open:o,bought:r6(bought),sold:r6(sold),adj:r6(adj),fc:b.fc,book:b.cad,avg,cr,rsrc:R.src||'Board buy rate (no closing rate yet)',rst:R.st||'Missing',val,unr:r2(val-b.cad)}}).filter(x=>Math.abs(x.fc)>1e-9||Math.abs(x.open.fc)>1e-9);
+ E.nextTx=()=>'TX-'+String(++B.seq.TX).padStart(3,'0');
+ E.nextAdj=()=>'ADJ-'+String(++B.seq.ADJ).padStart(3,'0');
+ /* ------------------------------------------------------------- */
+ E.act=(uid,action,p={})=>{const u=USERS[uid],D=E.day(),at=p.at;
+  const deny=m=>{E.log(D,uid,LABEL[action]?cap(LABEL[action]):action,'Denied',p.ref||'',m,at);return{ok:false,msg:m}};
+  const okr=(m,ref,detail)=>{E.log(D,uid,m,'OK',ref,detail,at);return{ok:true,msg:detail||m}};
+  if(action=='editOpening')return deny('Opening balances are carried forward from the approved close of the previous day and cannot be overwritten. Raise an authorized adjustment instead.');
+  if(!(PERM[action]||[]).includes(u.role))return deny(u.title.split(' · ')[0]+' role cannot '+LABEL[action]+'.');
+  if(B.cur!=B.days.length-1&&!['next'].includes(action))return deny('You are viewing '+D.date+'. Switch to the latest business date to make changes.');
+  const posting=['record','count','stmt','completeRecon','reopenRecon','reason','raiseAdj','approveAdj','reverse','postLocked','rateSet','rateAp'];
+  if(posting.includes(action)&&D.status=='Locked')return deny(D.date+' is locked for '+BRANCH+'. Post on an open business date, or ask Finance to reopen the day with a documented reason.');
+  if(posting.includes(action)&&['Submitted','Approved'].includes(D.status))return deny('The day is '+D.status.toLowerCase()+'. It must be returned for correction before anything changes.');
+  if(action!='open'&&D.status=='Not opened')return deny('Open the day first.');
+  const varOf=id=>(E.recs(D).find(r=>r.id==id)||{});
+  switch(action){
+   case 'open':{if(D.status!='Not opened')return deny('The day is already open.');if(!E.prevLocked(D))return deny('The previous business day is not locked.');
+    D.status='Open';D.opened={by:u.name,at:E.ts(D,at)};E.log(D,uid,'Open day','OK','DC-'+BCODE+'-'+D.date.replace(/-/g,''),'Day opened by '+u.name,at);
+    return okr('Load opening balances',(D.openFrom||{}).ref||'','Opening balances loaded from the approved close of '+((D.openFrom||{}).date||'the previous day')+' ('+Object.keys(D.opening).length+' accounts).')}
+   case 'record':{if(D.recDone)return deny('Reconciliations are complete. Reopen them before recording more transactions, so the counts stay valid.');
+    const b=buildTx(E,D,p);if(b.err)return deny(b.err);const ref=p.ref&&/^TX-/.test(p.ref)?p.ref:E.nextTx();if(p.ref&&/^TX-/.test(p.ref))B.seq.TX=Math.max(B.seq.TX,+p.ref.slice(3));
+    if(D.js.some(j=>j.ref==ref))return deny('Reference '+ref+' already exists.');
+    const j=E.post(D,{ref,type:'TX',kind:TXTYPES[p.type].t,tt:p.type,at:E.ts(D,at),by:u.name,desc:b.desc,party:p.party||'',ext:p.ext||'',ccy:b.ccy,amt:b.amt,rate:b.rate,src:b.src,avg:b.avg,cost:b.cost,gain:b.gain,lines:b.lines,status:'Posted',big:b.cadAmt>=10000});
+    return okr('Post transaction',ref,TXTYPES[p.type].t+' '+ref+' posted: '+b.ccy+' '+fm(b.amt)+(b.ccy!=BASE?' = CAD '+fm(b.cadAmt):'')+'. Debits = credits.')}
+   case 'count':{const till={};for(const d of CASH_DENOMS){const q=p.till?p.till[d]:0;if(q!=null&&q!==''&&(!(+q>=0)||+q%1))return deny('Note and coin quantities must be whole numbers of zero or more (CAD '+d+').');till[d]=+q||0}
+    const fx={};for(const c of E.held(D)){const v=p.fx?p.fx[c]:null;if(v===''||v==null)return deny('Enter the counted '+c+' amount (0 if none).');if(!(+v>=0))return deny(c+': the counted amount must be zero or more.');fx[c]=r2(+v)}
+    if(p.safe===''||p.safe==null||!(+p.safe>=0))return deny('Enter the counted safe amount.');
+    if(p.witness&&p.witness.trim().toLowerCase()==u.name.toLowerCase())return deny('The witness must be a different person from the counter.');
+    D.counts={till,safe:r2(+p.safe),fx,by:u.name,witness:(p.witness||'').trim(),at:E.ts(D,at)};return okr('Enter counts','CNT-VAN-'+D.date.replace(/-/g,''),'Till CAD '+fm(E.tillTotal(D))+', safe CAD '+fm(D.counts.safe)+' and '+Object.keys(fx).length+' currencies counted.')}
+   case 'stmt':{if(p.kind=='bank'){if(!isFinite(+p.stmt)||p.stmt==='')return deny('Enter the bank statement closing balance.');if(!(p.sref||'').trim())return deny('Enter the bank statement reference.');
+     const items=[];for(const ln of String(p.items||'').split('\n').map(s=>s.trim()).filter(Boolean)){const q=ln.split(';').map(s=>s.trim()),amt=+String(q[q.length-1]).replace(/,/g,'');if(q.length<2||!isFinite(amt)||q[q.length-1]==='')return deny('Each reconciling item needs "reference; description; amount". Problem: '+ln);items.push({ref:q[0],desc:q.length>2?q.slice(1,-1).join('; '):'',amt:r2(amt)})}
+     D.bank={stmt:r2(+p.stmt),ref:p.sref.trim(),items,by:u.name};return okr('Enter bank statement',p.sref.trim(),'Bank statement CAD '+fm(+p.stmt)+' with '+items.length+' reconciling item(s).')}
+    if(!isFinite(+p.stmt)||p.stmt==='')return deny('Enter the balance due on the Taaj statement.');if(!(p.sref||'').trim())return deny('Enter the Taaj statement reference.');
+    D.taaj={stmt:r2(+p.stmt),ref:p.sref.trim(),by:u.name};return okr('Enter Taaj statement',p.sref.trim(),'Taaj statement balance due CAD '+fm(+p.stmt)+'.')}
+   case 'completeRecon':{if(!D.counts)return deny('Enter the till, safe and currency counts first.');if(!D.bank)return deny('Enter the bank statement first.');if(!D.taaj&&Math.abs(E.bal(D,'1210').cad)>.004)return deny('Enter the Taaj settlement statement first.');
+    D.recDone=true;return okr('Complete reconciliations','REC-VAN-'+D.date.replace(/-/g,''),'Cash, safe, bank, FX stock and Taaj settlement reconciliations completed.')}
+   case 'reopenRecon':{if(!D.recDone)return deny('Reconciliations are not complete yet.');if(D.adjs.some(a=>a.status=='Pending approval'))return deny('Decide the pending adjustment first.');D.recDone=false;return okr('Reopen reconciliations','','Reconciliations reopened. Counts must be checked again before submitting.')}
+   case 'reason':{const r=(p.reason||'').trim(),ref=(p.sref||'').trim();if(r.length<10)return deny('Write a reason of at least 10 characters.');if(!ref)return deny('Add a supporting reference, for example an incident or count-sheet number.');
+    const v=varOf(p.id);if(!v.id)return deny('Unknown reconciliation.');D.reasons[p.id]={reason:r,ref,by:u.name};return okr('Explain variance',ref,(v.acct||p.id)+': '+r)}
+   case 'raiseAdj':{const v=varOf(p.id);if(!v.id||!v.adjustable)return deny('This reconciliation is corrected with a reason, not an adjustment.');if(v.actual==null||Math.abs(v.variance)<.005)return deny('There is no variance to adjust.');
+    if(!D.reasons[p.id])return deny('Explain the variance before raising an adjustment.');if(D.adjs.some(a=>a.id==p.id&&a.status!='Rejected'))return deny('An adjustment for this variance already exists.');
+    const rate=v.ccy==BASE?1:E.avg(D,v.ccy),cad=r2(Math.abs(v.variance)*rate),ref=E.nextAdj();
+    D.adjs.push({ref,id:p.id,code:v.code,ccy:v.ccy,fc:r6(v.variance),cad,rate,status:'Pending approval',by:u.name,at:E.ts(D,at),pre:{exp:v.expected,act:v.actual},why:D.reasons[p.id]});
+    return okr('Raise adjustment',ref,v.acct+' '+(v.variance<0?'short':'over')+' '+fm(Math.abs(v.variance))+' '+v.ccy+(v.ccy!=BASE?' × '+rf(rate):'')+' = CAD '+fm(cad)+'. Awaiting approval.')}
+   case 'approveAdj':{const a=D.adjs.find(x=>x.ref==p.ref);if(!a||a.status!='Pending approval')return deny('No adjustment is waiting for approval.');if(a.by==u.name)return deny('Separation of duties: '+u.name+' raised '+a.ref+' and cannot approve it.');
+    if(p.reject){if((p.reason||'').trim().length<10)return deny('Write the reason for rejecting (at least 10 characters).');a.status='Rejected';a.apprBy=u.name;a.note=p.reason.trim();return okr('Reject adjustment',a.ref,a.ref+' rejected: '+a.note)}
+    const short=a.fc<0,lines=short?[L('6500',a.cad,0),L(a.code,0,a.cad,a.fc,a.rate)]:[L(a.code,a.cad,0,a.fc,a.rate),L('6500',0,a.cad)];
+    E.post(D,{ref:a.ref,type:'ADJ',kind:'Count adjustment',at:E.ts(D,at),by:a.by,appr:u.name,desc:AC[a.code].name+' '+(short?'shortage':'overage')+' at count. '+a.why.reason+' ('+a.why.ref+').',ccy:a.ccy,amt:Math.abs(a.fc),rate:a.rate,src:a.ccy==BASE?'Base currency':'Carrying rate (weighted average cost)',lines,status:'Posted'});
+    a.status='Approved and posted';a.apprBy=u.name;return okr('Approve adjustment',a.ref,a.ref+' approved and posted: '+(short?'Dr 6500 / Cr '+a.code:'Dr '+a.code+' / Cr 6500')+' CAD '+fm(a.cad)+'.')}
+   case 'rateSet':{const c=p.ccy;if(!CCYS.includes(c))return deny('Unknown currency.');if(!(+p.rate>0))return deny('Enter a '+c+' closing rate above zero.');if(!(p.src||'').trim()||p.src.trim().length<3)return deny('Enter where the rate comes from.');
+    const dev=Math.abs(+p.rate/BOARD[c].b-1);D.rates[c]={r:+p.rate,src:p.src.trim(),by:u.name,st:'Pending approval',dev:r2(dev*100)};return okr('Set closing rate',c,c+' closing rate '+rf(+p.rate)+' from '+p.src.trim()+(dev>.05?' (more than 5% from the board rate)':'')+'. Awaiting approval.')}
+   case 'rateAp':{const r=D.rates[p.ccy];if(!r||r.st=='Approved')return deny('No '+(p.ccy||'')+' closing rate is waiting for approval.');if(r.by==u.name)return deny('Separation of duties: '+u.name+' entered this rate and cannot approve it.');
+    r.st='Approved';r.ap=u.name;return okr('Approve closing rate',p.ccy,p.ccy+' closing rate '+rf(r.r)+' approved.')}
+   case 'submit':{if(!['Open','Returned'].includes(D.status))return deny('Only an open or returned day can be submitted.');const b=E.blockers(D);if(b.length)return deny('Submit is blocked: '+b[0].text);
+    D.status='Submitted';D.submitted={by:u.name,at:E.ts(D,at)};return okr('Submit day','DC-'+BCODE+'-'+D.date.replace(/-/g,''),'Day submitted for approval with no open blockers.')}
+   case 'returnDay':{if(D.status!='Submitted')return deny('Only a submitted day can be returned.');const r=(p.reason||'').trim();if(r.length<10)return deny('Write the reason for returning the day (at least 10 characters).');
+    D.status='Returned';D.returned={by:u.name,at:E.ts(D,at),reason:r};return okr('Return day','DC-'+BCODE+'-'+D.date.replace(/-/g,''),'Returned for correction: '+r)}
+   case 'approve':{if(D.status!='Submitted')return deny('Only a submitted day can be approved.');if(D.submitted.by==u.name)return deny('Separation of duties: '+u.name+' submitted this day and cannot approve it.');
+    if(D.opened&&D.opened.by==u.name)return deny('Separation of duties: the person who prepared the day cannot approve it.');const b=E.blockers(D);if(b.length)return deny('Approval is blocked: '+b[0].text);
+    D.status='Approved';D.approved={by:u.name,at:E.ts(D,at)};return okr('Approve day','DC-'+BCODE+'-'+D.date.replace(/-/g,''),'Day approved.')}
+   case 'lock':{if(D.status!='Approved')return deny('Approve the day before locking it.');const lines=[];let net=0;
+    ACC.filter(a=>!a.bs).forEach(a=>{const b=E.bal(D,a.code).cad;if(Math.abs(b)<.005)return;lines.push(L(a.code,b<0?-b:0,b>0?b:0));net+=b});
+    if(lines.length){lines.push(L('3900',net>0?net:0,net<0?-net:0));E.post(D,{ref:'CL-'+D.date.replace(/-/g,''),type:'CL',kind:'Close income and expense to P&L',at:E.ts(D,at),by:'System',appr:u.name,desc:'Income and expense closed to 3900 Retained Earnings. Day result CAD '+fm(-net)+'.',ccy:'CAD',amt:Math.abs(r2(net)),rate:1,src:'Base currency',lines,status:'Posted'})}
+    D.result=r2(-net);D.status='Locked';D.locked={by:u.name,at:E.ts(D,at)};D.snapHash=fnv(JSON.stringify(D.js)+JSON.stringify(D.opening));return okr('Lock day','DC-'+BCODE+'-'+D.date.replace(/-/g,''),'Day locked. Income and expense closed to P&L. Nothing more can be posted to '+D.date+'.')}
+   case 'next':{if(D.status!='Locked')return deny('Lock the day before generating the next-day opening.');if(D.next)return deny('The next-day opening already exists.');
+    const op={};ACC.filter(a=>a.bs).forEach(a=>{const b=E.bal(D,a.code,true);if(Math.abs(b.cad)>.004||Math.abs(b.fc)>1e-9)op[a.code]={fc:b.fc,cad:b.cad}});
+    const nd=newDay(addD(D.date,1),op,{ref:'DC-'+BCODE+'-'+D.date.replace(/-/g,''),date:D.date,approvedBy:D.approved.by,approvedAt:D.approved.at,locked:true});
+    Object.keys(D.rates).forEach(c=>{nd.rates[c]={r:D.rates[c].r,src:'Copied from the '+D.date+' closing rate; confirm with Treasury',by:'System',st:'Pending approval'}});
+    D.next={at:E.ts(D,at),by:u.name,date:nd.date};B.days.push(nd);return okr('Generate next-day opening','DC-'+BCODE+'-'+nd.date.replace(/-/g,''),'Opening balances for '+nd.date+' generated from the locked close.')}
+   case 'reverse':{const j=D.js.find(x=>x.ref==p.ref);if(!j||j.type!='TX')return deny('Choose a posted transaction.');if(j.status=='Reversed')return deny(j.ref+' is already reversed.');if(D.recDone)return deny('Reopen reconciliations first, so the counts are checked again after the reversal.');
+    const r=(p.reason||'').trim();if(r.length<10)return deny('Write the reason for the reversal (at least 10 characters).');
+    E.post(D,{ref:'REV-'+j.ref,type:'REV',kind:'Reversal',at:E.ts(D,at),by:u.name,desc:'Reversal of '+j.ref+': '+r,ccy:j.ccy,amt:j.amt,rate:j.rate,src:j.src,reverses:j.ref,lines:j.lines.map(l=>({...l,d:l.c,c:l.d,fc:-l.fc})),status:'Posted'});
+    j.status='Reversed';j.revBy='REV-'+j.ref;return okr('Reverse transaction','REV-'+j.ref,'Posted REV-'+j.ref+' with opposite lines. '+j.ref+' stays in the ledger, marked reversed.')}
+   case 'postLocked':return deny('Posting refused.');}
+  return deny('Unknown action.')};
+ return E}
+
+/* build a transaction's journal from the form */
+function buildTx(E,D,p){const T=TXTYPES[p.type];if(!T)return{err:'Choose a transaction type.'};const amt=r2(p.amt);
+ if(!(amt>0))return{err:'Enter an amount greater than zero.'};if(Math.abs(+p.amt-amt)>1e-9)return{err:'Use at most two decimal places.'};
+ const till=E.bal(D,'1000').cad,ext=(p.ext||'').trim();let lines,desc,ccy='CAD',rate=1,src='Base currency',cadAmt=amt,extra={};
+ const need=(code,v,name)=>E.bal(D,code).cad+1e-9<v?'Not enough '+name+': available CAD '+fm(E.bal(D,code).cad)+', this needs CAD '+fm(v)+'.':'';
+ switch(p.type){
+  case 'buy':{ccy=p.ccy;if(!CCYS.includes(ccy))return{err:'Choose the currency bought.'};rate=+p.rate;if(!(rate>0))return{err:'Enter the buy rate.'};
+   if(Math.abs(rate/BOARD[ccy].b-1)>.02&&!(p.override||'').trim())return{err:'The rate is more than 2% from the board buy rate '+rf(BOARD[ccy].b)+'. Enter a manager override reason.'};
+   if(!ext)return{err:'Enter the customer KYC or ID reference.'};cadAmt=r2(amt*rate);const n=need('1000',cadAmt,'cash in the till');if(n)return{err:n};
+   src=(p.override||'').trim()?'Manager override: '+p.override.trim():SRC_BOARD;lines=[L(FXA[ccy],cadAmt,0,amt,rate),L('1000',0,cadAmt)];desc='Bought '+ccy+' '+fm(amt)+' at '+rf(rate)+' from customer ('+ext+'). Paid CAD '+fm(cadAmt)+' cash.';break}
+  case 'sell':{ccy=p.ccy;if(!CCYS.includes(ccy))return{err:'Choose the currency sold.'};rate=+p.rate;if(!(rate>0))return{err:'Enter the sell rate.'};
+   if(Math.abs(rate/BOARD[ccy].s-1)>.02&&!(p.override||'').trim())return{err:'The rate is more than 2% from the board sell rate '+rf(BOARD[ccy].s)+'. Enter a manager override reason.'};
+   if(!ext)return{err:'Enter the customer KYC or ID reference.'};const st=E.bal(D,FXA[ccy]);if(st.fc+1e-9<amt)return{err:'Not enough '+ccy+' in stock: available '+fm(st.fc)+', this needs '+fm(amt)+'.'};
+   cadAmt=r2(amt*rate);const avg=st.cad/st.fc,cost=r2(amt*avg),gain=r2(cadAmt-cost);src=(p.override||'').trim()?'Manager override: '+p.override.trim():SRC_BOARD;
+   lines=[L('1000',cadAmt,0),L(FXA[ccy],0,cost,-amt,avg)];if(Math.abs(gain)>.004)lines.push(gain>0?L('4200',0,gain):L('4200',-gain,0));extra={avg,cost,gain};
+   desc='Sold '+ccy+' '+fm(amt)+' at '+rf(rate)+' to customer ('+ext+'). Received CAD '+fm(cadAmt)+'. Cost at average '+rf(avg)+' = CAD '+fm(cost)+'.';break}
+  case 'payout':{const com=r2(p.com||0);if(com<0)return{err:'Commission cannot be negative.'};if(!ext)return{err:'Enter the Taaj remittance reference (for example TJ-88231).'};
+   const n=need('1000',amt,'cash in the till');if(n)return{err:n};lines=[L('1210',r2(amt+com),0),L('1000',0,amt)];if(com>0)lines.push(L('4100',0,com));
+   desc='Paid Taaj remittance '+ext+' to the beneficiary in cash on behalf of Taaj.'+(com>0?' Commission CAD '+fm(com)+' earned, due from Taaj.':'');break}
+  case 'settle':{if(!ext)return{err:'Enter the Taaj settlement reference.'};const to=p.to=='bank'?'1010':'1000';lines=[L(to,amt,0),L('1210',0,amt)];
+   desc='Taaj settlement '+ext+' received '+(to=='1010'?'by bank transfer':'in cash')+'. Reduces Due from Taaj; not income.';break}
+  case 'expense':{const cat=p.cat;if(!EXPC.includes(cat))return{err:'Choose an expense account.'};if(!ext)return{err:'Enter the receipt or invoice reference.'};const from=p.from=='bank'?'1010':'1000';
+   const n=need(from,amt,from=='1000'?'cash in the till':'money in the bank');if(n)return{err:n};lines=[L(cat,amt,0),L(from,0,amt)];desc=AC[cat].name+' paid '+(from=='1010'?'from the bank':'in cash')+', receipt '+ext+'.';break}
+  case 'tosafe':case 'fromsafe':case 'deposit':case 'withdraw':{const m={tosafe:['1005','1000','cash in the till'],fromsafe:['1000','1005','cash in the safe'],deposit:['1010','1000','cash in the till'],withdraw:['1000','1010','money in the bank']}[p.type];
+   const n=need(m[1],amt,m[2]);if(n)return{err:n};lines=[L(m[0],amt,0),L(m[1],0,amt)];desc=T.t+(ext?' ('+ext+')':'')+'. Moves CAD between your own accounts; no income or expense.';break}
+ }
+ if((p.note||'').trim())desc+=' '+p.note.trim();
+ return{lines,desc,ccy,amt,rate,src,cadAmt,...extra}}
+
+/* reconciliations: expected (book) vs actual (count / statement) */
+function recs(E,D){const out=[],C=D.counts,R=D.reasons;
+ const adjOf=id=>D.adjs.filter(a=>a.id==id&&a.status!='Rejected').pop();
+ const row=(id,area,code,ccy,expected,actual,ref,adjustable)=>{const a=adjOf(id);let exp=expected,act=actual;if(a&&a.status=='Approved and posted'){exp=a.pre.exp;act=a.pre.act}
+  const v=act==null?null:r2(act-exp),rate=ccy==BASE?1:(a?a.rate:E.avg(D,ccy));let st;
+  if(act==null)st=area=='Bank reconciliation'||area=='Remittance settlement'?'Statement not entered':'Not counted';
+  else if(a&&a.status=='Approved and posted')st=Math.abs(r2(actual-expected))<.005?'Adjusted · '+a.ref:'Recount needed';
+  else if(Math.abs(v)<.005)st=area=='Remittance settlement'?'Matched':area=='Bank reconciliation'?'Reconciled':'Balanced';
+  else if(a)st='Adjustment pending approval';else if(R[id])st=adjustable?'Explained · adjustment needed':'Explained';else st='Needs reason';
+  out.push({id,area,code,acct:code+' '+AC[code].name,ccy,expected:exp,actual:act,variance:v==null?0:v,cadVar:v==null?0:r2(v*rate),reason:R[id]?R[id].reason:'',ref:R[id]?R[id].ref:ref,status:st,adjustable,adj:a})};
+ row('till','Cash denomination count','1000','CAD',E.bal(D,'1000').cad,C?E.tillTotal(D):null,'CNT-VAN-'+D.date.replace(/-/g,''),true);
+ row('safe','Safe reconciliation','1005','CAD',E.bal(D,'1005').cad,C?C.safe:null,'SAFE-VAN-'+D.date.replace(/-/g,'')+(C&&C.witness?' (dual count: '+C.by+' + '+C.witness+')':''),true);
+ const bk=E.bal(D,'1010').cad;row('bank','Bank reconciliation','1010','CAD',bk,D.bank?r2(D.bank.stmt+D.bank.items.reduce((s,i)=>s+i.amt,0)):null,D.bank?D.bank.ref:'',false);
+ E.held(D).forEach(c=>{const b=E.bal(D,FXA[c]);row('fx-'+c,'FX stock reconciliation',FXA[c],c,r6(b.fc),C&&C.fx[c]!=null?C.fx[c]:null,'CNT-VAN-'+D.date.replace(/-/g,'')+'-FX',true)});
+ const tj=E.bal(D,'1210').cad;if(Math.abs(tj)>.004||D.taaj||D.js.some(j=>j.lines.some(l=>l.a=='1210')))row('taaj','Remittance settlement','1210','CAD',tj,D.taaj?D.taaj.stmt:null,D.taaj?D.taaj.ref:'',false);
+ return out}
+function checks(E,D){const c=[],add=(ok,text,sev)=>c.push({ok,text,sev:sev||'block'});const rs=E.recs(D),open=D.status!='Not opened';
+ add(E.prevLocked(D),'Previous business day approved and locked ('+((D.openFrom||{}).ref||'')+')');
+ add(open,'Day opened by the preparer');
+ add(open&&!!D.opening,'Opening balances loaded from the approved close, not typed in');
+ add(D.js.every(E.ok),'Every journal entry balances (debits = credits)');
+ const held=E.held(D),miss=held.filter(x=>!E.rateOf(D,x));add(!miss.length,miss.length?'Closing rates not approved: '+miss.join(', '):'Closing rates approved for '+(held.join(', ')||'all held currencies'));
+ add(!!D.counts,'Till, safe and currency counts entered');
+ add(!!D.bank,'Bank statement entered');
+ add(D.recDone,'Reconciliations completed');
+ const unex=rs.filter(r=>r.actual!=null&&Math.abs(r.variance)>.004&&!r.status.startsWith('Adjusted')&&!D.reasons[r.id]);
+ add(!unex.length,unex.length?'Variance without reason: '+unex.map(r=>r.acct+' '+fm(r.variance)+' '+r.ccy).join(', '):'Every variance has a reason and a supporting reference');
+ const noadj=rs.filter(r=>r.adjustable&&r.actual!=null&&Math.abs(r.variance)>.004&&D.reasons[r.id]&&!r.adj);
+ add(!noadj.length,noadj.length?'Cash or stock variance not yet adjusted: '+noadj.map(r=>r.acct).join(', '):'Cash and stock variances adjusted through approved adjustments');
+ const pend=D.adjs.filter(a=>a.status=='Pending approval');add(!pend.length,pend.length?pend.map(a=>a.ref).join(', ')+' awaiting approval by a manager or Finance':'No adjustments awaiting approval');
+ const bk=rs.find(r=>r.id=='bank');add(!bk||bk.actual==null||Math.abs(bk.variance)<.005||!!D.reasons.bank,'Bank reconciled to statement'+(bk&&bk.actual!=null?' (difference CAD '+fm(bk.variance)+')':''));
+ const tj=rs.find(r=>r.id=='taaj');add(!tj||(tj.actual!=null&&(Math.abs(tj.variance)<.005||!!D.reasons.taaj)),'Taaj settlement matched to the agent statement'+(tj&&tj.actual!=null?' (difference CAD '+fm(tj.variance)+')':''));
+ const big=D.js.filter(j=>j.big&&j.status!='Reversed');add(!big.length,big.length?big.map(j=>j.ref).join(', ')+' at or above CAD 10,000: check the FINTRAC large cash report':'No cash transaction at or above CAD 10,000 awaiting compliance review','warn');
+ return c}
+function stepIndex(E,D){return[D.status!='Not opened',D.status!='Not opened'&&!!D.opening,D.js.some(j=>j.type=='TX')||D.recDone,D.recDone,D.recDone&&E.blockers(D).length==0,!!D.submitted&&D.status!='Returned',!!D.approved,!!D.locked,!!D.next]}
+function chain(a){let p='00000000';for(const e of a){const {hash,...rest}=e;if(fnv(p+JSON.stringify(rest))!==hash)return false;p=hash}return true}
+
+/* sample day 1: same events as the brief, ending at "Review variances" with ADJ-001 waiting */
+const TILL_SAMPLE={100:6,50:8,20:15,10:5,5:6,2:7,1:5,0.25:4,0.1:0,0.05:0};
+function seed(acct){const E=Book();E.acct=acct||'';const a=(u,x,p)=>{const r=E.act(u,x,p);if(!r.ok)throw new Error(x+': '+r.msg);return r};
+ a('farhan','open',{at:'08:52'});
+ a('farhan','record',{type:'buy',ccy:'USD',amt:1000,rate:1.35,ext:'KYC-55812',at:'09:12'});
+ a('farhan','record',{type:'settle',amt:1500,to:'cash',ext:'TJ-SET-1027',at:'10:05'});
+ a('farhan','record',{type:'payout',amt:800,com:35,ext:'TJ-88231',at:'11:40'});
+ a('farhan','record',{type:'sell',ccy:'USD',amt:400,rate:1.395,ext:'KYC-55840',at:'13:18'});
+ a('farhan','record',{type:'expense',cat:'6100',amt:22,from:'cash',ext:'RCPT-7781',at:'15:46'});
+ [['USD',1.38],['AED',0.375],['ETB',0.0098],['KES',0.0104]].forEach(([c,r])=>{a('daniel','rateSet',{ccy:c,rate:r,src:'Treasury closing rates CR-20261027 (market mid 17:00 PT)',at:'16:55'});a('amina','rateAp',{ccy:c,at:'16:58'})});
+ a('farhan','count',{till:TILL_SAMPLE,safe:10000,fx:{USD:2600,AED:5000,ETB:119500,KES:250000},witness:'Amina',at:'17:02'});
+ a('farhan','stmt',{kind:'bank',stmt:18300,sref:'RBC statement 27-Oct-2026 (feed BNK-0012-1027)',items:'CHQ 1042; Cheque to landlord issued 26-Oct, not yet cleared; -50',at:'17:04'});
+ a('farhan','stmt',{kind:'taaj',stmt:2535,sref:'TJ-STMT-VAN-20261027',at:'17:05'});
+ a('farhan','completeRecon',{at:'17:06'});
+ a('farhan','reason',{id:'fx-ETB',reason:'Recount confirmed ETB 500 short (two 200 notes and one 100 note). Likely overpaid on an ETB sale; incident opened.',sref:'INC-1027',at:'17:09'});
+ a('farhan','raiseAdj',{id:'fx-ETB',at:'17:11'});
+ E.B.days[0].clock=17*60+14;return E}
+function complete(E){const a=(u,x,p)=>{const r=E.act(u,x,p);if(!r.ok)throw new Error(x+': '+r.msg);return r};a('amina','approveAdj',{ref:'ADJ-001'});a('farhan','submit');a('amina','approve');a('amina','lock');a('amina','next');return E}
+
+/* =====================================================================
+   UAT: each test replays the sample through a fresh book
+   ===================================================================== */
+function runUAT(){const T=[];const t=(id,area,scenario,expected,fn,manual)=>{let pass=null,detail='';if(!manual){try{const r=fn();pass=!!r.pass;detail=r.d||''}catch(e){pass=false;detail=e.message}}T.push({id,area,scenario,expected,pass,detail,manual})};
+ const S=()=>seed(),F=()=>complete(seed()),D0=E=>E.B.days[0];
+ t('UAT-01','Opening','Open 27-Oct and compare opening balances with the approved close of 26-Oct.','Every balance-sheet account opens at the 26-Oct approved figure, by currency.',()=>{const E=S(),o=D0(E).opening;return{pass:Object.keys(OPEN0).every(k=>o[k].fc==OPEN0[k].fc&&o[k].cad==OPEN0[k].cad),d:Object.keys(OPEN0).length+' accounts compared'}});
+ t('UAT-02','Opening','Teller, Manager and Finance try to overwrite an opening balance.','Refused for every role, pointing to an authorized adjustment.',()=>{const E=S(),r=['farhan','amina','daniel'].map(u=>E.act(u,'editOpening'));return{pass:r.every(x=>!x.ok)&&r[0].msg.includes('adjustment'),d:r[0].msg}});
+ t('UAT-03','Opening','Try to open the next day before the current day is locked.','Refused: the previous business day is not locked.',()=>{const E=S();const nd=newDay('2026-10-28',{},null);E.B.days.push(nd);E.B.cur=1;const r=E.act('farhan','open');return{pass:!r.ok&&r.msg.includes('not locked'),d:r.msg}});
+ t('UAT-04','Register','Record TX-001 to TX-005.','Unique references, timestamp, staff, currency, amount, rate and source, each with a balanced journal.',()=>{const E=S(),tx=D0(E).js.filter(j=>j.type=='TX');return{pass:tx.length==5&&new Set(tx.map(j=>j.ref)).size==5&&tx.every(j=>E.ok(j)&&j.at&&j.by&&j.ccy&&j.rate&&j.src),d:tx.map(j=>j.ref).join(', ')}});
+ t('UAT-05','Register','Post a journal that is out of balance by CAD 0.01.','Rejected. Nothing is posted.',()=>{const E=S(),D=D0(E),n=D.js.length;let err='';try{E.post(D,{ref:'BAD',lines:[L('1000',10,0),L('4100',0,9.99)]})}catch(e){err=e.message}return{pass:!!err&&D.js.length==n,d:err}});
+ t('UAT-06','Register','Buy USD at 1.4500 (more than 2% from the 1.3500 board rate) without an override reason.','Refused until a manager override reason is given.',()=>{const E=Book();E.act('farhan','open');const r=E.act('farhan','record',{type:'buy',ccy:'USD',amt:100,rate:1.45,ext:'KYC-1'});const r2_=E.act('farhan','record',{type:'buy',ccy:'USD',amt:100,rate:1.45,ext:'KYC-1',override:'VIP rate approved by Amina'});return{pass:!r.ok&&r2_.ok,d:r.msg}});
+ t('UAT-07','Register','Sell USD 5,000 when the stock is USD 2,600.','Refused: not enough USD in stock.',()=>{const E=Book();E.act('farhan','open');E.act('farhan','record',{type:'buy',ccy:'USD',amt:600,rate:1.35,ext:'K'});const r=E.act('farhan','record',{type:'sell',ccy:'USD',amt:5000,rate:1.395,ext:'K'});return{pass:!r.ok&&r.msg.includes('Not enough USD'),d:r.msg}});
+ t('UAT-08','Cash','Count the CAD till: 6×100, 8×50, 15×20, 5×10, 6×5, 7×2, 5×1, 4×0.25.','Counted CAD 1,400.00, expected CAD 1,400.00, variance CAD 0.00, Balanced.',()=>{const r=S().recs(D0(S())).find(x=>x.id=='till');return{pass:r.expected==1400&&r.actual==1400&&r.variance==0&&r.status=='Balanced',d:'Expected '+fm(r.expected)+' · counted '+fm(r.actual)}});
+ t('UAT-09','Cash','Recount the till as CAD 1,390.00 and try to submit.','Variance −10.00 shown. Submit blocked until a reason, reference and approved adjustment exist.',()=>{const E=S(),D=D0(E);E.act('amina','approveAdj',{ref:'ADJ-001'});E.act('farhan','reopenRecon');E.act('farhan','count',{...D.counts,till:{...D.counts.till,10:4},fx:D.counts.fx,safe:D.counts.safe,witness:'Amina'});E.act('farhan','completeRecon');const a=E.act('farhan','submit');return{pass:!a.ok&&E.recs(D).find(r=>r.id=='till').variance==-10,d:a.msg}});
+ t('UAT-10','FX','USD purchase TX-001 at 1.3500 with source.','Dr FX Stock USD 1,000.00 = CAD 1,350.00; Cr Cash CAD 1,350.00; rate source stored.',()=>{const j=D0(S()).js.find(x=>x.ref=='TX-001');return{pass:j.lines[0].fc==1000&&j.lines[0].d==1350&&j.lines[1].c==1350&&j.src==SRC_BOARD,d:j.src}});
+ t('UAT-11','FX','Sell USD 400 at 1.3950 after the purchase (weighted average cost).','Cost CAD 542.67 at 1.356667; realized FX gain CAD 15.33 to 4200.',()=>{const j=D0(S()).js.find(x=>x.ref=='TX-004');return{pass:j.cost==542.67&&j.gain==15.33&&rf(j.avg)=='1.356667',d:'cost '+fm(j.cost)+' · gain '+fm(j.gain)}});
+ t('UAT-12','FX','Revalue USD at the approved closing rate 1.3800.','USD 2,600.00 book CAD 3,527.33, value CAD 3,588.00, unrealized CAD 60.67.',()=>{const E=S(),u=E.fxRows(D0(E)).find(x=>x.c=='USD');return{pass:u.fc==2600&&u.book==3527.33&&u.val==3588&&u.unr==60.67,d:'unrealized '+fm(u.unr)}});
+ t('UAT-13','FX','Leave the KES closing rate unapproved and try to submit.','Submit blocked: closing rates not approved.',()=>{const E=S(),D=D0(E);D.rates.KES.st='Pending approval';E.act('amina','approveAdj',{ref:'ADJ-001'});const r=E.act('farhan','submit');return{pass:!r.ok&&r.msg.includes('Closing rates'),d:r.msg}});
+ t('UAT-14','FX','Daniel enters a closing rate and tries to approve it himself.','Refused: separation of duties.',()=>{const E=S();E.act('daniel','rateSet',{ccy:'USD',rate:1.381,src:'Treasury CR-2'});const r=E.act('daniel','rateAp',{ccy:'USD'});return{pass:!r.ok,d:r.msg}});
+ t('UAT-15','Taaj','Record TX-002, cash received from Taaj.','Cash up CAD 1,500.00, Due from Taaj down CAD 1,500.00, no income.',()=>{const j=D0(S()).js.find(x=>x.ref=='TX-002');return{pass:j.lines.some(l=>l.a=='1210'&&l.c==1500)&&!j.lines.some(l=>AC[l.a].cls=='I'),d:j.desc}});
+ t('UAT-16','Taaj','Reconcile 1210 with Taaj statement TJ-STMT-VAN-20261027.','Book CAD 2,535.00 = statement CAD 2,535.00, Matched.',()=>{const E=S(),r=E.recs(D0(E)).find(x=>x.id=='taaj');return{pass:r.status=='Matched'&&r.expected==2535,d:r.status}});
+ t('UAT-17','Bank','Reconcile 1010: statement CAD 18,300.00 with cheque #1042 outstanding.','Adjusted statement CAD 18,250.00 = books; difference 0.00.',()=>{const E=S(),r=E.recs(D0(E)).find(x=>x.id=='bank');return{pass:r.variance==0&&r.actual==18250,d:r.status}});
+ t('UAT-18','Variances','ETB count 119,500 against book 120,000.','Variance −500 ETB (CAD −4.80); reason, reference and ADJ-001 required; submit blocked while pending.',()=>{const E=S(),D=D0(E),a=E.act('farhan','submit'),r=E.recs(D).find(x=>x.id=='fx-ETB');return{pass:!a.ok&&r.variance==-500&&r.cadVar==-4.8,d:a.msg}});
+ t('UAT-19','Segregation','Farhan tries to approve the adjustment he raised.','Refused.',()=>{const r=S().act('farhan','approveAdj',{ref:'ADJ-001'});return{pass:!r.ok,d:r.msg}});
+ t('UAT-20','Segregation','Amina approves ADJ-001.','Dr 6500 CAD 4.80 / Cr 1102 ETB 500 = CAD 4.80; ETB book 119,500.',()=>{const E=S(),D=D0(E);E.act('amina','approveAdj',{ref:'ADJ-001'});const j=D.js.find(x=>x.ref=='ADJ-001');return{pass:j&&j.lines[0].d==4.8&&E.bal(D,'1102').fc==119500,d:'approved by '+j.appr}});
+ t('UAT-21','Workflow','Amina prepares and submits a day, then tries to approve it.','Refused: preparer and approver must differ.',()=>{const E=Book();E.act('amina','open');const r0=E.act('amina','approve');return{pass:!r0.ok,d:r0.msg}});
+ t('UAT-22','Workflow','Amina returns the submitted day with a reason; Farhan resubmits.','Submitted → Returned → Submitted; reason in the audit trail.',()=>{const E=S(),D=D0(E);E.act('amina','approveAdj',{ref:'ADJ-001'});E.act('farhan','submit');const a=E.act('amina','returnDay',{reason:'Attach the ETB incident report to INC-1027'});const b=E.act('farhan','submit');return{pass:a.ok&&b.ok&&D.status=='Submitted'&&E.B.audit.some(x=>x.action=='Return day'),d:D.status}});
+ t('UAT-23','Closing','Lock the approved day.','Income and expense closed to 3900; day result CAD 23.53; posting to 27-Oct refused.',()=>{const E=S(),D=D0(E);['approveAdj:amina','submit:farhan','approve:amina','lock:amina'].forEach(x=>{const[a,u]=x.split(':');E.act(u,a,{ref:'ADJ-001'})});const j=D.js.find(x=>x.type=='CL'),p=E.act('farhan','record',{type:'expense',cat:'6100',amt:5,from:'cash',ext:'R1'});return{pass:j&&E.ok(j)&&D.result==23.53&&!p.ok&&p.msg.includes('locked'),d:'result '+fm(D.result)+' · '+p.msg}});
+ t('UAT-24','Closing','Generate the 28-Oct opening.','Balance-sheet accounts carry forward; income and expense open at zero; assets CAD 41,344.53 = equity.',()=>{const E=F(),o=E.B.days[1].opening;const ta=r2(Object.entries(o).filter(([k])=>AC[k].cls=='A').reduce((s,[,v])=>s+v.cad,0)),te=r2(-Object.entries(o).filter(([k])=>AC[k].cls!='A').reduce((s,[,v])=>s+v.cad,0));return{pass:ta==41344.53&&te==ta&&!Object.keys(o).some(k=>!AC[k].bs),d:'assets '+fm(ta)+' · equity '+fm(te)}});
+ t('UAT-25','Closing','Run 28-Oct: open, buy USD 200, count, reconcile, approve, lock.','The second day closes on the carried-forward balances; USD cost pool continues.',()=>{const E=F();E.B.cur=1;const a=(u,x,p)=>{const r=E.act(u,x,p);if(!r.ok)throw new Error(x+': '+r.msg)};const D=E.B.days[1];
+  a('farhan','open');a('farhan','record',{type:'buy',ccy:'USD',amt:200,rate:1.35,ext:'KYC-9'});CCYS.forEach(c=>a('daniel','rateAp',{ccy:c}));
+  const fx={};E.held(D).forEach(c=>fx[c]=E.bal(D,FXA[c]).fc);const till={};let rem=E.bal(D,'1000').cad;CASH_DENOMS.forEach(d=>{const q=Math.floor((rem+1e-9)/d);till[d]=q;rem=r2(rem-q*d)});
+  a('farhan','count',{till,safe:E.bal(D,'1005').cad,fx,witness:'Amina'});a('farhan','stmt',{kind:'bank',stmt:18250,sref:'RBC 28-Oct',items:''});a('farhan','stmt',{kind:'taaj',stmt:2535,sref:'TJ-28'});a('farhan','completeRecon');a('farhan','submit');a('amina','approve');a('amina','lock');
+  return{pass:D.status=='Locked'&&E.bal(D,'1100').fc==2800,d:'USD stock '+fm(E.bal(D,'1100').fc)}});
+ t('UAT-26','Closing','Trial balance after lock.','Total debits = total credits; every journal balances.',()=>{const E=F(),D=D0(E);let d=0,c=0;Object.values(D.opening).forEach(o=>{if(o.cad>0)d+=o.cad;else c-=o.cad});D.js.forEach(j=>j.lines.forEach(l=>{d+=l.d;c+=l.c}));return{pass:Math.abs(d-c)<.005&&D.js.every(E.ok),d:'Dr '+fm(d)+' · Cr '+fm(c)}});
+ t('UAT-27','Reversal','Daniel reverses TX-005 with a reason (reconciliations reopened first).','REV-TX-005 posts opposite lines; TX-005 kept and marked Reversed; till up CAD 22.00.',()=>{const E=S(),D=D0(E);E.act('amina','approveAdj',{ref:'ADJ-001'});E.act('farhan','reopenRecon');const b=E.bal(D,'1000').cad,r=E.act('daniel','reverse',{ref:'TX-005',reason:'Supplies were paid by head-office card'});return{pass:r.ok&&D.js.find(x=>x.ref=='TX-005').status=='Reversed'&&r2(E.bal(D,'1000').cad-b)==22,d:r.msg}});
+ t('UAT-28','Reversal','Farhan (Teller) tries to reverse TX-001.','Refused.',()=>{const r=S().act('farhan','reverse',{ref:'TX-001',reason:'testing teller rights'});return{pass:!r.ok,d:r.msg}});
+ t('UAT-29','Access','Sara (Auditor) tries to record, approve and lock.','All refused; reports stay readable.',()=>{const E=S(),r=['record','approve','lock'].map(a=>E.act('sara',a,{type:'expense'}));return{pass:r.every(x=>!x.ok),d:r[0].msg}});
+ t('UAT-30','Audit','Change one past audit entry and re-check the hash chain.','The chain breaks at the changed entry.',()=>{const E=F(),ok=chain(E.B.audit);E.B.audit[3].detail='edited';return{pass:ok&&!chain(E.B.audit),d:E.B.audit.length+' entries chained'}});
+ t('UAT-31','Access','A teller assigned to Vancouver opens Surrey.','Only permitted branches are listed; direct access refused.',null,true);
+ t('UAT-32','Usability','Run the close on a phone (400 px) and a desktop.','All steps, counts and reports usable without sideways scrolling.',null,true);
+ return T}
+function configure(o){if(o.branch)BRANCH=o.branch;if(o.code)BCODE=o.code}
+function blankBook(date,opening,from){return Book({v:2,days:[newDay(date,opening,from)],cur:0,seq:{TX:0,ADJ:0},audit:[]})}
+if(typeof module!=='undefined')module.exports={Book,seed,complete,runUAT,recs,checks,fm,rf,r2,TXTYPES,CCYS,FXA,AC,ACC,BOARD,chain};
+
+/* =====================================================================
+   UI – all navigation is in-page state (buttons), no link navigation.
+   ===================================================================== */
+if(typeof document!=='undefined'){
+const $=s=>document.querySelector(s);
+const A=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+/* =====================================================================
+   Web platform layer for /closing
+   Sign-in (Supabase email + password), books and team, server sync.
+   Replaces the artifact-only sync block of ui.js at build time.
+   ===================================================================== */
+const URL_=window.__DC_API||'https://htrlqotaetdwccervhmd.supabase.co',AKEY='sb_publishable_GjGlB8yDm7Rdg7WjB5uPAQ_Y1KwrDWB';
+const SKEY='pb_closing_sb',BKEY='pb_closing_book',IDLE=15*60*1000,POLL=5000;
+const ls={g:k=>{try{return localStorage.getItem(k)}catch(e){return null}},s:(k,v)=>{try{localStorage.setItem(k,v)}catch(e){}},d:k=>{try{localStorage.removeItem(k)}catch(e){}}};
+const enc=encodeURIComponent;
+let SB=null;try{SB=JSON.parse(ls.g(SKEY))}catch(e){}
+let idleT=Date.now(),lastTouch=0,hb=null,pollT=null;
+const G={screen:'loading',err:'',ok:'',email:'',busy:false,books:[]};
+
+/* ---------- API ---------- */
+async function api(path,o){o=o||{};const h={apikey:AKEY,'Content-Type':'application/json'};if(SB&&SB.access_token&&!o.anon)h.Authorization='Bearer '+SB.access_token;if(o.prefer)h.Prefer=o.prefer;
+ const r=await fetch(URL_+path,{method:o.method||'GET',headers:h,body:o.body?JSON.stringify(o.body):undefined,cache:'no-store'});let j=null;try{j=await r.json()}catch(e){}
+ if(!r.ok){const er=new Error((j&&(j.msg||j.message||j.error_description||j.error))||('Request failed ('+r.status+')'));er.status=r.status;er.code=j&&(j.error_code||j.code);throw er}return j}
+const fixS=j=>({access_token:j.access_token,refresh_token:j.refresh_token,expires_at:j.expires_at||Math.floor(Date.now()/1000)+(j.expires_in||3600),user:j.user||(SB&&SB.user)});
+const keep=s=>{SB=s;s?ls.s(SKEY,JSON.stringify(s)):ls.d(SKEY)};
+async function refresh(){if(!SB||!SB.refresh_token)throw Object.assign(new Error('Signed out'),{status:401});
+ try{keep(fixS(await api('/auth/v1/token?grant_type=refresh_token',{method:'POST',body:{refresh_token:SB.refresh_token},anon:1})))}catch(e){if(e.status>=400&&e.status<500)keep(null);throw e}}
+async function rest(p,o){if(!SB)throw Object.assign(new Error('Signed out'),{status:401});if(SB.expires_at-60<Date.now()/1000)await refresh();
+ try{return await api('/rest/v1/'+p,o)}catch(e){if(e.status==401&&/PB_SESSION/.test(e.message||'')){expired();throw e}if(e.status==401){await refresh();return await api('/rest/v1/'+p,o)}throw e}}
+const rpc=(fn,body)=>rest('rpc/'+fn,{method:'POST',body:body||{}});
+function friendly(e){const m=String(e&&e.message||'');
+ if(e instanceof TypeError)return'Cannot reach the server. Check your internet connection and try again.';
+ if(/invalid login/i.test(m))return'Email or password is incorrect.';
+ if(/not confirmed/i.test(m))return'Confirm your email first: open the message we sent you and tap the link.';
+ if(e&&e.status==429||/rate limit|too many/i.test(m))return'Too many attempts. Wait a few minutes and try again.';
+ if(/already registered|already been registered/i.test(m))return'That email already has an account. Sign in instead.';
+ if(/password/i.test(m)&&/(short|least|weak|characters)/i.test(m))return'Choose a stronger password of at least 10 characters.';
+ if(/PB_SESSION/.test(m))return'Your session ended. Please sign in again.';
+ if(/dc_members_name_uq|duplicate key/i.test(m))return'Someone in this book already uses that name. Use a different display name.';
+ if(/DC_CONFLICT/.test(m))return'Someone else saved first. Your screen now shows the latest books; repeat your last step if it is missing.';
+ if(/Could not find the function|does not exist|PGRST202|404/i.test(m)||e&&e.status==404)return'The Daily Closing tables are not installed yet. Run supabase/daily-closing.sql once in the Supabase SQL Editor.';
+ const d=m.match(/^DC_[A-Z_]+:?\s*(.*)$/);if(d)return d[1]?d[1].charAt(0).toUpperCase()+d[1].slice(1)+(/[.!?]$/.test(d[1])?'':'.'):'The server refused this change.';
+ return m||'Something went wrong. Please try again.'}
+
+/* ---------- session: 15-minute idle sign-out + PrimeBook session guard heartbeat ---------- */
+function expired(msg){stopBook();keep(null);clearInterval(hb);gate('login',{err:msg||'Your session ended for security. Please sign in again.'})}
+function startSession(){idleT=Date.now();clearInterval(hb);hb=setInterval(async()=>{if(!SB)return;if(Date.now()-idleT>IDLE){signOut('You were signed out after 15 minutes without activity.');return}
+ if(Date.now()-lastTouch>60000){lastTouch=Date.now();try{await rest('rpc/pb_session_touch',{method:'POST',body:{p_idle_min:15,p_idle_s:Math.min(900,Math.round((Date.now()-idleT)/1000))}})}catch(e){if(e.status==404)lastTouch=Date.now()+3600e3}}},15000)}
+['click','keydown','touchstart','scroll'].forEach(ev=>document.addEventListener(ev,()=>{idleT=Date.now()},{passive:true}));
+async function signOut(msg){stopBook();try{if(SB)await api('/auth/v1/logout',{method:'POST'})}catch(e){}keep(null);clearInterval(hb);gate('login',{ok:msg||'You have been signed out.'})}
+const myId=()=>SB&&SB.user&&SB.user.id||'';
+const myEmail=()=>(SB&&SB.user&&SB.user.email||'').toLowerCase();
+
+/* ---------- book state ---------- */
+const SYNC={gen:0,mode:'loading',book:null,role:'',me:null,members:[],saves:null,baseRev:0,busy:false,queue:Promise.resolve(),last:{},meta:{},resetArm:false,canEdit:false,updatedName:'',updatedAt:''};
+const ROLE_TITLE={Owner:'Owner · Manager rights',Manager:'Branch Manager · Approver',Teller:'Teller · Preparer',Finance:'Finance · Head-office accountant',Auditor:'Internal auditor · Read only'};
+const WRITERS=['Owner','Manager','Teller','Finance'],RATE_EDIT=['Owner','Manager','Finance'];
+function persist(){}
+function names(){}
+const acctName=id=>{if(!id)return'';const m=SYNC.members.find(x=>x.user_id==id);return m?m.display_name+' ('+m.email+')':'a former member'};
+function syncLabel(){const m={loading:['Loading…','p-mute'],online:['Saved · live','p-ok'],saving:['Saving…','p-warn'],readonly:['Read only · live','p-info'],error:['Not saved · retrying','p-bad']}[SYNC.mode]||['','p-mute'];return`<span class="pill ${m[1]}">${m[0]}</span>`}
+function bcode(b){return(b.book_id||b.id||'').replace(/[^a-z0-9]/gi,'').slice(0,3).toUpperCase()||'BR'}
+function applyMembers(mem){SYNC.members=mem||[];Object.keys(USERS).filter(k=>k.startsWith('m:')).forEach(k=>delete USERS[k]);
+ SYNC.members.forEach(m=>{USERS['m:'+m.email]={name:m.display_name,role:m.role=='Owner'?'Manager':m.role,title:ROLE_TITLE[m.role]||m.role}});
+ SYNC.me=SYNC.members.find(m=>m.email==myEmail()&&m.active)||null;SYNC.role=SYNC.me?SYNC.me.role:'';UID=SYNC.me?'m:'+SYNC.me.email:UID;SYNC.canEdit=SYNC.role=='Owner'}
+function applyBoard(b){if(!b)return;Object.keys(b).forEach(c=>{if(BOARD[c]&&+b[c].b>0&&+b[c].s>0){BOARD[c].b=+b[c].b;BOARD[c].s=+b[c].s}})}
+function dayJson(d){return JSON.stringify({day:d,audit:E.B.audit.filter(a=>a.date==d.date)})}
+async function fetchBook(id){const st=await rest('dc_state?book_id=eq.'+enc(id)+'&select=rev,meta,updated_name,updated_at');
+ if(!st||!st.length)return null;
+ const [days,mem]=await Promise.all([rest('dc_days?book_id=eq.'+enc(id)+'&select=date,day,audit&order=date.asc'),rest('dc_members?book_id=eq.'+enc(id)+'&select=email,user_id,display_name,role,active&order=display_name.asc')]);
+ return{st:st[0],days:days||[],mem:mem||[]}}
+function applyBook(x){const m=x.st.meta||{};SYNC.meta=m;SYNC.baseRev=x.st.rev||0;SYNC.updatedName=x.st.updated_name||'';SYNC.updatedAt=x.st.updated_at||'';applyMembers(x.mem);applyBoard(m.board);
+ const by={};x.days.forEach(r=>by[r.date]=r);const dates=(m.dates||[]).filter(d=>by[d]);
+ if(!dates.length){E=null;SYNC.last={};return false}
+ const days=[],audit=[],last={};dates.forEach(dt=>{const r=by[dt];days.push(r.day);audit.push(...(r.audit||[]));last[dt]=JSON.stringify({day:r.day,audit:r.audit||[]})});
+ audit.sort((a,b)=>a.seq-b.seq);const wasLatest=!E||isLatest(),cur=wasLatest?days.length-1:Math.min(E.B.cur,days.length-1);
+ E=Book({v:2,days,cur,seq:m.seq||{TX:0,ADJ:0},audit});E.real=true;E.acct=myId();SYNC.last=last;
+ SYNC.mode=WRITERS.includes(SYNC.role)?'online':'readonly';return true}
+async function reload(quiet){const b=SYNC.book;if(!b)return;let x;const g=SYNC.gen;
+ try{x=await fetchBook(b.book_id)}catch(e){if(!quiet)toast({ok:false,msg:friendly(e)});return}
+ if(g!==SYNC.gen||SYNC.busy||SYNC.book!==b)return; // a local change happened meanwhile: its save decides
+ if(!x||!x.mem.some(m=>m.email==myEmail()&&m.active)){stopBook();ls.d(BKEY);await showBooks({err:'You no longer have access to '+b.name+'. Ask the book owner if this is unexpected.'});return}
+ const had=!!E;if(applyBook(x)){showApp();render()}else{if(had||G.screen!='setup')gate('setup')}}
+function stopBook(){clearInterval(pollT);pollT=null;SYNC.book=null;E=null}
+function startPoll(){clearInterval(pollT);pollT=setInterval(async()=>{if(!SYNC.book||SYNC.busy||document.hidden)return;
+ try{const r=await rest('dc_state?book_id=eq.'+enc(SYNC.book.book_id)+'&select=rev');if(!r||!r.length){reload(true);return}if(r[0].rev!==SYNC.baseRev&&!SYNC.busy)reload(true)}catch(e){}},POLL)}
+function metaOut(extra){return Object.assign({},SYNC.meta,{v:2,dates:E?E.B.days.map(d=>d.date):[],seq:E?{...E.B.seq}:{TX:0,ADJ:0},board:Object.fromEntries(CCYS.map(c=>[c,{b:BOARD[c].b,s:BOARD[c].s}]))},extra||{})}
+async function writeAll(note,extra){const days=[];if(E)for(const d of E.B.days){const j=dayJson(d);if(SYNC.last[d.date]!==j)days.push({date:d.date,day:d,audit:E.B.audit.filter(a=>a.date==d.date),j})}
+ const meta=metaOut(extra);const rev=await rpc('dc_save',{p_book:SYNC.book.book_id,p_base_rev:SYNC.baseRev,p_meta:meta,p_days:days.map(({j,...r})=>r),p_note:(note||'').slice(0,200)});
+ days.forEach(d=>SYNC.last[d.date]=d.j);SYNC.meta=meta;SYNC.baseRev=+rev;SYNC.updatedName=SYNC.me?SYNC.me.display_name:'';SYNC.updatedAt=new Date().toISOString()}
+function save(note,extra){if(!SYNC.book)return Promise.resolve(false);SYNC.gen++;
+ return SYNC.queue=SYNC.queue.then(async()=>{SYNC.busy=true;SYNC.mode='saving';if(E)header();let ok=true;
+  try{await writeAll(note,extra);SYNC.mode='online'}
+  catch(e){ok=false;const m=String(e&&e.message||'');
+   if(e instanceof TypeError||e.status>=500){SYNC.mode='error';toast({ok:false,msg:'Could not reach the server, so your last step is not saved yet. It will be sent with your next action, or press Save now on the Dashboard.'})}
+   else{toast({ok:false,msg:friendly(e)});SYNC.busy=false;SYNC.gen++;await reload(true)}}
+  finally{SYNC.busy=false;if(E&&SYNC.book)render()}return ok})}
+
+/* ---------- UI: gate screens (sign-in, books, setup) ---------- */
+const H=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function showApp(){$('#gate').hidden=true;$('#shell').hidden=false}
+function gate(screen,o){G.screen=screen;G.err=(o&&o.err)||'';G.ok=(o&&o.ok)||'';G.busy=false;$('#shell').hidden=true;$('#gate').hidden=false;drawGate();window.scrollTo(0,0)}
+const msgs=()=>`${G.err?`<div class="note bad" role="alert"><span class="ic bad">!</span><span>${H(G.err)}</span></div>`:''}${G.ok?`<div class="note ok" role="status"><span class="ic ok">✓</span><span>${H(G.ok)}</span></div>`:''}`;
+const todayPT=()=>new Date().toLocaleDateString('en-CA',{timeZone:'America/Vancouver'});
+function drawGate(){const g=$('#gate'),s=G.screen,em=H(G.email||myEmail());let body='';
+ const top=`<div class="g-brand"><b>BRIMAPAY · Daily Closing</b><small>PrimeBook · cash, FX and Taaj closing for each branch</small></div>`;
+ if(s=='loading')body=`<div class="g-card"><p class="mu">Loading…</p></div>`;
+ else if(s=='login')body=`<form class="g-card" data-g="login" novalidate><h1>Sign in</h1><p class="mu">Use the email your manager added to the branch book.</p>${msgs()}
+  <div class="field"><label for="g-em">Email</label><input id="g-em" name="em" type="email" autocomplete="username" value="${em}" required></div>
+  <div class="field"><label for="g-pw">Password</label><input id="g-pw" name="p" type="password" autocomplete="current-password" required></div>
+  <div class="btns"><button class="pri" type="submit">Sign in</button></div>
+  <p class="g-links"><button type="button" class="lnk" data-gs="signup">Create an account</button> · <button type="button" class="lnk" data-gs="forgot">Forgot password?</button></p></form>`;
+ else if(s=='signup')body=`<form class="g-card" data-g="signup" novalidate><h1>Create your account</h1><p class="mu">Use the same email your manager added to the book. We will send you a link to confirm it.</p>${msgs()}
+  <div class="field"><label for="g-em">Email</label><input id="g-em" name="em" type="email" autocomplete="username" value="${em}" required></div>
+  <div class="field"><label for="g-pw">Password (at least 10 characters)</label><input id="g-pw" name="p" type="password" autocomplete="new-password" minlength="10" required></div>
+  <div class="field"><label for="g-pw2">Repeat password</label><input id="g-pw2" name="p2" type="password" autocomplete="new-password" required></div>
+  <div class="btns"><button class="pri" type="submit">Create account</button></div><p class="g-links"><button type="button" class="lnk" data-gs="login">I already have an account</button></p></form>`;
+ else if(s=='check')body=`<div class="g-card"><h1>Check your email</h1><p>We sent a confirmation link to <b>${em}</b>. Open it on this device, then sign in.</p><div class="btns"><button type="button" class="pri" data-gs="login">Go to sign in</button></div></div>`;
+ else if(s=='forgot')body=`<form class="g-card" data-g="forgot" novalidate><h1>Reset your password</h1>${msgs()}<div class="field"><label for="g-em">Email</label><input id="g-em" name="em" type="email" autocomplete="username" value="${em}" required></div>
+  <div class="btns"><button class="pri" type="submit">Send reset link</button></div><p class="g-links"><button type="button" class="lnk" data-gs="login">Back to sign in</button></p></form>`;
+ else if(s=='reset')body=`<form class="g-card" data-g="reset" novalidate><h1>Choose a new password</h1>${msgs()}<div class="field"><label for="g-pw">New password (at least 10 characters)</label><input id="g-pw" name="p" type="password" autocomplete="new-password" required></div>
+  <div class="field"><label for="g-pw2">Repeat password</label><input id="g-pw2" name="p2" type="password" autocomplete="new-password" required></div><div class="btns"><button class="pri" type="submit">Save password</button></div></form>`;
+ else if(s=='books'){const bs=G.books;body=`<div class="g-card g-wide"><div class="g-head"><div><h1>Your branch books</h1><p class="mu">Signed in as <b>${H(myEmail())}</b></p></div><button type="button" class="ghost" data-gs="signout">Sign out</button></div>${msgs()}
+  ${bs.length?`<div class="g-books">${bs.map(b=>`<button type="button" class="g-book" data-open="${H(b.book_id)}"><b>${H(b.name)}</b><span>${H(b.display_name)} · ${H(ROLE_TITLE[b.role]||b.role)}</span><em>Open →</em></button>`).join('')}</div>`
+   :`<div class="note info"><span class="ic info">i</span><span><b>No books yet for ${H(myEmail())}.</b> If you work at a branch, ask your manager to add this exact email on their Team page, then press Refresh. If you are setting up a branch, create its book below.</span></div><div class="btns"><button type="button" data-gs="refresh">Refresh</button></div>`}
+  <details class="g-new" ${bs.length?'':'open'}><summary>Create a new branch book</summary>
+  <form data-g="create" novalidate class="fgrid"><div class="field"><label for="g-bn">Branch name</label><input id="g-bn" name="bn" placeholder="Vancouver" maxlength="80" required></div>
+   <div class="field"><label for="g-bc">Book code (letters, digits, dashes)</label><input id="g-bc" name="bc" placeholder="vancouver" maxlength="40" required pattern="[a-z0-9][a-z0-9-]{1,39}"></div>
+   <div class="field"><label for="g-dn">Your name as it appears in the ledger</label><input id="g-dn" name="dn" maxlength="60" required></div>
+   <div class="field"><label>&nbsp;</label><button class="pri" type="submit">Create book</button></div></form>
+   <p class="mu" style="font-size:12.5px">You become the book's Owner. You then add your staff by email and give each a role: Teller, Manager, Finance or Auditor.</p></details></div>`}
+ else if(s=='setup'){const b=SYNC.book||{},own=['Owner','Manager'].includes(SYNC.role);
+  body=`<div class="g-card g-wide"><div class="g-head"><div><span class="eyebrow">${H(b.name)} · first business day</span><h1>Set up the book</h1></div><div class="btns"><button type="button" class="ghost" data-gs="books">All books</button><button type="button" class="ghost" data-gs="signout">Sign out</button></div></div>${msgs()}
+  ${own?`<p>Enter what the branch holds at the start of its first business day on this system. Everything after that is carried forward automatically from each locked close.</p>
+  <form data-g="setup" novalidate><div class="fgrid">
+   <div class="field"><label for="s-date">First business date</label><input id="s-date" name="date" type="date" value="${todayPT()}" required></div><div></div>
+   ${[['1000','Cash on hand – till (CAD)'],['1005','Safe – CAD'],['1010','Bank – RBC operating (CAD)'],['1210','Due from Taaj (CAD)']].map(([c,l])=>`<div class="field"><label for="s-${c}">${l}</label><input id="s-${c}" name="a${c}" inputmode="decimal" placeholder="0.00"></div>`).join('')}</div>
+   <h3 style="margin:14px 0 6px">Foreign currency on hand</h3><p class="mu" style="margin:0 0 8px">Amount in the currency, and what it cost in CAD (its book value).</p>
+   <div class="fgrid">${CCYS.map(c=>`<div class="field"><label for="s-fc-${c}">${c} amount</label><input id="s-fc-${c}" name="fc${c}" inputmode="decimal" placeholder="0"></div><div class="field"><label for="s-cad-${c}">${c} cost in CAD</label><input id="s-cad-${c}" name="cad${c}" inputmode="decimal" placeholder="0.00"></div>`).join('')}</div>
+   <p class="mu" id="s-tot" style="margin-top:10px"></p>
+   <div class="btns"><button class="pri" type="submit">Create the first business day</button></div></form>
+   <details class="g-new"><summary>Or practise first with the training sample</summary><p>Loads a worked example day (27 Oct 2026, staff Farhan and Amina) with transactions, counts and a variance. Use a separate training book for this, not your live branch book: an owner can erase a book only while no day in it is locked.</p><div class="btns"><button type="button" data-gs="sample">Load the training sample</button></div></details>`
+  :`<div class="note info"><span class="ic info">i</span><span>This book has no business days yet. Its owner or a manager sets it up with the opening balances. This page updates by itself when they do.</span></div>`}</div>`}
+ g.innerHTML=`<div class="g-wrap">${top}${body}<p class="g-foot">PrimeBook · BRIMAPAY Financial Services Inc. · <a href="/">Back to PrimeBook</a></p></div>`;
+ if(s=='setup')setupTotal();const f=g.querySelector('input:not([type=hidden])');if(f&&['login','signup','forgot','reset'].includes(s)&&!f.value)f.focus()}
+const num=v=>{const x=String(v==null?'':v).replace(/[, ]/g,'');return x===''?0:+x};
+function setupTotal(){const f=document.querySelector('form[data-g=setup]');if(!f)return;let t=0,bad=false;
+ ['1000','1005','1010','1210'].forEach(c=>{const v=num(f['a'+c].value);if(!isFinite(v)||v<0)bad=true;else t+=v});
+ CCYS.forEach(c=>{const a=num(f['fc'+c].value),k=num(f['cad'+c].value);if(!isFinite(a)||!isFinite(k)||a<0||k<0||(a>0)!=(k>0))bad=true;else t+=k});
+ const el=$('#s-tot');if(el)el.innerHTML=bad?'<span style="color:var(--bad)">Check the figures: amounts cannot be negative, and each currency needs both its amount and its CAD cost.</span>':`Total assets CAD <b>${fm(t)}</b>, balanced by Owner's capital (3000) CAD ${fm(t)}.`;return bad?null:r2(t)}
+
+async function doLogin(f){const em=f.em.value.trim().toLowerCase(),p=f.p.value;G.email=em;if(!em||!p)return gate('login',{err:'Enter your email and password.'});
+ busy(1);try{const j=await api('/auth/v1/token?grant_type=password',{method:'POST',body:{email:em,password:p},anon:1});keep(fixS(j));await afterSignIn()}catch(e){gate('login',{err:friendly(e)})}}
+async function doSignup(f){const em=f.em.value.trim().toLowerCase(),p=f.p.value,p2=f.p2.value;G.email=em;
+ if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(em))return gate('signup',{err:'Enter a valid email address.'});if(p.length<10)return gate('signup',{err:'Use at least 10 characters for the password.'});if(p!==p2)return gate('signup',{err:'The two passwords do not match.'});
+ busy(1);try{const j=await api('/auth/v1/signup?redirect_to='+enc(location.origin+'/closing'),{method:'POST',body:{email:em,password:p},anon:1});
+  if(j&&j.access_token){keep(fixS(j));await afterSignIn()}else gate('check')}
+ catch(e){if(/already/i.test(e.message||''))gate('login',{err:'That email already has an account. Sign in instead.'});else gate('signup',{err:friendly(e)})}}
+async function doForgot(f){const em=f.em.value.trim().toLowerCase();G.email=em;if(!em)return gate('forgot',{err:'Enter your email.'});busy(1);
+ try{await api('/auth/v1/recover?redirect_to='+enc(location.origin+'/closing'),{method:'POST',body:{email:em},anon:1})}catch(e){}
+ gate('login',{ok:'If that email has an account, a reset link is on its way.'})}
+async function doReset(f){const p=f.p.value,p2=f.p2.value;if(p.length<10)return gate('reset',{err:'Use at least 10 characters.'});if(p!==p2)return gate('reset',{err:'The two passwords do not match.'});busy(1);
+ try{await api('/auth/v1/user',{method:'PUT',body:{password:p}});await afterSignIn('Password saved.')}catch(e){gate('reset',{err:friendly(e)})}}
+async function doCreate(f){const bn=f.bn.value.trim(),bc=f.bc.value.trim().toLowerCase(),dn=f.dn.value.trim();
+ if(!bn||!dn)return showBooks({err:'Enter the branch name and your name.'});if(!/^[a-z0-9][a-z0-9-]{1,39}$/.test(bc))return showBooks({err:'The book code needs 2 to 40 lowercase letters, digits or dashes, for example vancouver.'});
+ busy(1);try{await rpc('dc_create_book',{p_id:bc,p_name:bn,p_display:dn});await openBook(bc)}catch(e){showBooks({err:friendly(e)})}}
+async function doSetup(f){const tot=setupTotal();if(tot==null)return toastG('Check the opening figures first.');if(!(tot>0))return toastG('Enter at least one opening balance.');
+ const date=f.date.value;if(!/^\d{4}-\d{2}-\d{2}$/.test(date))return toastG('Choose the first business date.');
+ const op={};['1000','1005','1010','1210'].forEach(c=>{const v=r2(num(f['a'+c].value));if(v)op[c]={fc:v,cad:v}});
+ CCYS.forEach(c=>{const a=num(f['fc'+c].value),k=r2(num(f['cad'+c].value));if(a)op[FXA[c]]={fc:a,cad:k}});op['3000']={fc:-tot,cad:-tot};
+ const me=SYNC.me.display_name,now=new Date().toLocaleString('en-CA',{timeZone:'America/Vancouver',hour12:false}).replace(',','').slice(0,16);
+ E=blankBook(date,op,{ref:'SETUP-'+bcode(SYNC.book),date:'set-up',approvedBy:me,approvedAt:now,locked:true});E.real=true;E.acct=myId();
+ busy(1);const ok=await save('Book set up: first business day '+date+', total assets CAD '+fm(tot),{setup:{by:me,at:new Date().toISOString(),kind:'opening'}});
+ if(ok){VIEW='dashboard';showApp();render();toast({ok:true,msg:'Book set up. Open the day to start.'})}else{E=null;gate('setup',{err:'The book was not set up. Try again.'})}}
+async function doSample(){E=seed(myId());E.real=true;busy(1);const ok=await save('Book set up with the training sample',{setup:{by:SYNC.me.display_name,at:new Date().toISOString(),kind:'sample'}});
+ if(ok){VIEW='dashboard';showApp();render();toast({ok:true,msg:'Training sample loaded: 27 Oct 2026 at the Review variances step.'})}else{E=null;gate('setup',{err:'The sample was not loaded. Try again.'})}}
+function toastG(m){G.err=m;drawGate()}
+const busy=b=>{G.busy=!!b;document.querySelectorAll('#gate button,#gate input').forEach(x=>x.disabled=!!b)};
+
+async function afterSignIn(okMsg){startSession();try{const u=await api('/auth/v1/user');if(u&&u.id){SB.user=u;keep(SB)}}catch(e){}
+ await showBooks({ok:okMsg||''},true)}
+async function showBooks(o,auto){gate('loading');try{await rpc('dc_claim');G.books=await rpc('dc_my_books')||[]}catch(e){G.books=[];if(e.status==401&&!SB)return;return gate('books',{err:friendly(e)})}
+ const want=ls.g(BKEY);if(auto&&G.books.length){const b=G.books.find(x=>x.book_id==want)||(G.books.length==1?G.books[0]:null);if(b)return openBook(b.book_id)}
+ gate('books',o)}
+async function openBook(id){gate('loading');let b;try{G.books=await rpc('dc_my_books')||[]}catch(e){}b=G.books.find(x=>x.book_id==id);if(!b)return gate('books',{err:'That book is not available to you.'});
+ SYNC.book=b;ls.s(BKEY,id);configure({branch:b.name,code:bcode(b)});E=null;SYNC.saves=null;let x;
+ try{x=await fetchBook(id)}catch(e){return gate('books',{err:friendly(e)})}if(!x)return gate('books',{err:'That book is not available to you.'});
+ startPoll();if(applyBook(x)){VIEW=VIEWS.some(v=>v[0]==(location.hash||'').slice(1))?location.hash.slice(1):'dashboard';showApp();render()}else gate('setup')}
+
+document.addEventListener('submit',e=>{const f=e.target.closest('form[data-g]');if(!f)return;e.preventDefault();if(G.busy)return;
+ ({login:doLogin,signup:doSignup,forgot:doForgot,reset:doReset,create:doCreate,setup:doSetup})[f.dataset.g](f)});
+document.addEventListener('input',e=>{if(e.target.closest&&e.target.closest('form[data-g=setup]'))setupTotal();
+ if(e.target.id=='g-bn'){const c=$('#g-bc');if(c&&!c.dataset.touched)c.value=e.target.value.toLowerCase().normalize('NFKD').replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'').slice(0,40)}
+ if(e.target.id=='g-bc')e.target.dataset.touched='1'});
+document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;
+ if(b.dataset.gs){const s=b.dataset.gs;if(G.busy)return;
+  if(s=='signout')return signOut();if(s=='books'){stopBook();ls.d(BKEY);return showBooks({})}if(s=='refresh')return showBooks({},true);if(s=='sample')return doSample();
+  if(s=='savenow')return save('Retry save');return gate(s)}
+ if(b.dataset.open)return openBook(b.dataset.open)});
+
+/* ---------- in-book pages: Team and Settings ---------- */
+async function loadSaves(){try{SYNC.saves=await rest('dc_saves?book_id=eq.'+enc(SYNC.book.book_id)+'&select=rev,name,email,role,note,at&order=id.desc&limit=60')}catch(e){SYNC.saves=[]}if(VIEW=='team')render()}
+function vTeam(){if(SYNC.saves==null){SYNC.saves=[];loadSaves()}const own=SYNC.role=='Owner',link=location.origin+'/closing';
+ return`<section class="sec"><div class="sec-h"><div><span class="eyebrow">${H(SYNC.book.name)} · who can use this book</span><h2>Team</h2></div><p>${SYNC.members.filter(m=>m.active).length} active</p></div>
+ <p class="lede">Each person signs in with their own email and password. Their role decides what they can do; the server checks every save.</p>
+ <div class="tw"><table><thead><tr><th>Name in the ledger</th><th>Email</th><th>Role</th><th>Status</th>${own?'<th></th>':''}</tr></thead><tbody>${SYNC.members.map(m=>`<tr><td><b>${H(m.display_name)}</b>${m.email==myEmail()?' <span class="mu">(you)</span>':''}</td><td>${H(m.email)}</td><td>${H(ROLE_TITLE[m.role]||m.role)}</td>
+  <td>${!m.active?chip('Inactive'):m.user_id?chip('Active'):'<span class="pill p-warn">Invited · not signed in yet</span>'}</td>${own?`<td><div class="mini"><button type="button" data-tm-edit="${H(m.email)}">Edit</button>${m.email!=myEmail()?`<button type="button" class="${m.active?'dg':''}" data-tm-toggle="${H(m.email)}">${m.active?'Deactivate':'Reactivate'}</button>`:''}</div></td>`:''}</tr>`).join('')}</tbody></table></div>
+ ${own?`<h3 style="margin:16px 0 6px" id="tm-form-h">Add or change a person</h3><form id="tm-form" class="fgrid" novalidate onsubmit="return false">
+  <div class="field"><label for="tm-email">Email</label><input id="tm-email" type="email" autocomplete="off"></div>
+  <div class="field"><label for="tm-name">Name in the ledger</label><input id="tm-name" maxlength="60"></div>
+  <div class="field"><label for="tm-role">Role</label><select id="tm-role">${['Teller','Manager','Finance','Auditor','Owner'].map(r=>`<option value="${r}">${H(ROLE_TITLE[r])}</option>`).join('')}</select></div>
+  <div class="field"><label>&nbsp;</label><button type="button" class="pri" data-tm-save>Save person</button></div></form>
+  <div class="note info"><span class="ic info">i</span><span>After you add someone, send them this link: <b class="mono">${H(link)}</b>. They choose <b>Create an account</b> with the same email, confirm it from their inbox, and sign in. Deactivating someone removes their access at once; their past entries stay in the ledger.</span></div>`
+ :`<div class="note info"><span class="ic info">i</span><span>Only the book owner can add people or change roles.</span></div>`}
+ <table class="mu" style="margin-top:14px;font-size:12.5px"><tbody>${Object.entries({Teller:'Opens the day, records transactions, counts, enters statements, explains variances, submits.',Manager:'Everything a Teller does, plus approves rates, adjustments and the day (not one they prepared or submitted), locks, reverses.',Finance:'Sets and approves closing rates, approves adjustments, returns, reverses, locks.',Auditor:'Reads everything. Cannot change anything.',Owner:'Manager rights, plus manages the team and the rate board.'}).map(([r,t])=>`<tr><td style="padding:3px 10px 3px 0"><b>${r}</b></td><td>${t}</td></tr>`).join('')}</tbody></table></section>
+ <section class="sec"><div class="sec-h"><div><span class="eyebrow">Recorded by the server</span><h3>Save history</h3></div><p>Last 60 saves</p></div>
+ <div class="tw"><table><thead><tr><th>When (PT)</th><th>Revision</th><th>Who</th><th>What</th></tr></thead><tbody>${(SYNC.saves||[]).map(s=>`<tr><td class="mono">${H(new Date(s.at).toLocaleString('en-CA',{timeZone:'America/Vancouver',hour12:false}).slice(0,17))}</td><td class="mono">${s.rev}</td><td>${H(s.name||'')}<br><span class="mu">${H(s.email||'')} · ${H(s.role||'')}</span></td><td>${H(s.note||'')}</td></tr>`).join('')||'<tr><td colspan="4" class="mu">Loading…</td></tr>'}</tbody></table></div></section>`}
+function vSet(){const can=RATE_EDIT.includes(SYNC.role)&&SYNC.mode!='readonly';
+ return`<section class="sec"><div class="sec-h"><div><span class="eyebrow">${H(SYNC.book.name)}</span><h2>Rate board</h2></div><p>Used to pre-fill buy and sell rates</p></div>
+ <p class="lede">Staff can still enter the actual rate on each deal; a rate far from the board is flagged. Changes apply to everyone at once and are recorded in the save history.</p>
+ <div class="tw"><table><thead><tr><th>Currency</th><th class="n">We buy at (CAD per unit)</th><th class="n">We sell at (CAD per unit)</th></tr></thead><tbody>${CCYS.map(c=>`<tr><td><b>${c}</b></td><td class="n"><input id="rb-b-${c}" inputmode="decimal" value="${rf(BOARD[c].b)}" ${can?'':'disabled'} style="max-width:140px;text-align:right"></td><td class="n"><input id="rb-s-${c}" inputmode="decimal" value="${rf(BOARD[c].s)}" ${can?'':'disabled'} style="max-width:140px;text-align:right"></td></tr>`).join('')}</tbody></table></div>
+ ${can?'<div class="btns"><button type="button" class="pri" data-rb-save>Save rate board</button></div>':'<p class="mu">Only an Owner, Manager or Finance can change the rate board.</p>'}</section>
+ <section class="sec"><div class="sec-h"><h3>This book</h3></div><table><tbody>
+  <tr><td class="mu" style="padding:4px 14px 4px 0">Branch</td><td><b>${H(SYNC.book.name)}</b> · code ${H(bcode(SYNC.book))}</td></tr>
+  <tr><td class="mu" style="padding:4px 14px 4px 0">Base currency</td><td>CAD</td></tr>
+  <tr><td class="mu" style="padding:4px 14px 4px 0">You</td><td>${H(SYNC.me.display_name)} · ${H(myEmail())} · ${H(ROLE_TITLE[SYNC.role])}</td></tr>
+  <tr><td class="mu" style="padding:4px 14px 4px 0">Last saved</td><td>${SYNC.updatedAt?H(new Date(SYNC.updatedAt).toLocaleString('en-CA',{timeZone:'America/Vancouver',hour12:false}).slice(0,17))+' PT by '+H(SYNC.updatedName):'—'} · revision ${SYNC.baseRev}</td></tr>
+  <tr><td class="mu" style="padding:4px 14px 4px 0">Security</td><td>Signed out after 15 minutes without activity. Every save is checked by the server for your role, the revision, locked days and the append-only audit trail.</td></tr></tbody></table>
+  <div class="btns" style="margin-top:10px"><button type="button" class="ghost" data-gs="books">Switch book</button><button type="button" class="ghost" data-gs="signout">Sign out</button></div></section>`}
+async function teamSave(email,name,role,active){try{await rpc('dc_member_set',{p_book:SYNC.book.book_id,p_email:email,p_name:name,p_role:role,p_active:active});clearDraft(['tm-']);toast({ok:true,msg:(active?'Saved ':'Deactivated ')+name+' ('+email+').'});SYNC.saves=null;await reload(true);return true}
+ catch(e){toast({ok:false,msg:friendly(e)});return false}}
+document.addEventListener('click',async e=>{const b=e.target.closest('button');if(!b||!SYNC.book)return;
+ if(b.dataset.tmEdit){const m=SYNC.members.find(x=>x.email==b.dataset.tmEdit);if(!m)return;$('#tm-email').value=m.email;$('#tm-name').value=m.display_name;$('#tm-role').value=m.role;$('#tm-form-h').scrollIntoView({block:'start'});$('#tm-name').focus();return}
+ if(b.dataset.tmToggle){const m=SYNC.members.find(x=>x.email==b.dataset.tmToggle);if(m)teamSave(m.email,m.display_name,m.role,!m.active);return}
+ if(b.dataset.tmSave!=null){const em=$('#tm-email').value.trim().toLowerCase(),nm=$('#tm-name').value.trim(),rl=$('#tm-role').value;
+  if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(em))return toast({ok:false,msg:'Enter a valid email address.'});if(!nm)return toast({ok:false,msg:'Enter the name to show in the ledger.'});
+  b.disabled=true;await teamSave(em,nm,rl,true);return}
+ if(b.dataset.rbSave!=null){const nb={};for(const c of CCYS){const x=num(val('rb-b-'+c)),y=num(val('rb-s-'+c));if(!(x>0)||!(y>0))return toast({ok:false,msg:'Enter rates above zero for '+c+'.'});if(y<x)return toast({ok:false,msg:c+': the sell rate should not be below the buy rate.'});nb[c]={b:x,s:y}}
+  const old=Object.fromEntries(CCYS.map(c=>[c,{...BOARD[c]}]));applyBoard(nb);const ok=await save('Rate board: '+CCYS.map(c=>c+' '+rf(nb[c].b)+'/'+rf(nb[c].s)).join(', '));
+  if(ok){clearDraft(['rb-']);FORM.rate=String(BOARD[FORM.ccy][FORM.type=='sell'?'s':'b']);SYNC.saves=null;toast({ok:true,msg:'Rate board saved for everyone.'})}else applyBoard(old);return}});
+async function resetBook(b){if(!SYNC.canEdit){toast({ok:false,msg:'Only the book owner can erase the book.'});return}
+ if(E&&E.B.days.some(d=>d.status=='Locked')){toast({ok:false,msg:'This book has locked days, so it cannot be erased. Create a separate book for training.'});return}
+ if(!SYNC.resetArm){SYNC.resetArm=true;b.textContent='Click again to erase this book for everyone';setTimeout(()=>{SYNC.resetArm=false;if(E)render()},6000);return}
+ SYNC.resetArm=false;try{await rpc('dc_reset',{p_book:SYNC.book.book_id});clearDraft(['']);E=null;await reload(true);gate('setup',{ok:'Book erased. Set it up again.'})}catch(e){toast({ok:false,msg:friendly(e)})}}
+function webHeader(){const b=SYNC.book;if(!b)return;const w=$('#c-who');if(w)w.innerHTML=SYNC.me?`<b>${H(SYNC.me.display_name)}</b> <span class="w-r">${H(SYNC.role)}</span>`:'';const k=$('#c-book');if(k)k.textContent=b.name+' ('+bcode(b)+')'}
+function onlineBanner(){if(SYNC.mode=='readonly')return`<div class="note info"><span class="ic info">i</span><span><b>Read only.</b> As ${H(ROLE_TITLE[SYNC.role]||SYNC.role)} you can read the books, every report and the audit trail.</span></div>`;
+ if(SYNC.mode=='error')return`<div class="note bad"><span class="ic bad">!</span><span><b>Your last step is not saved yet.</b> Check your connection. <button type="button" data-gs="savenow">Save now</button></span></div>`;return''}
+
+/* ---------- boot ---------- */
+async function boot(){const h=location.hash.replace(/^#/,'');
+ if(h&&/access_token=|error_description=/.test(h)){const q=new URLSearchParams(h);history.replaceState(null,'',location.pathname);
+  if(q.get('error_description'))return gate('login',{err:q.get('error_description').replace(/\+/g,' ')});
+  if(q.get('access_token')){keep(fixS({access_token:q.get('access_token'),refresh_token:q.get('refresh_token'),expires_at:+q.get('expires_at')||0,expires_in:+q.get('expires_in')||3600}));
+   try{const u=await api('/auth/v1/user');SB.user=u;keep(SB)}catch(e){}
+   if(q.get('type')=='recovery'){startSession();return gate('reset')}
+   return afterSignIn(q.get('type')=='signup'?'Email confirmed. Welcome.':'')}}
+ if(SB&&SB.refresh_token){try{if(SB.expires_at-60<Date.now()/1000)await refresh();return afterSignIn()}catch(e){keep(null)}}
+ gate('login')}
+let E=null,UID='',VIEW='dashboard',UAT=runUAT();
+
+function startShared(){}
+let FORM={type:'buy',ccy:'USD',amt:'',rate:String(BOARD.USD.b),ext:'',override:'',com:'',to:'cash',cat:'6100',from:'cash',note:''};
+const D_=()=>E.day();
+const isLatest=()=>E.B.cur==E.B.days.length-1;
+const VIEWS=[['dashboard','Dashboard'],['transactions','Transactions'],['reconcile','Reconcile'],['reports','Reports'],['team','Team'],['settings','Settings'],['design','System design'],['controls','Controls'],['uat','UAT tests']];
+const STEPS=['Open day','Load opening balances','Record transactions','Reconcile accounts','Review variances','Submit','Approve','Lock day','Next-day opening'];
+const sp=s=>{const m={'Not opened':'p-mute','Open':'p-info','Returned':'p-warn','Submitted':'p-warn','Approved':'p-ok','Locked':'p-ok'};return`<span class="pill ${m[s]||'p-mute'}">${A(s)}</span>`};
+const chip=s=>{const c=/^(Balanced|Reconciled|Matched|Posted|Approved|Adjusted|Locked|Pass|OK)/.test(s)?'p-ok':/(Needs|Unmatched|Fail|Denied|Not counted|not entered|Recount|Rejected|Missing)/.test(s)?'p-bad':/(pending|Pending|Explained|Submitted|Returned|Monitoring|Reversed)/.test(s)?'p-warn':'p-mute';return`<span class="pill ${c}">${A(s)}</span>`};
+function toast(r){const t=$('#toast');t.textContent=r.msg;t.className='toast '+(r.ok?'ok':'bad');t.hidden=false;clearTimeout(toast.t);toast.t=setTimeout(()=>t.hidden=true,4800)}
+const DRAFT={};const DRX=/^(q-|c-safe|c-fx-|c-wit|b-|t-|rs-|rf-|rt-|rv-|ret-|tm-|rb-)/;
+const CLEAR={count:['q-','c-'],'stmt-bank':['b-'],'stmt-taaj':['t-'],reverse:['rv-'],returnDay:['ret-']};
+function clearDraft(pre){Object.keys(DRAFT).forEach(k=>{if(pre.some(x=>k.startsWith(x)))delete DRAFT[k]})}
+function act_artifact(a,p,key){if(SYNC.mode=='readonly'||SYNC.canWrite===false&&SYNC.mode!='local'){toast({ok:false,msg:'You have view-only access to these shared books. Ask the owner for Contributor access to make changes.'});return{ok:false}}
+ if(SYNC.mode=='empty'){toast({ok:false,msg:'Start the shared books first (button on the Dashboard).'});return{ok:false}}
+ if(SYNC.mode=='connecting'){toast({ok:false,msg:'Still connecting to the shared books. Try again in a moment.'});return{ok:false}}
+ E.acct=SYNC.acct;const r=E.act(UID,a,p||{});save(USERS[UID].name+': '+a);if(r.ok&&key)clearDraft(key);toast(r);render();return r}
+function act(a,p,key){if(!E||!SYNC.book)return{ok:false};
+ if(!WRITERS.includes(SYNC.role)){toast({ok:false,msg:'Your role is read only. You can read every report and the audit trail.'});return{ok:false}}
+ E.acct=myId();const r=E.act(UID,a,p||{});save((USERS[UID]||{}).name+': '+(r.ok?'':'refused · ')+a);if(r.ok&&key)clearDraft(key);toast(r);render();return r}
+const val=id=>{const e=document.getElementById(id);return e?e.value:''};
+
+/* ---------- header ---------- */
+$('#c-date').addEventListener('change',e=>{E.B.cur=+e.target.value;if(SYNC.mode=='local')persist();render()});
+function header(){webHeader();const D=D_();$('#c-date').innerHTML=E.B.days.map((d,i)=>`<option value="${i}" ${i==E.B.cur?'selected':''}>${new Date(d.date+'T12:00:00Z').toLocaleDateString('en-CA',{weekday:'short',day:'numeric',month:'short',year:'numeric',timeZone:'UTC'})} · ${d.status}</option>`).join('');
+ $('#c-status').innerHTML=sp(D.status);const sy=$('#c-sync');if(sy)sy.innerHTML=syncLabel();const st=stepIndex(E,D),cur=st.findIndex(x=>!x);
+ $('#rail').innerHTML=STEPS.map((s,i)=>`<li class="${st[i]?'done':i==cur?'cur':''}" ${i==cur?'aria-current="step"':''}><div class="bar"></div><span>${s}</span></li>`).join('');
+ $('#nav').innerHTML=VIEWS.map(([k,t])=>`<button type="button" data-view="${k}" ${VIEW==k?'aria-current="page"':''}>${t}</button>`).join('')}
+function render(){header();const D=D_();
+ const past=!isLatest()?`<div class="note warn"><span class="ic warn">!</span><span><b>You are viewing ${A(D.date)} (${A(D.status)}).</b> It is read-only. <button type="button" data-go-latest>Go to ${A(E.B.days[E.B.days.length-1].date)}</button></span></div>`:'';
+ const ae=document.activeElement,aid=ae&&ae.id&&ae.closest&&ae.closest('#app')?ae.id:'',ass=ae&&ae.selectionStart;
+ $('#app').innerHTML=`<div class="view">${past}${({dashboard:vDash,transactions:vTx,reconcile:vRec,reports:vRep,design:vDesign,controls:vCtl,uat:vUat,team:vTeam,settings:vSet})[VIEW]()}</div>`;
+ Object.keys(DRAFT).forEach(k=>{const el=document.getElementById(k);if(el&&!el.disabled)el.value=DRAFT[k]});
+ if(aid){const el=document.getElementById(aid);if(el&&el!==document.activeElement){el.focus();try{if(ass!=null)el.setSelectionRange(ass,ass)}catch(e){}}}
+ try{if(location.hash!=='#'+VIEW)history.replaceState(null,'','#'+VIEW)}catch(e){}}
+
+/* ---------- dashboard ---------- */
+function nextActions(D){const s=D.status,b=[],B=(a,l,pri,x)=>b.push(`<button type="button" class="${pri?'pri':''}" ${a.startsWith('view:')?`data-view="${a.slice(5)}"`:`data-act="${a}"`} ${x||''}>${l}</button>`);
+ if(!isLatest()){B('view:reports','Open the reports for this day',1);return b.join('')}
+ if(s=='Not opened')B('open','Open day and load opening balances',1);
+ else if(['Open','Returned'].includes(s)){const pr=Object.entries(D.rates).filter(([c,r])=>r.st!='Approved'),pa=D.adjs.filter(a=>a.status=='Pending approval');
+  B('view:transactions','Record a transaction',!D.counts);
+  if(!D.counts||!D.bank)B('view:reconcile','Enter counts and statements',!!D.js.length&&!D.counts);
+  else if(!D.recDone)B('completeRecon','Complete reconciliations',1);
+  if(pr.length)B('view:reconcile','Approve '+pr.length+' closing rate'+(pr.length==1?'':'s'));
+  pa.forEach(a=>B('approveAdj','Approve '+a.ref,1,`data-ref="${a.ref}"`));
+  if(D.recDone&&E.recs(D).some(r=>r.actual!=null&&Math.abs(r.variance)>.004&&!D.reasons[r.id]))B('view:reconcile','Explain variances',1);
+  B('submit','Submit day for approval',D.recDone&&!E.blockers(D).length)}
+ else if(s=='Submitted'){B('approve','Approve day',1);b.push('<button type="button" data-ret>Return for correction…</button>')}
+ else if(s=='Approved')B('lock','Lock day and close P&L',1);
+ else if(s=='Locked'&&!D.next)B('next','Generate next-day opening',1);
+ else if(s=='Locked'&&D.next)b.push(`<button type="button" class="pri" data-go-latest>Go to ${A(D.next.date)}</button>`);
+ return b.join('')}
+const FEATURES=[
+ ['Record transactions','Currency buy and sell, Taaj payout and settlement, expenses, till ↔ safe ↔ bank transfers, each with a live journal preview.','transactions','tx-form'],
+ ['Transaction register','Reference, time, staff, accounts, currency, amount, rate and rate source for every entry.','transactions','tx-register'],
+ ['Authorized reversal','Cancel a posted entry with an opposite journal and a reason. Posted entries are never edited.','transactions','tx-reversal'],
+ ['Cash, safe and FX counts','Till by denomination, the safe and every foreign currency, with a second counter as witness.','reconcile','rc-counts'],
+ ['Bank reconciliation','Statement balance and uncleared items against the books.','reconcile','rc-counts'],
+ ['Taaj settlement','Due from Taaj matched to the agent statement. Taaj receipts are never income.','reconcile','rc-taaj'],
+ ['Closing rates','Enter each currency rate with its source; a second person approves it.','reconcile','rc-rates'],
+ ['Variances and adjustments','Reason and reference for every difference; adjustments approved by someone else.','reconcile','rc-variances'],
+ ['Submit, approve, lock','Separation of duties enforced at every step. Locking closes income and expense to P&L.','dashboard','dash-next'],
+ ['Next-day opening','Carry balances forward and run the next business day.','reports','r-next'],
+ ['14 closing reports','Opening, register, trial balance, cash, bank, safe, FX stock, I&E, exceptions, branch summary and more.','reports','r-open'],
+ ['Realized and unrealized FX','Weighted-average cost, gains on sales and revaluation at closing rates.','reports','r-fxgl'],
+ ['Audit trail','Every action and refusal, with the signed-in account and a tamper-evident hash chain.','reports','r-staff'],
+ ['Exceptions','Variances, outstanding items, compliance flags and refused actions.','reports','r-exc'],
+ ['System design','Architecture, workflow states, data model, accounts and role permissions.','design',''],
+ ['Controls','Validation rules, blockers, exception handling and integrations.','controls',''],
+ ['UAT tests','30 automated acceptance tests that run on this page.','uat','']];
+function featureMap(){return`<section class="sec" id="dash-features"><div class="sec-h"><div><span class="eyebrow">Everything in this app</span><h2>Features</h2></div><p>What you can do depends on your role (see Team)</p></div>
+ <div class="feat">${FEATURES.map(([t,d,v,id])=>`<button type="button" class="ft" data-view="${v}" data-target="${id}"><b>${t}</b><span>${d}</span><em>Open →</em></button>`).join('')}</div></section>`}
+function vDash(){const D=D_(),ck=E.checks(D),bl=ck.filter(c=>!c.ok&&c.sev=='block'),p=E.pnl(D),fx=E.fxRows(D),unr=r2(fx.reduce((s,x)=>s+x.unr,0));
+ const ta=r2(ACC.filter(a=>a.cls=='A').reduce((s,a)=>s+E.bal(D,a.code).cad,0)),till=E.recs(D).find(r=>r.id=='till'),u=USERS[UID];
+ const who={Teller:'You prepare the day: record transactions, count, enter statements, explain variances and submit.',Manager:'You approve adjustments, closing rates and the day, then lock it. You cannot approve what you prepared or submitted.',Finance:'You set and approve closing rates, approve adjustments, reverse entries and can lock.',Auditor:'You can read everything. Every action you try is refused and logged.'}[u.role];
+ return`${onlineBanner()}<section class="sec"><div class="sec-h"><div><span class="eyebrow">${BRANCH} · ${A(D.date)}${D.opened?' · opened by '+A(D.opened.by):''}</span><h2>Daily closing</h2></div><p>Signed in as <b>${A(u.name)}</b>, ${A(u.title)}</p></div>
+ <p class="lede">${who}</p>
+ <div class="grid2"><div class="stack" id="dash-next"><h3>Next step</h3><div class="btns">${nextActions(D)}</div>
+  <div id="retbox" hidden class="field"><label for="ret-reason">Reason for returning the day</label><textarea id="ret-reason" placeholder="What must be corrected (at least 10 characters)"></textarea><div class="btns"><button type="button" class="dg" data-act="returnDay">Return to preparer</button></div></div>
+  ${D.status=='Locked'?`<div class="note ok"><span class="ic ok">✓</span><span><b>Day locked</b> by ${A(D.locked.by)} at ${A(D.locked.at.slice(11))}. Day result CAD ${fm(D.result)}. Posting to ${A(D.date)} is refused.</span></div>`:bl.length?`<div class="note bad"><span class="ic bad">!</span><span><b>${bl.length} blocker${bl.length==1?'':'s'}.</b> Submit and approval stay blocked until each is cleared.</span></div>`:D.status=='Not opened'?'':`<div class="note ok"><span class="ic ok">✓</span><span><b>No blockers.</b> The day can move to the next step.</span></div>`}
+  <div class="btns">${SYNC.canEdit&&!E.B.days.some(d=>d.status=='Locked')?`<button type="button" class="ghost" data-reset>Erase this book and start over</button>`:''}</div></div>
+ <div class="stack"><h3>Closing checks</h3><ul class="checks">${ck.map(c=>`<li><span class="ic ${c.ok?'ok':c.sev=='block'?'bad':'warn'}">${c.ok?'✓':'!'}</span><span>${A(c.text)}</span><span class="mu" style="font-size:12px">${c.ok?'':c.sev=='block'?'Blocks submit':'Warning'}</span></li>`).join('')}</ul></div></div></section>
+ <div class="kpis">
+  <div class="kpi"><small>Total assets (book)</small><b>CAD ${fm(ta)}</b><span>All currencies at carrying value</span></div>
+  <div class="kpi"><small>CAD till</small><b>CAD ${fm(till.expected)}</b><span>${till.actual==null?'Not counted yet':'Counted '+fm(till.actual)+' · variance '+fm(till.variance)}</span></div>
+  <div class="kpi"><small>Day result</small><b class="${p.net<0?'neg':'pos'}">CAD ${fm(D.status=='Locked'?D.result:p.net)}</b><span>Income ${fm(p.ti)} − expenses ${fm(p.te)}</span></div>
+  <div class="kpi"><small>Unrealized FX (memo)</small><b class="${unr<0?'neg':'pos'}">CAD ${fm(unr)}</b><span>At the day's closing rates</span></div></div>
+ ${featureMap()}
+ <div class="grid2"><section class="sec"><div class="sec-h"><h3>Balances by account and currency</h3><p>Foreign amounts are never added together</p></div>${balTable(D)}</section>
+ <section class="sec"><div class="sec-h"><h3>Recent activity</h3><p>Append-only audit trail</p></div><ul class="log">${E.B.audit.filter(a=>a.date==D.date).slice(-9).reverse().map(a=>`<li><time>${A(a.at.slice(11))}</time><span><b>${A(a.user)}</b> · ${A(a.action)} ${a.result=='Denied'?chip('Denied'):''}<br><span class="mu">${A(a.detail)}${a.acct?' · by '+A(acctName(a.acct)):''}</span></span></li>`).join('')||'<li><span></span><span class="mu">No activity yet.</span></li>'}</ul></section></div>`}
+function balTable(D){const rows=ACC.filter(a=>a.cls=='A').map(a=>{const b=E.bal(D,a.code);return`<tr><td><span class="tag">${a.code}</span> ${A(a.name)}</td><td>${a.ccy}</td><td class="n">${a.ccy=='CAD'?'—':fm(b.fc)}</td><td class="n">${fm(b.cad)}</td></tr>`}).join('');
+ const t=r2(ACC.filter(a=>a.cls=='A').reduce((s,a)=>s+E.bal(D,a.code).cad,0));return`<div class="tw"><table><thead><tr><th>Account</th><th>Ccy</th><th class="n">Foreign amount</th><th class="n">CAD (book)</th></tr></thead><tbody>${rows}</tbody><tfoot><tr><td colspan="3">Total assets in CAD</td><td class="n">${fm(t)}</td></tr></tfoot></table></div>`}
+
+/* ---------- transactions ---------- */
+function txFields(){const f=FORM,ccyOpt=`<select id="f-ccy" data-f="ccy">${CCYS.map(c=>`<option ${f.ccy==c?'selected':''}>${c}</option>`).join('')}</select>`,inp=(k,lab,ph,im)=>`<div class="field"><label for="f-${k}">${lab}</label><input id="f-${k}" data-f="${k}" value="${A(f[k])}" ${ph?`placeholder="${A(ph)}"`:''} ${im?'inputmode="decimal"':''}></div>`;
+ const t=f.type;let h='';
+ if(t=='buy'||t=='sell')h=`<div class="field"><label for="f-ccy">Currency</label>${ccyOpt}</div>${inp('amt','Amount ('+f.ccy+')','0.00',1)}${inp('rate',(t=='buy'?'Buy':'Sell')+' rate (CAD per '+f.ccy+')','',1)}${inp('ext','Customer KYC / ID reference','KYC-…')}${inp('override','Rate override reason (only if more than 2% from the board)','')}`;
+ else if(t=='payout')h=`${inp('amt','Amount paid to beneficiary (CAD)','0.00',1)}${inp('com','Commission earned (CAD)','0.00',1)}${inp('ext','Taaj remittance reference','TJ-…')}`;
+ else if(t=='settle')h=`${inp('amt','Amount received (CAD)','0.00',1)}<div class="field"><label for="f-to">Received into</label><select id="f-to" data-f="to"><option value="cash" ${f.to=='cash'?'selected':''}>Cash – till</option><option value="bank" ${f.to=='bank'?'selected':''}>Bank – RBC Operating</option></select></div>${inp('ext','Taaj settlement reference','TJ-SET-…')}`;
+ else if(t=='expense')h=`<div class="field"><label for="f-cat">Expense account</label><select id="f-cat" data-f="cat">${['6100','6200','6300','6400'].map(c=>`<option value="${c}" ${f.cat==c?'selected':''}>${c} ${A(AC[c].name)}</option>`).join('')}</select></div>${inp('amt','Amount (CAD)','0.00',1)}<div class="field"><label for="f-from">Paid from</label><select id="f-from" data-f="from"><option value="cash" ${f.from=='cash'?'selected':''}>Cash – till</option><option value="bank" ${f.from=='bank'?'selected':''}>Bank – RBC Operating</option></select></div>${inp('ext','Receipt / invoice reference','RCPT-…')}`;
+ else h=`${inp('amt','Amount (CAD)','0.00',1)}${inp('ext','Reference (optional)','')}`;
+ return h+inp('note','Note (optional)','')}
+function txPreview(){const D=D_(),b=buildTx(E,D,{...FORM,amt:+FORM.amt,rate:+FORM.rate,com:+FORM.com||0});
+ if(b.err)return`<div class="note warn"><span class="ic warn">!</span><span>${A(b.err)}</span></div>`;
+ const td=r2(b.lines.reduce((s,l)=>s+l.d,0)),tc=r2(b.lines.reduce((s,l)=>s+l.c,0));
+ return`<div class="tw"><table><thead><tr><th>Account</th><th class="n">Foreign</th><th class="n">Debit CAD</th><th class="n">Credit CAD</th></tr></thead><tbody>${b.lines.map(l=>`<tr><td><span class="tag">${l.a}</span> ${A(AC[l.a].name)}</td><td class="n">${AC[l.a].ccy=='CAD'?'—':fm(l.fc)+' @ '+rf(l.rate)}</td><td class="n">${l.d?fm(l.d):''}</td><td class="n">${l.c?fm(l.c):''}</td></tr>`).join('')}</tbody><tfoot><tr><td colspan="2">Total</td><td class="n">${fm(td)}</td><td class="n">${fm(tc)}</td></tr></tfoot></table></div><p class="mu" style="font-size:12.5px">${A(b.desc)}${b.gain!=null?' Realized FX '+(b.gain>=0?'gain':'loss')+' CAD '+fm(Math.abs(b.gain))+'.':''}</p>`}
+function regTable(D){return D.js.length?`<div class="tw"><table><thead><tr><th>Ref</th><th>Timestamp (PT)</th><th>Business date</th><th>Branch</th><th>Staff</th><th>Description</th><th>Debit account</th><th>Credit account</th><th>Ccy</th><th class="n">Amount</th><th class="n">Rate</th><th>Rate source</th><th class="n">CAD</th><th>Status</th></tr></thead><tbody>${D.js.map(j=>{const d=j.lines.filter(l=>l.d>0),c=j.lines.filter(l=>l.c>0),cad=r2(j.lines.reduce((s,l)=>s+l.d,0));
+  return`<tr><td class="ref">${j.ref}</td><td class="mono">${A(j.at)}</td><td class="mono">${A(D.date)}</td><td>${A(BCODE)}</td><td>${A(j.by)}${j.appr?'<br><span class="mu">appr. '+A(j.appr)+'</span>':''}</td><td style="min-width:240px">${A(j.desc)}</td><td>${d.map(l=>l.a+' '+A(AC[l.a].name)).join('<br>')}</td><td>${c.map(l=>l.a+' '+A(AC[l.a].name)).join('<br>')}</td><td>${j.ccy}</td><td class="n">${fm(j.amt)}</td><td class="n">${rf(j.rate)}</td><td class="mu" style="min-width:180px">${A(j.src)}</td><td class="n">${fm(cad)}</td><td>${chip(j.status)}</td></tr>`}).join('')}</tbody></table></div>`:'<p class="mu">No transactions recorded yet.</p>'}
+function trace(D){return D.js.length?D.js.map(j=>{const td=r2(j.lines.reduce((s,l)=>s+l.d,0)),tc=r2(j.lines.reduce((s,l)=>s+l.c,0));
+ return`<div class="je"><div class="je-h"><span class="ref">${j.ref}</span><span class="tag">${j.type}</span><span class="d">${A(j.kind)} · ${A(j.at.slice(11))} · ${A(j.by)}${j.appr?' · approved by '+A(j.appr):''}${j.reverses?' · reverses '+j.reverses:''}${j.revBy?' · reversed by '+j.revBy:''}</span></div>
+ <div class="tw" style="border:0;border-radius:0"><table><thead><tr><th>Account</th><th>Ccy</th><th class="n">Foreign amount</th><th class="n">Rate</th><th class="n">Debit CAD</th><th class="n">Credit CAD</th></tr></thead><tbody>${j.lines.map(l=>`<tr><td><span class="tag">${l.a}</span> ${A(AC[l.a].name)}</td><td>${AC[l.a].ccy}</td><td class="n">${AC[l.a].ccy=='CAD'?'—':fm(l.fc)}</td><td class="n">${AC[l.a].ccy=='CAD'?'1.0000':rf(l.rate)}</td><td class="n">${l.d?fm(l.d):''}</td><td class="n">${l.c?fm(l.c):''}</td></tr>`).join('')}</tbody><tfoot><tr><td colspan="4">Total</td><td class="n">${fm(td)}</td><td class="n">${fm(tc)}</td></tr></tfoot></table></div>
+ <div class="bal ${Math.abs(td-tc)<.005?'pos':'neg'}">${Math.abs(td-tc)<.005?'✓ Balanced':'✗ Out of balance'}</div></div>`}).join(''):'<p class="mu">No journal entries yet.</p>'}
+function vTx(){const D=D_(),can=['Teller','Manager'].includes(USERS[UID].role),editable=isLatest()&&['Open','Returned'].includes(D.status)&&!D.recDone,posted=D.js.filter(j=>j.type=='TX'&&j.status=='Posted');
+ const T=TXTYPES[FORM.type];
+ return`<section class="sec" id="tx-form"><div class="sec-h"><div><span class="eyebrow">Step 3</span><h2>Record a transaction</h2></div><p>Every transaction posts a balanced journal in CAD and keeps the original currency, amount and rate</p></div>
+ ${!editable?`<div class="note info"><span class="ic info">i</span><span>${D.status=='Not opened'?'Open the day first.':D.recDone&&['Open','Returned'].includes(D.status)?'Reconciliations are complete. Reopen them on the Reconcile tab to record more transactions.':'This day is '+A(D.status.toLowerCase())+'; recording is closed.'}</span></div>`:''}
+ ${editable&&!can?`<div class="note warn"><span class="ic warn">!</span><span>${A(USERS[UID].title.split(' · ')[0])} cannot record transactions. Ask a Teller or Manager to record them.</span></div>`:''}
+ <div class="grid2"><div class="stack"><div class="field"><label for="f-type">Transaction type</label><select id="f-type" data-f="type">${Object.entries(TXTYPES).map(([k,v])=>`<option value="${k}" ${FORM.type==k?'selected':''}>${A(v.t)}</option>`).join('')}</select><span class="mu" style="font-size:12.5px">${A(T.d)}</span></div>
+  <div class="fgrid">${txFields()}</div><div class="btns"><button type="button" class="pri" data-act="record" ${editable?'':'disabled'}>Post transaction</button><button type="button" class="ghost" data-clear>Clear</button></div></div>
+  <div class="stack"><h3>Journal preview</h3><div id="txpv">${txPreview()}</div>
+  <p class="mu" style="font-size:12.5px">Board rates today: ${CCYS.map(c=>c+' buy '+rf(BOARD[c].b)+' / sell '+rf(BOARD[c].s)).join(' · ')}.</p></div></div></section>
+ <section class="sec" id="tx-register"><div class="sec-h"><div><span class="eyebrow">Report 2</span><h2>Daily transaction register</h2></div><p>${D.js.filter(j=>j.type=='TX').length} transactions · ${D.js.length} journals</p></div>${regTable(D)}</section>
+ <section class="sec" id="tx-reversal"><div class="sec-h"><div><span class="eyebrow">Controlled change</span><h3>Authorized reversal</h3></div><p>Posted entries are never edited</p></div>
+  <p class="lede">A reversal posts the same lines on opposite sides and links both entries. Only a Manager or Finance can reverse, a reason is required, and reconciliations must be reopened first so the counts are checked again.</p>
+  <div class="grid3"><div class="field"><label for="rv-ref">Transaction</label><select id="rv-ref">${posted.map(j=>`<option value="${j.ref}">${j.ref} · ${A(j.kind)} · ${j.ccy} ${fm(j.amt)}</option>`).join('')||'<option value="">Nothing to reverse</option>'}</select></div>
+  <div class="field" style="grid-column:span 2"><label for="rv-reason">Reason (required)</label><input id="rv-reason" placeholder="Why this entry is being reversed"></div></div>
+  <div class="btns"><button type="button" class="dg" data-act="reverse">Post reversal</button></div></section>
+ <section class="sec"><div class="sec-h"><div><span class="eyebrow">Report 13</span><h2>Journal-entry trace</h2></div><p>Every journal and its balanced lines</p></div><div class="stack">${trace(D)}</div></section>`}
+
+/* ---------- reconcile ---------- */
+function recTable(D,edit){const rs=E.recs(D);return`<div class="tw"><table><thead><tr><th>Reconciliation</th><th>Account</th><th>Ccy</th><th class="n">Expected</th><th class="n">Actual</th><th class="n">Variance</th><th class="n">Variance CAD</th><th>Reason</th><th>Supporting ref</th><th>Status</th>${edit?'<th>Action</th>':''}</tr></thead><tbody>${rs.map(r=>{const needs=r.actual!=null&&Math.abs(r.variance)>.004;
+ let ac='';if(edit&&needs){if(!D.reasons[r.id]&&!r.adj)ac=`<div class="mini"><input id="rs-${r.id}" placeholder="Reason (10+ characters)" aria-label="Reason for ${A(r.acct)}"><input id="rf-${r.id}" placeholder="Reference" aria-label="Reference for ${A(r.acct)}"><button type="button" data-act="reason" data-id="${r.id}">Save reason</button></div>`;
+  else if(r.adjustable&&!r.adj)ac=`<button type="button" class="pri" data-act="raiseAdj" data-id="${r.id}">Raise adjustment</button>`;
+  else if(r.adj&&r.adj.status=='Pending approval')ac=`<button type="button" class="pri" data-act="approveAdj" data-ref="${r.adj.ref}">Approve ${r.adj.ref}</button>`}
+ return`<tr><td>${A(r.area)}</td><td>${A(r.acct)}</td><td>${r.ccy}</td><td class="n">${fm(r.expected)}</td><td class="n">${r.actual==null?'—':fm(r.actual)}</td><td class="n ${r.variance<-.004?'neg':r.variance>.004?'wn':''}">${r.actual==null?'—':fm(r.variance)}</td><td class="n">${r.actual==null?'—':fm(r.cadVar)}</td><td style="min-width:200px">${A(r.reason)||'<span class="mu">—</span>'}</td><td class="mono" style="font-size:12px">${A(r.ref)}</td><td>${chip(r.status)}</td>${edit?`<td style="min-width:220px">${ac}</td>`:''}</tr>`}).join('')}</tbody></table></div>`}
+function vRec(){const D=D_(),open=isLatest()&&['Open','Returned'].includes(D.status),editC=open&&!D.recDone,C=D.counts||{till:{},fx:{},safe:'',witness:''},held=E.held(D);
+ const tillRows=CASH_DENOMS.map(d=>`<tr><td class="n">${d>=1?d.toFixed(0):d.toFixed(2)}</td><td class="n"><input class="qty" type="number" min="0" step="1" id="q-${String(d).replace('.','_')}" data-den="${d}" value="${C.till[d]==null?'':C.till[d]}" ${editC?'':'disabled'} aria-label="Quantity of CAD ${d}"></td></tr>`).join('');
+ const R=E.recs(D),pend=D.adjs;
+ return`<section class="sec" id="rc-counts"><div class="sec-h"><div><span class="eyebrow">Step 4</span><h2>Counts and statements</h2></div><p>Expected comes from the ledger; actual comes from a count or a statement</p></div>
+ ${D.status=='Not opened'?'<div class="note info"><span class="ic info">i</span><span>Open the day first.</span></div>':''}
+ <div class="grid3"><div class="stack"><h3>Till · CAD denominations</h3><div class="tw"><table><thead><tr><th class="n">Denomination</th><th class="n">Quantity</th></tr></thead><tbody>${tillRows}</tbody><tfoot><tr><td>Expected</td><td class="n">${fm(E.bal(D,'1000').cad)}</td></tr></tfoot></table></div></div>
+ <div class="stack"><h3>Safe and foreign currency</h3><div class="field"><label for="c-safe">Safe · CAD counted</label><input id="c-safe" inputmode="decimal" value="${A(C.safe)}" ${editC?'':'disabled'}><span class="mu" style="font-size:12px">Expected ${fm(E.bal(D,'1005').cad)}</span></div>
+  ${held.map(c=>`<div class="field"><label for="c-fx-${c}">${c} counted</label><input id="c-fx-${c}" inputmode="decimal" value="${A(C.fx[c]==null?'':C.fx[c])}" ${editC?'':'disabled'}><span class="mu" style="font-size:12px">Expected ${fm(E.bal(D,FXA[c]).fc)} ${c}</span></div>`).join('')}
+  <div class="field"><label for="c-wit">Second counter (witness)</label><input id="c-wit" value="${A(C.witness||'')}" placeholder="Name of a second person" ${editC?'':'disabled'}></div>
+  <div class="btns"><button type="button" class="pri" data-act="count" ${editC?'':'disabled'}>Save counts</button><button type="button" class="ghost" data-fill ${editC?'':'disabled'} title="Demo convenience: copies the expected figures into the count">Fill with expected (demo)</button></div></div>
+ <div class="stack"><h3>Bank statement · RBC Operating</h3><div class="field"><label for="b-stmt">Statement closing balance (CAD)</label><input id="b-stmt" inputmode="decimal" value="${A(D.bank?D.bank.stmt:'')}" ${editC?'':'disabled'}><span class="mu" style="font-size:12px">Books ${fm(E.bal(D,'1010').cad)}</span></div>
+  <div class="field"><label for="b-ref">Statement reference</label><input id="b-ref" value="${A(D.bank?D.bank.ref:'')}" placeholder="e.g. RBC statement ${A(D.date)}" ${editC?'':'disabled'}></div>
+  <div class="field"><label for="b-items">Reconciling items: one per line, "reference; description; amount" (minus for uncleared payments)</label><textarea id="b-items" ${editC?'':'disabled'} placeholder="CHQ 1042; Cheque to landlord; -50">${A(D.bank?D.bank.items.map(i=>i.ref+'; '+i.desc+'; '+i.amt).join('\n'):'')}</textarea></div>
+  <div class="btns"><button type="button" class="pri" data-act="stmt-bank" ${editC?'':'disabled'}>Save bank statement</button></div>
+  <h3>Taaj settlement statement</h3><div class="field"><label for="t-stmt">Balance due per Taaj (CAD)</label><input id="t-stmt" inputmode="decimal" value="${A(D.taaj?D.taaj.stmt:'')}" ${editC?'':'disabled'}><span class="mu" style="font-size:12px">Books ${fm(E.bal(D,'1210').cad)}</span></div>
+  <div class="field"><label for="t-ref">Statement reference</label><input id="t-ref" value="${A(D.taaj?D.taaj.ref:'')}" placeholder="TJ-STMT-…" ${editC?'':'disabled'}></div>
+  <div class="btns"><button type="button" class="pri" data-act="stmt-taaj" ${editC?'':'disabled'}>Save Taaj statement</button></div></div></div>
+ <div class="btns">${open&&!D.recDone?'<button type="button" class="pri" data-act="completeRecon">Complete reconciliations</button>':''}${open&&D.recDone?'<button type="button" data-act="reopenRecon">Reopen reconciliations</button>':''}</div></section>
+ <section class="sec" id="rc-variances"><div class="sec-h"><div><span class="eyebrow">Step 5</span><h2>Variance review</h2></div><p>Every variance needs a reason and a reference; cash and stock variances also need an adjustment approved by someone else</p></div>${recTable(D,open)}
+  ${pend.length?`<div class="tw"><table><thead><tr><th>Adjustment</th><th>Account</th><th class="n">Amount</th><th class="n">CAD</th><th>Raised by</th><th>Decision</th><th>Status</th></tr></thead><tbody>${pend.map(a=>`<tr><td class="ref">${a.ref}</td><td>${A(a.code+' '+AC[a.code].name)}</td><td class="n">${fm(a.fc)} ${a.ccy}</td><td class="n">${fm(a.cad)}</td><td>${A(a.by)}</td><td>${A(a.apprBy||'—')}${a.note?'<br><span class="mu">'+A(a.note)+'</span>':''}</td><td>${chip(a.status)}${a.status=='Pending approval'&&open?` <button type="button" data-act="rejectAdj" data-ref="${a.ref}">Reject…</button>`:''}</td></tr>`).join('')}</tbody></table></div>`:''}</section>
+ <section class="sec" id="rc-rates"><div class="sec-h"><div><span class="eyebrow">FX handling</span><h2>Closing rates</h2></div><p>Each rate keeps its value, source, who entered it and who approved it</p></div>
+  <div class="tw"><table><thead><tr><th>Ccy</th><th class="n">Closing rate</th><th>Source</th><th>Entered by</th><th>Status</th><th>Set a new rate</th><th></th></tr></thead><tbody>${held.map(c=>{const r=D.rates[c]||{};return`<tr><td><b>${c}</b></td><td class="n">${r.r?rf(r.r):'—'}</td><td style="min-width:200px">${A(r.src||'')}</td><td>${A(r.by||'')}${r.ap?'<br><span class="mu">approved by '+A(r.ap)+'</span>':''}</td><td>${chip(r.st||'Missing')}</td>
+   <td><div class="mini"><input id="rt-${c}" inputmode="decimal" placeholder="Rate" aria-label="${c} rate" ${open?'':'disabled'}><input id="rs-src-${c}" placeholder="Source" aria-label="${c} source" ${open?'':'disabled'}><button type="button" data-act="rateSet" data-ccy="${c}" ${open?'':'disabled'}>Set</button></div></td>
+   <td>${r.st&&r.st!='Approved'&&open?`<button type="button" class="pri" data-act="rateAp" data-ccy="${c}">Approve</button>`:''}</td></tr>`}).join('')}</tbody></table></div></section>
+ ${R.some(r=>r.id=='taaj')?secTaaj(D).replace('<section class="sec">','<section class="sec" id="rc-taaj">'):''}`}
+function secTaaj(D){const b=E.bal(D,'1210').cad,mv=D.js.filter(j=>j.lines.some(l=>l.a=='1210'));
+ return`<section class="sec"><div class="sec-h"><div><span class="eyebrow">Remittance settlement</span><h3>1210 Due from Taaj System</h3></div>${chip(D.taaj?(Math.abs(D.taaj.stmt-b)<.005?'Matched':'Unmatched'):'Statement not entered')}</div>
+ <div class="callout"><h3>Taaj System is a settlement asset, not income</h3><p>When we pay a Taaj remittance out of our cash, Taaj owes us that money, so it sits in <b>1210 Due from Taaj System</b>, an asset. When Taaj pays us, in cash or by bank, the receivable goes down: <span class="mono">Dr Cash / Cr 1210</span>. Only the commission Taaj pays us is income (4100).</p></div>
+ <div class="tw"><table><thead><tr><th>Movement</th><th>Ref</th><th class="n">CAD</th></tr></thead><tbody><tr><td>Opening balance due</td><td class="ref">${A((D.openFrom||{}).ref||'')}</td><td class="n">${fm(((D.opening||{})['1210']||{cad:0}).cad)}</td></tr>${mv.map(j=>{const v=j.lines.filter(l=>l.a=='1210').reduce((s,l)=>s+l.d-l.c,0);return`<tr><td>${A(j.kind)}${j.status=='Reversed'?' (reversed)':''}</td><td class="ref">${j.ref}</td><td class="n">${fm(v)}</td></tr>`}).join('')}</tbody>
+ <tfoot><tr><td colspan="2">Ledger balance 1210</td><td class="n">${fm(b)}</td></tr><tr><td colspan="2">Taaj statement ${A(D.taaj?D.taaj.ref:'')}</td><td class="n">${D.taaj?fm(D.taaj.stmt):'—'}</td></tr><tr><td colspan="2">Difference</td><td class="n">${D.taaj?fm(D.taaj.stmt-b):'—'}</td></tr></tfoot></table></div></section>`}
+
+/* ---------- reports ---------- */
+const REPORTS=[['r-open','1. Opening balances'],['r-reg','2. Transaction register'],['r-close','3. Account closing & trial balance'],['r-cash','4. Cash variance'],['r-bank','5. Bank reconciliation'],['r-safe','6. Safe reconciliation'],['r-fx','7. Multi-currency stock & closing'],['r-fxgl','7a. Realized & unrealized FX'],['r-taaj','7b. Remittance settlement'],['r-ie','8. Income & expense'],['r-exc','9. Exceptions'],['r-branch','10. Branch summary'],['r-staff','11. Staff activity & approvals'],['r-next','12. Next-day opening'],['r-trace','13. Journal-entry trace']];
+const repHead=(D,id,title,sub)=>`<div class="sec-h" id="${id}"><div><span class="eyebrow">BRIMAPAY · ${BRANCH} · ${A(D.date)}</span><h2>${title}</h2></div><p>${sub||''}</p></div>`;
+function vRep(){const D=D_(),p=E.pnl(D),fx=E.fxRows(D),op=D.opening||{};
+ const openRows=ACC.filter(a=>a.bs).map(a=>{const o=op[a.code]||{fc:0,cad:0};return`<tr><td><span class="tag">${a.code}</span> ${A(a.name)}</td><td>${A(a.grp)}</td><td>${a.ccy}</td><td class="n">${a.ccy=='CAD'?'—':fm(o.fc)}</td><td class="n">${o.cad>0?fm(o.cad):''}</td><td class="n">${o.cad<0?fm(-o.cad):''}</td></tr>`}).join('');
+ let td=0,tc=0;Object.values(op).forEach(o=>{if(o.cad>0)td+=o.cad;else tc-=o.cad});
+ const clos=ACC.map(a=>{const o=op[a.code]||{fc:0,cad:0};let d=0,c=0;D.js.filter(j=>j.type!='CL').forEach(j=>j.lines.forEach(l=>{if(l.a==a.code){d+=l.d;c+=l.c}}));return{a,o,d:r2(d),c:r2(c),b:E.bal(D,a.code)}}).filter(x=>Math.abs(x.o.cad)>.004||x.d||x.c);
+ const tot=k=>r2(clos.reduce((s,x)=>s+k(x),0));
+ const sales=D.js.filter(j=>j.tt=='sell'&&j.status!='Reversed');
+ const unrTot=r2(fx.reduce((s,x)=>s+x.unr,0));
+ const nextRows=ACC.map(a=>{const b=a.bs?E.bal(D,a.code,true):{fc:0,cad:0};let cad=b.cad;if(a.code=='3900'&&D.status!='Locked')cad=r2(E.bal(D,'3900').cad-p.net);return{a,fc:a.bs?b.fc:0,cad:a.bs?cad:0}}).filter(x=>Math.abs(x.cad)>.004||!x.a.bs);
+ const exc=[];E.recs(D).filter(r=>r.actual!=null&&Math.abs(r.variance)>.004).forEach(r=>exc.push([r.acct+' variance '+fm(r.variance)+' '+r.ccy+' (CAD '+fm(r.cadVar)+')',r.adjustable?'Medium':'High','Branch Manager',r.reason?'Reason: '+r.reason:'Needs reason and reference',r.status]));
+ if(D.bank)D.bank.items.forEach(i=>exc.push(['Outstanding bank item '+i.ref+' CAD '+fm(i.amt),'Low','Finance','Clears automatically; escalates after 7 days','Monitoring']));
+ fx.filter(x=>x.unr<-.004).forEach(x=>exc.push([x.c+' unrealized loss CAD '+fm(x.unr),'Info','Treasury','Review exposure limit','Noted']));
+ D.js.filter(j=>j.big).forEach(j=>exc.push([j.ref+' is CAD 10,000 or more','Medium','Compliance','FINTRAC large cash transaction report',j.status=='Reversed'?'Reversed':'Review']));
+ const den=E.B.audit.filter(a=>a.date==D.date&&a.result=='Denied').length;exc.push(['Refused actions in the audit trail: '+den,den?'Low':'Info','Internal audit','Review for training or misuse','Noted']);
+ const by={};E.B.audit.filter(a=>a.date==D.date).forEach(a=>{const g=by[a.user]||(by[a.user]={role:a.role,n:0,tx:0,ap:0,den:0});g.n++;if(a.action=='Post transaction'&&a.result=='OK')g.tx++;if(/Approve|Lock|Return/.test(a.action)&&a.result=='OK')g.ap++;if(a.result=='Denied')g.den++});
+ const sod=[['Preparer ≠ day approver',!D.approved||(D.approved.by!=(D.submitted||{}).by&&D.approved.by!=(D.opened||{}).by)],['Adjustment raiser ≠ adjustment approver',D.adjs.every(a=>!a.apprBy||a.apprBy!=a.by)],['Closing-rate enterer ≠ approver',Object.values(D.rates).every(r=>!r.ap||r.ap!=r.by)]];
+ return`<section class="sec"><div class="sec-h"><div><span class="eyebrow">Report pack · ${A(D.date)}</span><h2>Closing reports</h2></div><p>${D.status=='Locked'?'Final: the day is locked':'Live view of the day in progress'}</p></div><div class="rep-nav">${REPORTS.map(([id,t])=>`<button type="button" data-jump="${id}">${t}</button>`).join('')}</div></section>
+ <section class="sec">${repHead(D,'r-open','1. Opening balances','Carried forward from '+A((D.openFrom||{}).ref||'')+', approved by '+A((D.openFrom||{}).approvedBy||'')+(D.status=='Not opened'?' · loads when the day is opened':''))}
+ <div class="tw"><table><thead><tr><th>Account</th><th>Type</th><th>Ccy</th><th class="n">Foreign amount</th><th class="n">Debit CAD</th><th class="n">Credit CAD</th></tr></thead><tbody>${openRows}</tbody><tfoot><tr><td colspan="4">Total</td><td class="n">${fm(td)}</td><td class="n">${fm(tc)}</td></tr></tfoot></table></div>
+ <p class="mu" style="font-size:12.5px">Income and expense accounts open at zero. No field can change these figures; a correction needs an authorized adjustment.</p></section>
+ <section class="sec">${repHead(D,'r-reg','2. Transaction register',D.js.length+' journals')}${regTable(D)}</section>
+ <section class="sec">${repHead(D,'r-close','3. Account closing and trial balance','Before the P&L closing entry')}
+ <div class="tw"><table><thead><tr><th>Account</th><th>Ccy</th><th class="n">Opening CAD</th><th class="n">Debits CAD</th><th class="n">Credits CAD</th><th class="n">Closing foreign</th><th class="n">Closing Dr CAD</th><th class="n">Closing Cr CAD</th><th>Next day</th></tr></thead><tbody>${clos.map(x=>`<tr><td><span class="tag">${x.a.code}</span> ${A(x.a.name)}</td><td>${x.a.ccy}</td><td class="n">${fm(x.o.cad)}</td><td class="n">${x.d?fm(x.d):''}</td><td class="n">${x.c?fm(x.c):''}</td><td class="n">${x.a.ccy=='CAD'?'—':fm(x.b.fc)}</td><td class="n">${x.b.cad>0?fm(x.b.cad):''}</td><td class="n">${x.b.cad<0?fm(-x.b.cad):''}</td><td>${x.a.bs?'<span class="mu">Carry forward</span>':'<b>Close to 3900 P&amp;L</b>'}</td></tr>`).join('')}</tbody>
+ <tfoot><tr><td colspan="3">Trial balance</td><td class="n">${fm(tot(x=>x.d))}</td><td class="n">${fm(tot(x=>x.c))}</td><td></td><td class="n">${fm(tot(x=>x.b.cad>0?x.b.cad:0))}</td><td class="n">${fm(tot(x=>x.b.cad<0?-x.b.cad:0))}</td><td>${Math.abs(tot(x=>x.b.cad))<.005?'<span class="pos">Balanced</span>':'<span class="neg">Out of balance</span>'}</td></tr></tfoot></table></div></section>
+ <section class="sec">${repHead(D,'r-cash','4. Cash variance','Till, safe, bank, foreign notes and Taaj')}${recTable(D,false)}${D.counts?`<p class="mu" style="font-size:12.5px">Till counted by ${A(D.counts.by)}${D.counts.witness?', witnessed by '+A(D.counts.witness):''}: ${CASH_DENOMS.filter(d=>D.counts.till[d]).map(d=>D.counts.till[d]+' × '+(d>=1?d:d.toFixed(2))).join(', ')} = CAD ${fm(E.tillTotal(D))}.</p>`:''}</section>
+ <div class="grid2"><section class="sec">${repHead(D,'r-bank','5. Bank reconciliation','RBC Operating')}${bankRec(D)}</section><section class="sec">${repHead(D,'r-safe','6. Safe reconciliation','Dual control')}${safeRec(D)}</section></div>
+ <section class="sec">${repHead(D,'r-fx','7. Multi-currency stock and closing','Each currency on its own; CAD totals only')}
+ <div class="tw"><table><thead><tr><th>Ccy</th><th class="n">Opening</th><th class="n">Bought</th><th class="n">Sold</th><th class="n">Adjusted</th><th class="n">Closing amount</th><th class="n">Book rate (avg cost)</th><th class="n">Book CAD</th><th class="n">Closing rate</th><th>Rate source</th><th class="n">CAD at closing rate</th><th class="n">Unrealized CAD</th></tr></thead><tbody>${fx.map(x=>`<tr><td><b>${x.c}</b></td><td class="n">${fm(x.open.fc)}</td><td class="n">${x.bought?fm(x.bought):'—'}</td><td class="n">${x.sold?fm(x.sold):'—'}</td><td class="n">${x.adj?fm(x.adj):'—'}</td><td class="n"><b>${fm(x.fc)}</b></td><td class="n">${rf(x.avg)}</td><td class="n">${fm(x.book)}</td><td class="n">${rf(x.cr)}</td><td class="mu" style="min-width:180px">${A(x.rsrc)} ${x.rst!='Approved'?chip(x.rst):''}</td><td class="n">${fm(x.val)}</td><td class="n ${x.unr<0?'neg':'pos'}">${fm(x.unr)}</td></tr>`).join('')}</tbody>
+ <tfoot><tr><td colspan="7">Total in CAD (foreign columns are not added)</td><td class="n">${fm(fx.reduce((s,x)=>s+x.book,0))}</td><td colspan="2"></td><td class="n">${fm(fx.reduce((s,x)=>s+x.val,0))}</td><td class="n">${fm(unrTot)}</td></tr></tfoot></table></div></section>
+ <section class="sec">${repHead(D,'r-fxgl','7a. Realized and unrealized FX','Weighted average cost method')}
+ ${sales.length?`<div class="tw"><table><thead><tr><th>Sale</th><th class="n">Amount</th><th class="n">Sell rate</th><th class="n">CAD received</th><th class="n">Average cost</th><th class="n">Cost CAD</th><th class="n">Realized CAD</th></tr></thead><tbody>${sales.map(j=>`<tr><td class="ref">${j.ref}</td><td class="n">${j.ccy} ${fm(j.amt)}</td><td class="n">${rf(j.rate)}</td><td class="n">${fm(r2(j.amt*j.rate))}</td><td class="n">${rf(j.avg)}</td><td class="n">${fm(j.cost)}</td><td class="n ${j.gain<0?'neg':'pos'}">${fm(j.gain)}</td></tr>`).join('')}</tbody></table></div>`:'<p class="mu">No currency sold today, so no realized FX.</p>'}
+ ${(()=>{const u=fx.find(x=>x.c=='USD'),buy=D.js.find(j=>j.tt=='buy'&&j.ccy=='USD'&&j.status!='Reversed');if(!u)return'';const o=u.open;return`<div class="formula">USD opening stock   ${fm(o.fc)}   book CAD ${fm(o.cad)}${o.fc?'   (avg '+rf(o.cad/o.fc)+')':''}
+${buy?`${buy.ref} purchase    USD ${fm(buy.amt)} × ${rf(buy.rate)} = CAD ${fm(r2(buy.amt*buy.rate))}   (${A(buy.src)})
+`:''}${sales.filter(j=>j.ccy=='USD').map(j=>`${j.ref} sale        USD ${fm(j.amt)} × ${rf(j.rate)} = CAD ${fm(r2(j.amt*j.rate))};  cost USD ${fm(j.amt)} × ${rf(j.avg)} = CAD ${fm(j.cost)}
+  REALIZED FX       ${fm(r2(j.amt*j.rate))} − ${fm(j.cost)} = CAD ${fm(j.gain)}   → 4200`).join('\n')}
+USD closing stock   ${fm(u.fc)}   book CAD ${fm(u.book)}
+  at closing rate   USD ${fm(u.fc)} × ${rf(u.cr)} = CAD ${fm(u.val)}   (${A(u.rsrc)})
+  UNREALIZED FX     ${fm(u.val)} − ${fm(u.book)} = CAD ${fm(u.unr)}   (memo; posted by month-end revaluation)${buy?`
+  of which ${buy.ref} lot (memo): USD ${fm(buy.amt)} × (${rf(u.cr)} − ${rf(buy.rate)}) = CAD ${fm(r2(buy.amt*(u.cr-buy.rate)))}`:''}</div>`})()}
+ <p class="mu" style="font-size:12.5px">Realized gain or loss arises only when foreign currency is sold. Unrealized gain or loss on stock held: CAD ${fm(unrTot)} across all currencies at the day's closing rates.</p></section>
+ ${secTaaj(D).replace('<section class="sec">','<section class="sec" id="r-taaj">')}
+ <section class="sec">${repHead(D,'r-ie','8. Income and expense','Closed to 3900 at lock')}
+ <div class="tw"><table><thead><tr><th>Account</th><th class="n">CAD</th></tr></thead><tbody><tr class="sub"><td colspan="2">Income</td></tr>${p.inc.filter(x=>Math.abs(x.v)>.004).map(x=>`<tr><td><span class="tag">${x.a.code}</span> ${A(x.a.name)}</td><td class="n">${fm(x.v)}</td></tr>`).join('')||'<tr><td class="mu">None</td><td></td></tr>'}<tr class="sub"><td>Total income</td><td class="n">${fm(p.ti)}</td></tr><tr class="sub"><td colspan="2">Expenses</td></tr>${p.exp.filter(x=>Math.abs(x.v)>.004).map(x=>`<tr><td><span class="tag">${x.a.code}</span> ${A(x.a.name)}</td><td class="n">${fm(x.v)}</td></tr>`).join('')||'<tr><td class="mu">None</td><td></td></tr>'}<tr class="sub"><td>Total expenses</td><td class="n">${fm(p.te)}</td></tr></tbody><tfoot><tr><td>Day result</td><td class="n ${p.net<0?'neg':'pos'}">${fm(p.net)}</td></tr></tfoot></table></div>
+ <p class="mu" style="font-size:12.5px">Not income: Taaj settlements (a receivable collected), currency purchases (an asset swap) and transfers between your own accounts. Unrealized FX of CAD ${fm(unrTot)} is a memo in report 7.</p></section>
+ <section class="sec">${repHead(D,'r-exc','9. Exceptions','Raised automatically, each with an owner')}
+ <div class="tw"><table><thead><tr><th>Exception</th><th>Severity</th><th>Owner</th><th>Action</th><th>Status</th></tr></thead><tbody>${exc.map(e=>`<tr><td>${A(e[0])}</td><td>${chip(e[1])}</td><td>${A(e[2])}</td><td class="mu">${A(e[3])}</td><td>${chip(e[4])}</td></tr>`).join('')}</tbody></table></div></section>
+ <section class="sec">${repHead(D,'r-branch','10. Branch summary','All branches for '+A(D.date))}
+ <div class="tw"><table><thead><tr><th>Branch</th><th>Status</th><th>Prepared by</th><th>Approved by</th><th class="n">Cash variance CAD</th><th class="n">Open blockers</th><th class="n">Day result CAD</th></tr></thead><tbody>
+ <tr><td><b>Vancouver</b> <span class="mu">(live)</span></td><td>${sp(D.status)}</td><td>${A((D.opened||{}).by||'—')}</td><td>${A((D.approved||{}).by||'—')}</td><td class="n">${fm(E.recs(D).filter(r=>r.ccy=='CAD'&&r.adjustable).reduce((s,r)=>s+r.cadVar,0))}</td><td class="n">${E.blockers(D).length}</td><td class="n">${fm(D.status=='Locked'?D.result:p.net)}</td></tr>
+ <tr><td>Surrey <span class="sample">illustrative</span></td><td>${sp('Locked')}</td><td>Hodan</td><td>Yusuf</td><td class="n">0.00</td><td class="n">0</td><td class="n">418.20</td></tr>
+ <tr><td>Calgary <span class="sample">illustrative</span></td><td>${sp('Submitted')}</td><td>Musa</td><td>—</td><td class="n">−10.00</td><td class="n">0</td><td class="n">96.75</td></tr></tbody></table></div></section>
+ <section class="sec">${repHead(D,'r-staff','11. Staff activity and approvals','From the audit trail')}
+ <div class="tw"><table><thead><tr><th>Staff</th><th>Role</th><th class="n">Actions</th><th class="n">Transactions posted</th><th class="n">Approvals / locks</th><th class="n">Refused</th></tr></thead><tbody>${Object.entries(by).map(([u,g])=>`<tr><td><b>${A(u)}</b></td><td>${A(g.role)}</td><td class="n">${g.n}</td><td class="n">${g.tx}</td><td class="n">${g.ap}</td><td class="n">${g.den}</td></tr>`).join('')}</tbody></table></div>
+ <ul class="checks">${sod.map(([t,ok])=>`<li><span class="ic ${ok?'ok':'bad'}">${ok?'✓':'!'}</span><span>${t}</span><span></span></li>`).join('')}</ul>
+ <div class="tw"><table><thead><tr><th>#</th><th>Time</th><th>Staff</th><th>Action</th><th>Result</th><th>Ref</th><th>Detail</th><th>Hash</th></tr></thead><tbody>${E.B.audit.filter(a=>a.date==D.date).map(a=>`<tr><td class="n">${a.seq}</td><td class="mono">${A(a.at.slice(11))}</td><td>${A(a.user)}${a.acct?'<br><span class="mu">'+A(acctName(a.acct))+'</span>':''}</td><td>${A(a.action)}</td><td>${chip(a.result)}</td><td class="ref">${A(a.ref)}</td><td style="min-width:220px">${A(a.detail)}</td><td class="mono mu">${a.hash}</td></tr>`).join('')}</tbody></table></div>
+ <p class="mu" style="font-size:12.5px">Hash chain ${chain(E.B.audit)?'<span class="pos">intact</span>':'<span class="neg">broken</span>'}: each entry's hash includes the previous one, so editing or deleting history is detectable.</p></section>
+ <section class="sec">${repHead(D,'r-next','12. Next-day opening · '+addD(D.date,1),D.next?'Generated by '+A(D.next.by)+' from the locked close':'Preview. Final once the day is locked.')}
+ <div class="tw"><table><thead><tr><th>Account</th><th>Ccy</th><th class="n">Opening foreign</th><th class="n">Opening Dr CAD</th><th class="n">Opening Cr CAD</th><th>Source</th></tr></thead><tbody>${nextRows.map(x=>`<tr><td><span class="tag">${x.a.code}</span> ${A(x.a.name)}</td><td>${x.a.ccy}</td><td class="n">${x.a.ccy=='CAD'?'—':fm(x.fc)}</td><td class="n">${x.cad>0?fm(x.cad):''}</td><td class="n">${x.cad<0?fm(-x.cad):''}</td><td class="mu">${x.a.bs?'Closing of '+A(D.date):'Closed to P&amp;L · opens at zero'}</td></tr>`).join('')}</tbody>
+ <tfoot><tr><td colspan="3">Total</td><td class="n">${fm(nextRows.reduce((s,x)=>s+(x.cad>0?x.cad:0),0))}</td><td class="n">${fm(nextRows.reduce((s,x)=>s+(x.cad<0?-x.cad:0),0))}</td><td></td></tr></tfoot></table></div></section>
+ <section class="sec">${repHead(D,'r-trace','13. Journal-entry trace','Every entry balanced in CAD')}<div class="stack">${trace(D)}</div></section>`}
+function bankRec(D){const bk=E.bal(D,'1010').cad;if(!D.bank)return`<p class="mu">Statement not entered yet. Books show CAD ${fm(bk)}.</p>`;const adj=r2(D.bank.stmt+D.bank.items.reduce((s,i)=>s+i.amt,0));
+ return`<div class="tw"><table><tbody><tr><td>Balance per bank statement</td><td class="mu">${A(D.bank.ref)}</td><td class="n">${fm(D.bank.stmt)}</td></tr>${D.bank.items.map(o=>`<tr><td>${o.amt<0?'Less outstanding':'Add in transit'} ${A(o.ref)}</td><td class="mu">${A(o.desc)}</td><td class="n">${fm(o.amt)}</td></tr>`).join('')}<tr class="sub"><td>Adjusted statement balance</td><td></td><td class="n">${fm(adj)}</td></tr><tr><td>Balance per ledger (1010)</td><td></td><td class="n">${fm(bk)}</td></tr><tr class="sub"><td>Difference</td><td>${D.reasons.bank?A(D.reasons.bank.reason):''}</td><td class="n">${fm(adj-bk)}</td></tr></tbody></table></div>`}
+function safeRec(D){const exp=E.bal(D,'1005').cad,act=D.counts?D.counts.safe:null;
+ return`<div class="tw"><table><tbody><tr><td>Expected (1005)</td><td class="n">${fm(exp)}</td></tr><tr><td>Counted${D.counts&&D.counts.witness?' (dual control: '+A(D.counts.by)+' + '+A(D.counts.witness)+')':''}</td><td class="n">${act==null?'—':fm(act)}</td></tr><tr class="sub"><td>Variance</td><td class="n">${act==null?'—':fm(act-exp)}</td></tr></tbody></table></div><p class="mu" style="font-size:12.5px">Moving cash between the till and the safe is a transfer entry, never a silent balance change.</p>`}
+
+/* ---------- design / controls (static content) ---------- */
+function vDesign(){const ent=[
+ ['branch','id, code, name, timezone, base_currency (CAD), status','A location that closes its own day.'],
+ ['staff_user','id, name, email, role, branch_ids[], status, mfa','Signed-in person. Role and branches come from the identity provider.'],
+ ['role_permission','role, permission, scope (branch / all)','What each role may do. Changes are approved and logged.'],
+ ['business_day','id, branch_id, business_date, status, prev_day_id, opened_by/at, submitted_by/at, approved_by/at, locked_by/at, reopen_count','One row per branch per date. Status drives the workflow.'],
+ ['account','code, name, class (A/L/E/I/X), group, currency (fixed or multi), sub_type (till, safe, bank, fx_stock, settlement), branch_scope, active','Chart of accounts. Only A, L, E carry forward.'],
+ ['opening_balance','day_id, account, currency, fc_amount, cad_amount, source_day_id, adjustment_id','Written only by the system from the prior locked close.'],
+ ['transaction','ref (TX-…), day_id, branch, staff, created_at, type, description, customer/agent ref, ccy, amount, rate_id, status','The business event the teller records.'],
+ ['journal_entry','ref, type (TX / ADJ / REV / CL / FXR), transaction_ref, posted_by, approved_by, reverses_ref, posted_at','The accounting record. Never updated after posting.'],
+ ['journal_line','entry_ref, line_no, account, currency, fc_amount, rate, rate_id, debit_cad, credit_cad','Sum of debits = sum of credits per entry, in CAD.'],
+ ['fx_rate','id, date, currency, type (buy / sell / mid / closing), rate, source, published_at, approved_by','Every rate used is stored with its source.'],
+ ['fx_cost_pool','branch, currency, qty, cad_cost, avg_rate (after each movement)','Weighted average cost for realized gain on sale.'],
+ ['cash_count','day_id, account, currency, denomination, quantity, counted_by, witness','Till, safe and foreign-note counts.'],
+ ['reconciliation','day_id, account, type, expected, actual, variance, variance_cad, reason, support_ref, status, prepared_by, reviewed_by','One per account to reconcile.'],
+ ['recon_item','reconciliation_id, ref, description, amount, age_days, cleared_ref','Outstanding cheques, deposits in transit, unmatched agent lines.'],
+ ['adjustment','ref (ADJ-…), day_id, reason, journal_ref, requested_by, approved_by, status','The only way to change balances outside a transaction.'],
+ ['agent_statement','agent (Taaj), date, line_ref, amount, matched_journal_ref','Imported settlement statements.'],
+ ['exception','day_id, type, severity, owner, due, status, resolution','Anything needing a human decision.'],
+ ['audit_log','seq, at, user, role, branch, action, entity, before, after, result, device, prev_hash, hash','Append-only, hash-chained.']];
+ const perms=[['Open day / load opening','✓','✓','—','—'],['Record transactions','✓','✓','—','—'],['Enter cash and stock counts','✓','✓ (witness)','—','—'],['Explain variances','✓','✓','—','—'],['Raise adjustment','✓','✓','—','—'],['Approve adjustment (not own)','—','✓','✓','—'],['Submit day','✓','✓','—','—'],['Approve day (not own)','—','✓','—','—'],['Return day with reason','—','✓','✓','—'],['Lock day / next-day opening','—','✓','✓','—'],['Reverse posted transaction','—','✓','✓','—'],['Reopen locked day (reason + 2nd approver)','—','—','✓','—'],['Publish and approve closing rates','—','—','✓ (Treasury)','—'],['Edit opening balances','—','—','—','—'],['View reports and audit trail','Own branch','Own branch','All','All']];
+ return`<section class="sec"><div class="sec-h"><div><span class="eyebrow">Architecture</span><h2>How the system fits together</h2></div></div>
+ <p class="lede">One ledger, many branches. Tellers record business events; the system turns each into a balanced journal. The closing workflow sits on top of the ledger and decides when a branch day can be approved and locked. Reports read the same ledger, so they always agree.</p>
+ <div class="grid3"><div class="stack"><h3>Capture</h3><p class="mu">Teller screens for buy, sell, remittance payout, settlement, expense and transfer. Each picks accounts from the chart of accounts and a rate from the rate board.</p></div>
+ <div class="stack"><h3>Ledger</h3><p class="mu">Posting service validates, balances and writes journals in CAD with the original currency, amount and rate on every line. Posted entries are append-only.</p></div>
+ <div class="stack"><h3>Close</h3><p class="mu">Business-day service: opening carry-forward, counts, reconciliations, blockers, approvals, lock, P&amp;L close and next-day opening.</p></div></div></section>
+ <section class="sec"><div class="sec-h"><div><span class="eyebrow">Workflow</span><h2>Business-day states</h2></div><p>Each transition is permission-checked and logged</p></div>
+ <pre class="mermaid">stateDiagram-v2
+  [*] --> NotOpened
+  NotOpened --> Open: Open day (Teller) - opening loaded from prior locked close
+  Open --> Open: Record transactions, count, reconcile, explain variances
+  Open --> Submitted: Submit (zero blockers)
+  Submitted --> Returned: Return with reason (Manager)
+  Returned --> Submitted: Correct and resubmit
+  Submitted --> Approved: Approve (Manager, not the preparer)
+  Approved --> Locked: Lock day - CL entry closes P&amp;L
+  Locked --> NextDayOpen: Generate next-day opening (carries balance-sheet balances, rates proposed for approval)
+  Locked --> Reopened: Reopen (Finance, reason, second approver)
+  Reopened --> Submitted</pre></section>
+ <section class="sec"><div class="sec-h"><div><span class="eyebrow">Data model</span><h2>Core tables</h2></div></div><div class="tw"><table><thead><tr><th>Table</th><th>Key fields</th><th>Purpose</th></tr></thead><tbody>${ent.map(e=>`<tr><td class="ref">${e[0]}</td><td style="min-width:320px">${A(e[1])}</td><td>${A(e[2])}</td></tr>`).join('')}</tbody></table></div></section>
+ <section class="sec"><div class="sec-h"><div><span class="eyebrow">Chart of accounts used in the sample</span><h2>Accounts</h2></div></div><div class="tw"><table><thead><tr><th>Code</th><th>Name</th><th>Class</th><th>Currency</th><th>At close</th></tr></thead><tbody>${ACC.map(a=>`<tr><td class="ref">${a.code}</td><td>${A(a.name)}${a.code=='1210'?' <span class="tag">asset, not income</span>':''}</td><td>${A(a.grp)}</td><td>${a.ccy}</td><td>${a.bs?'Carry forward':'Close to 3900'}</td></tr>`).join('')}</tbody></table></div>
+ <div class="callout"><h3>Taaj System</h3><p>1210 Due from Taaj System is a settlement asset (a due-from-agent receivable). Paying out a Taaj remittance increases it. A cash or bank receipt from Taaj reduces it (<span class="mono">Dr 1000 or 1010 / Cr 1210</span>). Only the commission is income. Receipts from Taaj must never be posted to an income account; the posting service rejects that combination.</p></div></section>
+ <section class="sec"><div class="sec-h"><div><span class="eyebrow">Access</span><h2>Role permissions</h2></div><p>Branch scope applies to every row</p></div><div class="tw"><table class="matrix"><thead><tr><th>Permission</th><th>Teller</th><th>Branch Manager</th><th>Finance</th><th>Auditor</th></tr></thead><tbody>${perms.map(r=>`<tr>${r.map((c,i)=>`<td>${i==0?A(c):c=='—'?'<span class="x">—</span>':c.startsWith('✓')?'<span class="y">'+A(c)+'</span>':A(c)}</td>`).join('')}</tr>`).join('')}</tbody></table></div></section>
+ <section class="sec"><div class="sec-h"><div><span class="eyebrow">Policies</span><h2>Accounting rules</h2></div></div><div class="grid2">
+ <div class="stack"><h3>Opening balances</h3><p class="mu">Copied by the system from the prior day's locked close, by branch, account and currency. No input field exists. A correction is an adjustment journal with reason, maker and a different approver.</p>
+ <h3>Closing</h3><p class="mu">Closing = opening + debits − credits, per account and currency. Assets, liabilities and equity carry forward. At lock, a CL entry moves every income and expense balance to 3900, so they open at zero next day. Period income statements read journals excluding CL entries.</p></div>
+ <div class="stack"><h3>Foreign exchange</h3><p class="mu">Each foreign currency has its own stock account and is counted, reconciled and totalled on its own. Lines keep the foreign amount and rate; CAD is the functional currency for every total. Sales and payouts realize gain or loss against weighted average cost. Unrealized gain or loss is calculated daily at Treasury closing rates and posted at month-end, reversed on the first day of the next month.</p>
+ <h3>Corrections</h3><p class="mu">Nothing posted is edited or deleted. A reversal (REV) mirrors the original. A reopened day keeps its first approval history and needs a fresh approval.</p></div></div></section>`}
+
+function vCtl(){const vr=[
+ ['VR-01','Business date','Cannot post to a future date, a locked date, or a date before the branch go-live.','Reject'],
+ ['VR-02','Branch scope','Staff can select and post only in branches assigned to them.','Reject'],
+ ['VR-03','Opening','Opening balances are system-written from the prior locked close; no user may edit them.','Reject'],
+ ['VR-04','Prior day','A day cannot open until the previous business day is locked.','Reject'],
+ ['VR-05','Balance','Each journal must balance in CAD to the cent; at least two lines; no zero or negative amounts.','Reject'],
+ ['VR-06','Reference','Transaction and journal references are unique per company and never reused.','Reject'],
+ ['VR-07','Accounts','Account must be active and allowed for the purpose: cash/bank in “paid from”, income only from earned income, Taaj receipts only against 1210.','Reject'],
+ ['VR-08','Currency','Line currency must match the account currency; multi-currency accounts keep a separate balance per currency.','Reject'],
+ ['VR-09','Rate','Every foreign line needs a rate with a source. A rate more than 2% from the board rate needs a manager override with reason.','Reject / approve'],
+ ['VR-10','Funds','Till and FX stock can never go below zero. Bank accounts follow their overdraft limit.','Reject'],
+ ['VR-11','Counts','Denomination quantities are whole numbers ≥ 0; counted total = Σ denomination × quantity.','Reject'],
+ ['VR-12','Variance','Any variance ≠ 0 needs a reason (10+ characters) and a supporting reference.','Blocker'],
+ ['VR-13','Stock variance','A stock variance is cleared only by an approved adjustment at carrying cost.','Blocker'],
+ ['VR-14','Reconciliation','Bank and agent settlement differences must be zero after listed outstanding items.','Blocker'],
+ ['VR-15','Closing rates','Closing rates for every held currency approved before submit.','Blocker'],
+ ['VR-16','Segregation','Maker ≠ checker for adjustments, day approval and reopening.','Reject'],
+ ['VR-17','Lock','No posting, count or reason change after submit unless the day is returned; nothing after lock unless Finance reopens.','Reject'],
+ ['VR-18','Compliance','Cash transactions of CAD 10,000 or more (single or 24-hour aggregate) flagged for the FINTRAC large cash report before submit.','Blocker'],
+ ['VR-19','Reversal','Only Manager or Finance; reason required; original stays and is linked.','Reject']];
+ const integ=[['Identity provider (SSO)','Sign-in, MFA, role and branch assignment','Real time'],['General ledger / posting API','All journals; month-end consolidation','Real time'],['Treasury rate feed','Buy, sell and closing mid rates with source and approver','Morning and 17:00 PT'],['Bank statement feed','Statement lines for bank reconciliation (CSV or BAI2)','Daily'],['Taaj agent portal','Payout confirmations and daily settlement statement','Hourly + daily statement'],['Compliance (FINTRAC)','Large cash and suspicious transaction reports; KYC references','Event driven'],['Document store','Count sheets, receipts, incident reports linked by reference','On upload'],['Notifications','Blockers, pending approvals, overdue closes to managers','Event driven'],['Reporting / export','PDF and CSV of every report; read-only API for BI','On demand']];
+ return`<section class="sec"><div class="sec-h"><div><span class="eyebrow">Validation and control rules</span><h2>What the system enforces</h2></div></div><div class="tw"><table><thead><tr><th>Rule</th><th>Area</th><th>Rule</th><th>Outcome</th></tr></thead><tbody>${vr.map(r=>`<tr><td class="ref">${r[0]}</td><td>${r[1]}</td><td style="min-width:320px">${A(r[2])}</td><td>${chip(r[3]=='Blocker'?'Blocks submit':r[3])}</td></tr>`).join('')}</tbody></table></div></section>
+ <div class="grid2"><section class="sec"><div class="sec-h"><div><span class="eyebrow">Dashboard</span><h2>Blockers</h2></div></div><p class="lede">Submit and Approve stay disabled while any blocker is open. The live list for ${A(BRANCH)}:</p><ul class="checks">${E.checks(D_()).map(c=>`<li><span class="ic ${c.ok?'ok':c.sev=='block'?'bad':'warn'}">${c.ok?'✓':'!'}</span><span>${A(c.text)}</span><span></span></li>`).join('')}</ul></section>
+ <section class="sec"><div class="sec-h"><div><span class="eyebrow">Exceptions</span><h2>Exception handling</h2></div></div><div class="tw"><table><thead><tr><th>Severity</th><th>Examples</th><th>Handling</th></tr></thead><tbody>
+ <tr><td>${chip('High')}</td><td>Till variance, unmatched agent settlement, unbalanced posting attempt</td><td>Blocks submit. Manager notified at once. Resolve same day.</td></tr>
+ <tr><td>${chip('Medium')}</td><td>FX stock variance, rate override, reversal</td><td>Needs reason + reference + approved adjustment. Visible to Finance.</td></tr>
+ <tr><td>${chip('Low')}</td><td>Outstanding bank item, refused actions</td><td>Monitored; escalates after 7 days or repeated attempts.</td></tr>
+ <tr><td>${chip('Info')}</td><td>Unrealized FX moves, compliance threshold checks</td><td>Reported; no action unless limits are breached.</td></tr></tbody></table></div></section></div>
+ <section class="sec"><div class="sec-h"><div><span class="eyebrow">Audit trail</span><h2>What is recorded</h2></div></div><p class="lede">Every action, including refused attempts, writes one append-only entry: time, user, role, branch, action, entity and reference, before and after values, result, and device. Each entry carries a hash of itself plus the previous entry, so a change to history breaks the chain. Auditors read everything and change nothing.</p></section>
+ <section class="sec"><div class="sec-h"><div><span class="eyebrow">Integration points</span><h2>Connected systems</h2></div></div><div class="tw"><table><thead><tr><th>System</th><th>Exchange</th><th>Timing</th></tr></thead><tbody>${integ.map(r=>`<tr><td><b>${r[0]}</b></td><td>${r[1]}</td><td>${r[2]}</td></tr>`).join('')}</tbody></table></div></section>`}
+
+
+
+/* ---------- UAT ---------- */
+function vUat(){const p=UAT.filter(t=>t.pass===true).length,f=UAT.filter(t=>t.pass===false).length,m=UAT.filter(t=>t.manual).length;
+ return`<section class="sec"><div class="sec-h"><div><span class="eyebrow">User acceptance</span><h2>UAT acceptance tests</h2></div><div class="btns"><button type="button" data-uat>Run again</button></div></div>
+ <p class="lede">Automated tests replay the sample through a fresh copy of the engine on this page, including a full second business day. Manual tests are for the UAT team on the real environment.</p>
+ <div class="kpis"><div class="kpi"><small>Passed</small><b class="pos">${p}</b><span>automated</span></div><div class="kpi"><small>Failed</small><b class="${f?'neg':''}">${f}</b><span>automated</span></div><div class="kpi"><small>Manual</small><b>${m}</b><span>to sign off</span></div><div class="kpi"><small>Total</small><b>${UAT.length}</b><span>test cases</span></div></div>
+ <div class="tw"><table><thead><tr><th>ID</th><th>Area</th><th>Scenario</th><th>Expected result</th><th>Result</th><th>Evidence</th></tr></thead><tbody>${UAT.map(t=>`<tr><td class="ref">${t.id}</td><td>${t.area}</td><td style="min-width:240px">${A(t.scenario)}</td><td style="min-width:260px">${A(t.expected)}</td><td>${t.manual?chip('Manual'):chip(t.pass?'Pass':'Fail')}</td><td class="mu" style="min-width:200px;font-size:12px">${A(t.detail)}</td></tr>`).join('')}</tbody></table></div></section>`}
+
+/* ---------- events ---------- */
+function readCounts(){const till={};CASH_DENOMS.forEach(d=>{const v=val('q-'+String(d).replace('.','_'));till[d]=v===''?0:v});const fx={};E.held(D_()).forEach(c=>fx[c]=val('c-fx-'+c));return{till,safe:val('c-safe'),fx,witness:val('c-wit')}}
+document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;
+ if(b.dataset.view){VIEW=b.dataset.view;render();const tg=b.dataset.target&&document.getElementById(b.dataset.target);if(tg)tg.scrollIntoView({block:'start'});else window.scrollTo(0,0);return}
+ if(b.dataset.goLatest!=null){E.B.cur=E.B.days.length-1;if(SYNC.mode=='local')persist();VIEW='dashboard';render();return}
+ if(b.dataset.reset!=null){resetBook(b);return}
+ if(b.dataset.start!=null){startShared();return}
+ if(b.dataset.uat!=null){UAT=runUAT();render();toast({ok:true,msg:'UAT re-run: '+UAT.filter(t=>t.pass).length+' passed.'});return}
+ if(b.dataset.ret!=null){const x=$('#retbox');x.hidden=!x.hidden;return}
+ if(b.dataset.jump){const el=document.getElementById(b.dataset.jump);if(el)el.scrollIntoView({behavior:'smooth',block:'start'});return}
+ if(b.dataset.clear!=null){FORM={...FORM,amt:'',ext:'',override:'',com:'',note:''};render();return}
+ if(b.dataset.fill!=null){const D=D_();let rem=E.bal(D,'1000').cad;CASH_DENOMS.forEach(d=>{const q=Math.floor((rem+1e-9)/d);const el=document.getElementById('q-'+String(d).replace('.','_'));if(el)el.value=q;rem=r2(rem-q*d)});
+  const s=$('#c-safe');if(s)s.value=E.bal(D,'1005').cad;E.held(D).forEach(c=>{const el=document.getElementById('c-fx-'+c);if(el)el.value=E.bal(D,FXA[c]).fc});const w=$('#c-wit');if(w&&!w.value)w.value='';
+  const bs=$('#b-stmt');if(bs&&!bs.value)bs.value=E.bal(D,'1010').cad;const br=$('#b-ref');if(br&&!br.value)br.value='RBC statement '+D.date;const ts=$('#t-stmt');if(ts&&!ts.value)ts.value=E.bal(D,'1210').cad;const tr=$('#t-ref');if(tr&&!tr.value)tr.value='TJ-STMT-'+BCODE+'-'+D.date.replace(/-/g,'');
+  document.querySelectorAll('#app input,#app textarea').forEach(el=>{if(el.id&&DRX.test(el.id)&&!el.disabled&&el.value!=='')DRAFT[el.id]=el.value});
+  toast({ok:true,msg:'Expected figures copied into the count and statement fields. Change any figure that differs, then save.'});return}
+ const a=b.dataset.act;if(!a)return;
+ if(a=='record'){const r=act('record',{...FORM,amt:+FORM.amt,rate:+FORM.rate,com:+FORM.com||0});if(r.ok){FORM={...FORM,amt:'',ext:'',override:'',com:'',note:''};render()}return}
+ if(a=='count')return act('count',readCounts(),CLEAR.count);
+ if(a=='stmt-bank')return act('stmt',{kind:'bank',stmt:val('b-stmt'),sref:val('b-ref'),items:val('b-items')},CLEAR['stmt-bank']);
+ if(a=='stmt-taaj')return act('stmt',{kind:'taaj',stmt:val('t-stmt'),sref:val('t-ref')},CLEAR['stmt-taaj']);
+ if(a=='reason')return act('reason',{id:b.dataset.id,reason:val('rs-'+b.dataset.id),sref:val('rf-'+b.dataset.id)},['rs-'+b.dataset.id,'rf-'+b.dataset.id]);
+ if(a=='raiseAdj')return act('raiseAdj',{id:b.dataset.id});
+ if(a=='approveAdj')return act('approveAdj',{ref:b.dataset.ref});
+ if(a=='rejectAdj'){const tr=b.closest('td');if(!tr.querySelector('input')){tr.insertAdjacentHTML('beforeend',`<div class="mini"><input id="rj-${b.dataset.ref}" placeholder="Reason for rejecting"><button type="button" class="dg" data-act="rejectAdjGo" data-ref="${b.dataset.ref}">Reject</button></div>`)}return}
+ if(a=='rejectAdjGo')return act('approveAdj',{ref:b.dataset.ref,reject:true,reason:val('rj-'+b.dataset.ref)});
+ if(a=='rateSet')return act('rateSet',{ccy:b.dataset.ccy,rate:val('rt-'+b.dataset.ccy),src:val('rs-src-'+b.dataset.ccy)},['rt-'+b.dataset.ccy,'rs-src-'+b.dataset.ccy]);
+ if(a=='rateAp')return act('rateAp',{ccy:b.dataset.ccy});
+ if(a=='returnDay')return act('returnDay',{reason:val('ret-reason')},CLEAR.returnDay);
+ if(a=='reverse')return act('reverse',{ref:val('rv-ref'),reason:val('rv-reason')},CLEAR.reverse);
+ if(a=='next'){const r=act('next');return r}
+ act(a)});
+document.addEventListener('input',e=>{const t=e.target;if(t.id&&DRX.test(t.id))DRAFT[t.id]=t.value;if(t.dataset&&t.dataset.f){FORM[t.dataset.f]=t.value;const pv=$('#txpv');if(pv)pv.innerHTML=txPreview()}});
+document.addEventListener('change',e=>{const t=e.target;if(t.dataset&&t.dataset.f&&t.tagName=='SELECT'){FORM[t.dataset.f]=t.value;if(t.dataset.f=='type'||t.dataset.f=='ccy'){if(FORM.type=='buy'||FORM.type=='sell')FORM.rate=String(BOARD[FORM.ccy][FORM.type=='buy'?'b':'s'])}render()}});
+window.addEventListener('hashchange',()=>{const h=(location.hash||'').slice(1);if(VIEWS.some(v=>v[0]==h)&&h!=VIEW){VIEW=h;render()}});
+{const h=(location.hash||'').slice(1);if(VIEWS.some(v=>v[0]==h))VIEW=h}
+boot();
+}
+
+</script>
+</body>
+</html>

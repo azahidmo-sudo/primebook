@@ -1,0 +1,47 @@
+
+/* ---- shared with the sample app ---- */
+[hidden]{display:none!important}
+.nav button{background:transparent;border:0;border-bottom:2px solid transparent;border-radius:0;padding:11px 14px;color:var(--ink-2);font:500 14px var(--f-body);white-space:nowrap;min-height:0}
+.nav button:hover{color:var(--ink);border-color:transparent}
+.nav button[aria-current="page"]{color:var(--accent-ink);border-bottom-color:var(--accent);font-weight:600}
+button:disabled,input:disabled{opacity:.5;cursor:not-allowed}
+.fgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px 12px}
+.fgrid .field input,.fgrid .field select{width:100%}
+.field select,.field input{width:100%}
+.mini{display:flex;gap:6px;flex-wrap:wrap;align-items:center}.mini input{flex:1 1 110px;min-width:0}
+.note button{margin-left:6px;min-height:30px;padding:4px 10px}
+@media (max-width:560px){.fgrid{grid-template-columns:1fr}.band{position:static}}
+.feat{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px}
+.ft{display:flex;flex-direction:column;align-items:flex-start;gap:4px;text-align:left;padding:12px 14px;border:1px solid var(--line);border-radius:10px;background:var(--panel);min-height:0;font-weight:400}
+.ft:hover{border-color:var(--accent);background:var(--accent-soft)}
+.ft b{font:600 14px var(--f-body);color:var(--ink)}.ft span{font-size:12.5px;color:var(--ink-2);line-height:1.45}.ft em{font-style:normal;font:600 12px var(--f-body);color:var(--accent-ink);margin-top:2px}
+.sec{scroll-margin-top:170px}
+@media (max-width:560px){.sec{scroll-margin-top:12px}}
+
+/* ---- web platform: band additions ---- */
+.w-v{color:var(--band-ink);font:500 14px var(--f-body);display:inline-flex;align-items:center;gap:6px;min-height:34px}
+.w-r{font:600 11px var(--f-body);letter-spacing:.06em;text-transform:uppercase;color:#9FB0CC;border:1px solid var(--band-2);border-radius:999px;padding:1px 8px}
+.w-acts{flex-direction:row!important;gap:6px;align-items:flex-end;margin-left:auto}
+.w-btn{background:transparent;color:var(--band-ink);border:1px solid #33476A;min-height:32px;padding:4px 12px;font:500 13px var(--f-body);border-radius:8px}
+.w-btn:hover{background:var(--band-2);border-color:#4A6290;color:#fff}
+
+/* ---- web platform: sign-in and setup screens ---- */
+#gate{min-height:100vh;background:radial-gradient(900px 420px at 85% -10%,#DCE6FA,transparent 60%),var(--bg)}
+.g-wrap{max-width:760px;margin:0 auto;padding:48px 16px 40px;display:flex;flex-direction:column;align-items:center;gap:18px}
+.g-brand{text-align:center}.g-brand b{display:block;font:600 22px var(--f-display);color:var(--ink)}.g-brand small{font:500 11px var(--f-body);letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3)}
+.g-card{width:100%;max-width:430px;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:24px;box-shadow:0 10px 30px rgba(21,32,51,.07);display:flex;flex-direction:column;gap:12px}
+.g-card.g-wide{max-width:760px}
+.g-card h1{font-size:22px}.g-card p{margin:0}
+.g-card .field{display:flex;flex-direction:column;gap:4px}
+.g-card .btns{margin-top:4px}.g-card .btns .pri{min-width:140px}
+.g-links{font-size:13px;color:var(--ink-3)}
+.lnk{background:none;border:0;padding:0;min-height:0;color:var(--accent-ink);font:500 13px var(--f-body);text-decoration:underline;text-underline-offset:2px;cursor:pointer}
+.g-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap}
+.g-books{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px}
+.g-book{display:flex;flex-direction:column;align-items:flex-start;gap:4px;text-align:left;padding:14px;border:1px solid var(--line);border-radius:10px;background:var(--panel);min-height:0;font-weight:400}
+.g-book:hover{border-color:var(--accent);background:var(--accent-soft)}
+.g-book b{font:600 16px var(--f-body);color:var(--ink)}.g-book span{font-size:12.5px;color:var(--ink-2)}.g-book em{font-style:normal;font:600 12px var(--f-body);color:var(--accent-ink)}
+.g-new{border-top:1px solid var(--line-2);padding-top:12px}
+.g-new summary{cursor:pointer;font:600 14px var(--f-body);color:var(--accent-ink);margin-bottom:10px}
+.g-foot{font-size:12px;color:var(--ink-3);text-align:center}.g-foot a{color:var(--ink-2)}
+@media (max-width:560px){.g-wrap{padding-top:24px}.g-card{padding:18px}.w-acts{margin-left:0}}
