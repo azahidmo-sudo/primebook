@@ -195,6 +195,9 @@ button:disabled,input:disabled{opacity:.5;cursor:not-allowed}
 .g-new summary{cursor:pointer;font:600 14px var(--f-body);color:var(--accent-ink);margin-bottom:10px}
 .g-foot{font-size:12px;color:var(--ink-3);text-align:center}.g-foot a{color:var(--ink-2)}
 @media (max-width:560px){.g-wrap{padding-top:24px}.g-card{padding:18px}.w-acts{margin-left:0}}
+.g-alt{display:flex;flex-direction:column;gap:6px;border-top:1px solid var(--line-2);padding-top:12px;margin-top:2px}
+.g-alt button{width:100%}.g-alt .mu{font-size:12.5px}
+#c-staff{background:var(--band-2);color:var(--band-ink);border:1px solid #33476A;border-radius:8px;min-height:34px;padding:4px 8px;font:500 14px var(--f-body);max-width:230px}
 
 </style>
 </head>
@@ -574,7 +577,7 @@ const WRITERS=['Owner','Manager','Teller','Finance'],RATE_EDIT=['Owner','Manager
 function persist(){}
 function names(){}
 const acctName=id=>{if(!id)return'';const m=SYNC.members.find(x=>x.user_id==id);return m?m.display_name+' ('+m.email+')':'a former member'};
-function syncLabel(){const m={loading:['Loading…','p-mute'],online:['Saved · live','p-ok'],saving:['Saving…','p-warn'],readonly:['Read only · live','p-info'],error:['Not saved · retrying','p-bad']}[SYNC.mode]||['','p-mute'];return`<span class="pill ${m[1]}">${m[0]}</span>`}
+function syncLabel(){const m={loading:['Loading…','p-mute'],online:['Saved · live','p-ok'],saving:['Saving…','p-warn'],readonly:['Read only · live','p-info'],local:['This browser only','p-warn'],error:['Not saved · retrying','p-bad']}[SYNC.mode]||['','p-mute'];return`<span class="pill ${m[1]}">${m[0]}</span>`}
 function bcode(b){return(b.book_id||b.id||'').replace(/[^a-z0-9]/gi,'').slice(0,3).toUpperCase()||'BR'}
 function applyMembers(mem){SYNC.members=mem||[];Object.keys(USERS).filter(k=>k.startsWith('m:')).forEach(k=>delete USERS[k]);
  SYNC.members.forEach(m=>{USERS['m:'+m.email]={name:m.display_name,role:m.role=='Owner'?'Manager':m.role,title:ROLE_TITLE[m.role]||m.role}});
@@ -592,7 +595,7 @@ function applyBook(x){const m=x.st.meta||{};SYNC.meta=m;SYNC.baseRev=x.st.rev||0
  audit.sort((a,b)=>a.seq-b.seq);const wasLatest=!E||isLatest(),cur=wasLatest?days.length-1:Math.min(E.B.cur,days.length-1);
  E=Book({v:2,days,cur,seq:m.seq||{TX:0,ADJ:0},audit});E.real=true;E.acct=myId();SYNC.last=last;
  SYNC.mode=WRITERS.includes(SYNC.role)?'online':'readonly';return true}
-async function reload(quiet){const b=SYNC.book;if(!b)return;let x;const g=SYNC.gen;
+async function reload(quiet){const b=SYNC.book;if(!b||SYNC.local)return;let x;const g=SYNC.gen;
  try{x=await fetchBook(b.book_id)}catch(e){if(!quiet)toast({ok:false,msg:friendly(e)});return}
  if(g!==SYNC.gen||SYNC.busy||SYNC.book!==b)return; // a local change happened meanwhile: its save decides
  if(!x||!x.mem.some(m=>m.email==myEmail()&&m.active)){stopBook();ls.d(BKEY);await showBooks({err:'You no longer have access to '+b.name+'. Ask the book owner if this is unexpected.'});return}
@@ -605,6 +608,7 @@ async function writeAll(note,extra){const days=[];if(E)for(const d of E.B.days){
  const meta=metaOut(extra);const rev=await rpc('dc_save',{p_book:SYNC.book.book_id,p_base_rev:SYNC.baseRev,p_meta:meta,p_days:days.map(({j,...r})=>r),p_note:(note||'').slice(0,200)});
  days.forEach(d=>SYNC.last[d.date]=d.j);SYNC.meta=meta;SYNC.baseRev=+rev;SYNC.updatedName=SYNC.me?SYNC.me.display_name:'';SYNC.updatedAt=new Date().toISOString()}
 function save(note,extra){if(!SYNC.book)return Promise.resolve(false);SYNC.gen++;
+ if(SYNC.local){const ok=localSave();if(ok){SYNC.updatedAt=new Date().toISOString();SYNC.updatedName=SYNC.me?SYNC.me.display_name:''}else toast({ok:false,msg:'This browser refused to save (storage full or private window). Export the reports you need.'});if(E)render();return Promise.resolve(ok)}
  return SYNC.queue=SYNC.queue.then(async()=>{SYNC.busy=true;SYNC.mode='saving';if(E)header();let ok=true;
   try{await writeAll(note,extra);SYNC.mode='online'}
   catch(e){ok=false;const m=String(e&&e.message||'');
@@ -625,7 +629,8 @@ function drawGate(){const g=$('#gate'),s=G.screen,em=H(G.email||myEmail());let b
   <div class="field"><label for="g-em">Email</label><input id="g-em" name="em" type="email" autocomplete="username" value="${em}" required></div>
   <div class="field"><label for="g-pw">Password</label><input id="g-pw" name="p" type="password" autocomplete="current-password" required></div>
   <div class="btns"><button class="pri" type="submit">Sign in</button></div>
-  <p class="g-links"><button type="button" class="lnk" data-gs="signup">Create an account</button> · <button type="button" class="lnk" data-gs="forgot">Forgot password?</button></p></form>`;
+  <p class="g-links"><button type="button" class="lnk" data-gs="signup">Create an account</button> · <button type="button" class="lnk" data-gs="forgot">Forgot password?</button></p>
+  <div class="g-alt"><button type="button" data-gs="local">Use it now in this browser — no account needed</button><span class="mu">Every feature works. Saved on this device only, with a staff switch to act as each role.</span></div></form>`;
  else if(s=='signup')body=`<form class="g-card" data-g="signup" novalidate><h1>Create your account</h1><p class="mu">Use the same email your manager added to the book. We will send you a link to confirm it.</p>${msgs()}
   <div class="field"><label for="g-em">Email</label><input id="g-em" name="em" type="email" autocomplete="username" value="${em}" required></div>
   <div class="field"><label for="g-pw">Password (at least 10 characters)</label><input id="g-pw" name="p" type="password" autocomplete="new-password" minlength="10" required></div>
@@ -636,6 +641,10 @@ function drawGate(){const g=$('#gate'),s=G.screen,em=H(G.email||myEmail());let b
   <div class="btns"><button class="pri" type="submit">Send reset link</button></div><p class="g-links"><button type="button" class="lnk" data-gs="login">Back to sign in</button></p></form>`;
  else if(s=='reset')body=`<form class="g-card" data-g="reset" novalidate><h1>Choose a new password</h1>${msgs()}<div class="field"><label for="g-pw">New password (at least 10 characters)</label><input id="g-pw" name="p" type="password" autocomplete="new-password" required></div>
   <div class="field"><label for="g-pw2">Repeat password</label><input id="g-pw2" name="p2" type="password" autocomplete="new-password" required></div><div class="btns"><button class="pri" type="submit">Save password</button></div></form>`;
+ else if(s=='books'&&G.missing)body=`<div class="g-card g-wide"><div class="g-head"><div><h1>Shared books are not switched on yet</h1><p class="mu">Signed in as <b>${H(myEmail())}</b></p></div><button type="button" class="ghost" data-gs="signout">Sign out</button></div>
+  <div class="note info"><span class="ic info">i</span><span>You can start working right now in this browser with every feature. Sharing the books with your staff online needs one step by the person who manages your Supabase account.</span></div>
+  <div class="btns"><button type="button" class="pri" data-gs="local">Start working now (this browser)</button><button type="button" data-gs="refresh">Check again</button></div>
+  ${howOnline()}</div>`;
  else if(s=='books'){const bs=G.books;body=`<div class="g-card g-wide"><div class="g-head"><div><h1>Your branch books</h1><p class="mu">Signed in as <b>${H(myEmail())}</b></p></div><button type="button" class="ghost" data-gs="signout">Sign out</button></div>${msgs()}
   ${bs.length?`<div class="g-books">${bs.map(b=>`<button type="button" class="g-book" data-open="${H(b.book_id)}"><b>${H(b.name)}</b><span>${H(b.display_name)} · ${H(ROLE_TITLE[b.role]||b.role)}</span><em>Open →</em></button>`).join('')}</div>`
    :`<div class="note info"><span class="ic info">i</span><span><b>No books yet for ${H(myEmail())}.</b> If you work at a branch, ask your manager to add this exact email on their Team page, then press Refresh. If you are setting up a branch, create its book below.</span></div><div class="btns"><button type="button" data-gs="refresh">Refresh</button></div>`}
@@ -645,9 +654,9 @@ function drawGate(){const g=$('#gate'),s=G.screen,em=H(G.email||myEmail());let b
    <div class="field"><label for="g-dn">Your name as it appears in the ledger</label><input id="g-dn" name="dn" maxlength="60" required></div>
    <div class="field"><label>&nbsp;</label><button class="pri" type="submit">Create book</button></div></form>
    <p class="mu" style="font-size:12.5px">You become the book's Owner. You then add your staff by email and give each a role: Teller, Manager, Finance or Auditor.</p></details></div>`}
- else if(s=='setup'){const b=SYNC.book||{},own=['Owner','Manager'].includes(SYNC.role);
-  body=`<div class="g-card g-wide"><div class="g-head"><div><span class="eyebrow">${H(b.name)} · first business day</span><h1>Set up the book</h1></div><div class="btns"><button type="button" class="ghost" data-gs="books">All books</button><button type="button" class="ghost" data-gs="signout">Sign out</button></div></div>${msgs()}
-  ${own?`<p>Enter what the branch holds at the start of its first business day on this system. Everything after that is carried forward automatically from each locked close.</p>
+ else if(s=='setup'){const b=SYNC.book||{},own=SYNC.local||['Owner','Manager'].includes(SYNC.role);
+  body=`<div class="g-card g-wide"><div class="g-head"><div><span class="eyebrow">${H(b.name)} · first business day</span><h1>Set up the book</h1></div><div class="btns">${SYNC.local?'<button type="button" class="ghost" data-gs="leave">Back</button>':'<button type="button" class="ghost" data-gs="books">All books</button><button type="button" class="ghost" data-gs="signout">Sign out</button>'}</div></div>${msgs()}
+  ${SYNC.local?localNote():''}${own?`<p>Enter what the branch holds at the start of its first business day on this system. Everything after that is carried forward automatically from each locked close.</p>
   <form data-g="setup" novalidate><div class="fgrid">
    <div class="field"><label for="s-date">First business date</label><input id="s-date" name="date" type="date" value="${todayPT()}" required></div><div></div>
    ${[['1000','Cash on hand – till (CAD)'],['1005','Safe – CAD'],['1010','Bank – RBC operating (CAD)'],['1210','Due from Taaj (CAD)']].map(([c,l])=>`<div class="field"><label for="s-${c}">${l}</label><input id="s-${c}" name="a${c}" inputmode="decimal" placeholder="0.00"></div>`).join('')}</div>
@@ -695,7 +704,7 @@ const busy=b=>{G.busy=!!b;document.querySelectorAll('#gate button,#gate input').
 
 async function afterSignIn(okMsg){startSession();try{const u=await api('/auth/v1/user');if(u&&u.id){SB.user=u;keep(SB)}}catch(e){}
  await showBooks({ok:okMsg||''},true)}
-async function showBooks(o,auto){gate('loading');try{await rpc('dc_claim');G.books=await rpc('dc_my_books')||[]}catch(e){G.books=[];if(e.status==401&&!SB)return;return gate('books',{err:friendly(e)})}
+async function showBooks(o,auto){gate('loading');G.missing=false;try{await rpc('dc_claim');G.books=await rpc('dc_my_books')||[]}catch(e){G.books=[];if(e.status==401&&!SB)return;G.missing=e.status==404||/PGRST202|Could not find|does not exist/i.test(e.message||'');return gate('books',G.missing?{}:{err:friendly(e)})}
  const want=ls.g(BKEY);if(auto&&G.books.length){const b=G.books.find(x=>x.book_id==want)||(G.books.length==1?G.books[0]:null);if(b)return openBook(b.book_id)}
  gate('books',o)}
 async function openBook(id){gate('loading');let b;try{G.books=await rpc('dc_my_books')||[]}catch(e){}b=G.books.find(x=>x.book_id==id);if(!b)return gate('books',{err:'That book is not available to you.'});
@@ -710,13 +719,13 @@ document.addEventListener('input',e=>{if(e.target.closest&&e.target.closest('for
  if(e.target.id=='g-bc')e.target.dataset.touched='1'});
 document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;
  if(b.dataset.gs){const s=b.dataset.gs;if(G.busy)return;
-  if(s=='signout')return signOut();if(s=='books'){stopBook();ls.d(BKEY);return showBooks({})}if(s=='refresh')return showBooks({},true);if(s=='sample')return doSample();
-  if(s=='savenow')return save('Retry save');return gate(s)}
+  if(SYNC.local&&(s=='signout'||s=='books'))return leaveLocal();if(s=='signout')return signOut();if(s=='books'){stopBook();ls.d(BKEY);return showBooks({})}if(s=='refresh')return showBooks({},true);if(s=='sample')return doSample();
+  if(s=='savenow')return save('Retry save');if(s=='local')return startLocal();if(s=='leave')return leaveLocal();return gate(s)}
  if(b.dataset.open)return openBook(b.dataset.open)});
 
 /* ---------- in-book pages: Team and Settings ---------- */
 async function loadSaves(){try{SYNC.saves=await rest('dc_saves?book_id=eq.'+enc(SYNC.book.book_id)+'&select=rev,name,email,role,note,at&order=id.desc&limit=60')}catch(e){SYNC.saves=[]}if(VIEW=='team')render()}
-function vTeam(){if(SYNC.saves==null){SYNC.saves=[];loadSaves()}const own=SYNC.role=='Owner',link=location.origin+'/closing';
+function vTeam(){if(SYNC.local)return vTeamLocal();if(SYNC.saves==null){SYNC.saves=[];loadSaves()}const own=SYNC.role=='Owner',link=location.origin+'/closing';
  return`<section class="sec"><div class="sec-h"><div><span class="eyebrow">${H(SYNC.book.name)} · who can use this book</span><h2>Team</h2></div><p>${SYNC.members.filter(m=>m.active).length} active</p></div>
  <p class="lede">Each person signs in with their own email and password. Their role decides what they can do; the server checks every save.</p>
  <div class="tw"><table><thead><tr><th>Name in the ledger</th><th>Email</th><th>Role</th><th>Status</th>${own?'<th></th>':''}</tr></thead><tbody>${SYNC.members.map(m=>`<tr><td><b>${H(m.display_name)}</b>${m.email==myEmail()?' <span class="mu">(you)</span>':''}</td><td>${H(m.email)}</td><td>${H(ROLE_TITLE[m.role]||m.role)}</td>
@@ -755,15 +764,41 @@ document.addEventListener('click',async e=>{const b=e.target.closest('button');i
   const old=Object.fromEntries(CCYS.map(c=>[c,{...BOARD[c]}]));applyBoard(nb);const ok=await save('Rate board: '+CCYS.map(c=>c+' '+rf(nb[c].b)+'/'+rf(nb[c].s)).join(', '));
   if(ok){clearDraft(['rb-']);FORM.rate=String(BOARD[FORM.ccy][FORM.type=='sell'?'s':'b']);SYNC.saves=null;toast({ok:true,msg:'Rate board saved for everyone.'})}else applyBoard(old);return}});
 async function resetBook(b){if(!SYNC.canEdit){toast({ok:false,msg:'Only the book owner can erase the book.'});return}
+ if(SYNC.local){if(!SYNC.resetArm){SYNC.resetArm=true;b.textContent='Click again to erase this browser\'s book';setTimeout(()=>{SYNC.resetArm=false;if(E)render()},6000);return}
+  SYNC.resetArm=false;ls.d(LKEY);clearDraft(['']);E=null;return gate('setup',{ok:'Erased. Set the book up again.'})}
  if(E&&E.B.days.some(d=>d.status=='Locked')){toast({ok:false,msg:'This book has locked days, so it cannot be erased. Create a separate book for training.'});return}
  if(!SYNC.resetArm){SYNC.resetArm=true;b.textContent='Click again to erase this book for everyone';setTimeout(()=>{SYNC.resetArm=false;if(E)render()},6000);return}
  SYNC.resetArm=false;try{await rpc('dc_reset',{p_book:SYNC.book.book_id});clearDraft(['']);E=null;await reload(true);gate('setup',{ok:'Book erased. Set it up again.'})}catch(e){toast({ok:false,msg:friendly(e)})}}
-function webHeader(){const b=SYNC.book;if(!b)return;const w=$('#c-who');if(w)w.innerHTML=SYNC.me?`<b>${H(SYNC.me.display_name)}</b> <span class="w-r">${H(SYNC.role)}</span>`:'';const k=$('#c-book');if(k)k.textContent=b.name+' ('+bcode(b)+')'}
-function onlineBanner(){if(SYNC.mode=='readonly')return`<div class="note info"><span class="ic info">i</span><span><b>Read only.</b> As ${H(ROLE_TITLE[SYNC.role]||SYNC.role)} you can read the books, every report and the audit trail.</span></div>`;
+function webHeader(){const b=SYNC.book;if(!b)return;document.querySelectorAll('.band [data-gs]').forEach(x=>{x.textContent=SYNC.local?(x.dataset.gs=='books'?'Shared books':'Leave'):(x.dataset.gs=='books'?'Switch book':'Sign out')});const w=$('#c-who');if(w&&SYNC.local){if(!w.querySelector('#c-staff')||w.dataset.u!==UID){w.dataset.u=UID;w.innerHTML=`<select id="c-staff" aria-label="Working as">${LSTAFF.map(k=>`<option value="${k}" ${k==UID?'selected':''}>${H(USERS[k].name)} — ${H(USERS[k].role)}</option>`).join('')}</select>`}}else if(w)w.innerHTML=SYNC.me?`<b>${H(SYNC.me.display_name)}</b> <span class="w-r">${H(SYNC.role)}</span>`:'';const k=$('#c-book');if(k)k.textContent=b.name+' ('+bcode(b)+')'}
+function onlineBanner(){if(SYNC.local)return`<div class="note warn"><span class="ic warn">!</span><span><b>Working in this browser only.</b> Everything works and is saved on this device. Use <b>Signed in</b> at the top to act as each person (Teller, Manager, Finance, Auditor). To share the books with your staff online, see the Team page.</span></div>`;if(SYNC.mode=='readonly')return`<div class="note info"><span class="ic info">i</span><span><b>Read only.</b> As ${H(ROLE_TITLE[SYNC.role]||SYNC.role)} you can read the books, every report and the audit trail.</span></div>`;
  if(SYNC.mode=='error')return`<div class="note bad"><span class="ic bad">!</span><span><b>Your last step is not saved yet.</b> Check your connection. <button type="button" data-gs="savenow">Save now</button></span></div>`;return''}
+
+/* ---------- this-browser mode: every feature, saved on this device only ---------- */
+const LKEY='pb_closing_local',LMODE='pb_closing_mode',LUID='pb_closing_local_uid',LSTAFF=['farhan','amina','daniel','sara'];
+function localNote(){return`<div class="note warn"><span class="ic warn">!</span><span><b>This browser only.</b> The book is saved on this device. Your staff cannot see it until the shared books are switched on.</span></div>`}
+function howOnline(){return`<details class="g-new"><summary>How to switch on shared books (one time, about 2 minutes)</summary><ol style="margin:0;padding-left:20px;line-height:1.7">
+ <li>Sign in at <b>supabase.com</b> and open the PrimeBook project.</li><li>Click <b>SQL Editor</b>, then <b>New query</b>.</li>
+ <li>Paste the whole file <b>supabase/daily-closing.sql</b> from the PrimeBook GitHub repository and click <b>Run</b>.</li>
+ <li>Under <b>Authentication → URL Configuration</b>, add <b class="mono">${H(location.origin+'/closing')}</b> to the Redirect URLs.</li>
+ <li>Come back here and press <b>Check again</b>.</li></ol></details>`}
+function setLocalUser(uid){if(!USERS[uid])uid='amina';UID=uid;ls.s(LUID,uid);SYNC.me={display_name:USERS[uid].name,email:''};SYNC.role=USERS[uid].role;SYNC.canEdit=true;SYNC.mode='local'}
+function localSave(){try{localStorage.setItem(LKEY,JSON.stringify({v:1,book:E?E.B:null,board:Object.fromEntries(CCYS.map(c=>[c,{b:BOARD[c].b,s:BOARD[c].s}]))}));return true}catch(e){return false}}
+function startLocal(){stopBook();clearInterval(pollT);SYNC.local=true;ls.s(LMODE,'local');SYNC.book={book_id:'vancouver-local',name:'Vancouver',role:'Owner',display_name:''};SYNC.members=[];SYNC.saves=[];
+ configure({branch:'Vancouver',code:'VAN'});setLocalUser(ls.g(LUID)||'amina');let st=null;try{st=JSON.parse(ls.g(LKEY))}catch(e){}
+ if(st&&st.board)applyBoard(st.board);
+ if(st&&st.book&&Array.isArray(st.book.days)&&st.book.days.length){E=Book(st.book);E.real=true;E.acct=myId();VIEW=VIEWS.some(v=>v[0]==(location.hash||'').slice(1))?location.hash.slice(1):'dashboard';showApp();render()}
+ else{E=null;gate('setup')}}
+function leaveLocal(){SYNC.local=false;ls.d(LMODE);stopBook();SYNC.mode='loading';if(SB)showBooks({},false);else gate('login')}
+document.addEventListener('change',e=>{if(e.target.id=='c-staff'&&SYNC.local){setLocalUser(e.target.value);render();toast({ok:true,msg:'Now working as '+USERS[UID].name+' ('+USERS[UID].role+').'})}});
+function vTeamLocal(){return`<section class="sec"><div class="sec-h"><div><span class="eyebrow">This browser only</span><h2>Team</h2></div><p>4 staff</p></div>
+ <p class="lede">In this mode one person works the whole close on this device. Switch who you are acting as with <b>Signed in</b> at the top; each role sees exactly the rights it has, and separation of duties still applies (the person who prepares or submits the day cannot approve it).</p>
+ <div class="tw"><table><thead><tr><th>Name</th><th>Role</th><th>Can do</th><th></th></tr></thead><tbody>${LSTAFF.map(k=>`<tr><td><b>${H(USERS[k].name)}</b>${k==UID?' <span class="mu">(acting now)</span>':''}</td><td>${H(USERS[k].title)}</td><td class="mu" style="font-size:12.5px">${H({Teller:'Open day, record, count, statements, explain variances, submit',Manager:'All of the Teller, plus approve rates, adjustments and the day, lock, reverse',Finance:'Closing rates, approve adjustments, return, reverse, lock',Auditor:'Read everything, change nothing'}[USERS[k].role])}</td><td>${k==UID?'':`<button type="button" data-as="${k}">Act as ${H(USERS[k].name)}</button>`}</td></tr>`).join('')}</tbody></table></div></section>
+ <section class="sec"><div class="sec-h"><h3>Share the books with your staff online</h3></div><p>Once shared books are switched on, each person signs in with their own email and password, the owner adds staff here by email, and every save is checked by the server.</p>${howOnline()}</section>`}
+document.addEventListener('click',e=>{const b=e.target.closest('button[data-as]');if(!b||!SYNC.local)return;setLocalUser(b.dataset.as);render();toast({ok:true,msg:'Now working as '+USERS[UID].name+' ('+USERS[UID].role+').'})});
 
 /* ---------- boot ---------- */
 async function boot(){const h=location.hash.replace(/^#/,'');
+ if(ls.g(LMODE)=='local'&&!/access_token=|error_description=/.test(h))return startLocal();
  if(h&&/access_token=|error_description=/.test(h)){const q=new URLSearchParams(h);history.replaceState(null,'',location.pathname);
   if(q.get('error_description'))return gate('login',{err:q.get('error_description').replace(/\+/g,' ')});
   if(q.get('access_token')){keep(fixS({access_token:q.get('access_token'),refresh_token:q.get('refresh_token'),expires_at:+q.get('expires_at')||0,expires_in:+q.get('expires_in')||3600}));

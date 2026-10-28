@@ -45,3 +45,6 @@ button:disabled,input:disabled{opacity:.5;cursor:not-allowed}
 .g-new summary{cursor:pointer;font:600 14px var(--f-body);color:var(--accent-ink);margin-bottom:10px}
 .g-foot{font-size:12px;color:var(--ink-3);text-align:center}.g-foot a{color:var(--ink-2)}
 @media (max-width:560px){.g-wrap{padding-top:24px}.g-card{padding:18px}.w-acts{margin-left:0}}
+.g-alt{display:flex;flex-direction:column;gap:6px;border-top:1px solid var(--line-2);padding-top:12px;margin-top:2px}
+.g-alt button{width:100%}.g-alt .mu{font-size:12.5px}
+#c-staff{background:var(--band-2);color:var(--band-ink);border:1px solid #33476A;border-radius:8px;min-height:34px;padding:4px 8px;font:500 14px var(--f-body);max-width:230px}
