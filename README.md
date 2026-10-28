@@ -32,3 +32,6 @@ Customer receivables by currency, aging, customer, branch and period, built on t
 
 ## Typography system
 One global type layer (end of `public/index.html`, `ty-sys`): Inter throughout, a single heading scale in sentence case, consistent table header and cell sizes, and tabular lining numerals on every figure so amounts, balances and rates align. A small post-render pass right-aligns numeric table columns and their headers. Presentation only; no data or accounting logic is touched.
+
+## Daily cash report (Cashbook → Daily Cash Report)
+Printable report in the company-document layout: company header, Receipts and Payments split into Cash / Non-cash / Total, cash reconciliation (opening, receipts, payments, transfers out, expected, counted, over/(short), status against the closing tolerance, closing carried forward), the denomination count saved at closing, notes and signature lines. One report per currency (currencies are never combined), till/account selector, previous/next day, per-account table, other-currencies summary, transaction listing, CSV export and print/PDF. Read-only: it reads the day's entries and the saved closing; it posts nothing.
