@@ -48,3 +48,34 @@ Daily transactions > Daily closing > **Reconciliations** and **Closing reports**
 Income and expense are closed to P&L in the snapshot and the next-day opening (presented as current earnings). No daily closing journal is posted, so monthly and yearly income statements keep working.
 Currency stock is stored as a current position, so the split by currency for earlier dates comes from locked snapshots.
 Tests: `tests/daily-closing` (Playwright, 55 checks). Edit `dcs.src.js`, run `build.py`, serve `public/` on port 8766 and run `suite.py`.
+
+## Daily Closing web app (`/closing`)
+
+A separate page on this site, `https://<your-primebook-site>/closing`, where each branch runs its
+daily close online. Every member of staff signs in with their own email and password; the books live
+in your PrimeBook Supabase database.
+
+**One-time setup**
+
+1. Supabase dashboard → SQL Editor → New query → paste `supabase/daily-closing.sql` → Run.
+   (If you use `supabase/session-guard.sql`, run that first; the closing tables then get the same
+   session protection.)
+2. Supabase dashboard → Authentication → URL Configuration → add `https://<your-primebook-site>/closing`
+   to the Redirect URLs, so confirmation and password-reset links come back to the page.
+3. Open `/closing`, choose **Create an account**, confirm your email, sign in, and create the branch
+   book (for example *Vancouver*). You become its Owner.
+4. Enter the opening balances for the first business day (or load the training sample in a separate
+   training book).
+5. Team page → add each person's email, ledger name and role (Teller, Manager, Finance, Auditor).
+   Send them the `/closing` link; they create an account with that same email.
+
+**What the server enforces** (whatever the browser does): only active members can read a book;
+auditors cannot save; every save carries the revision it was based on, so two people can never
+overwrite each other; the audit trail is append-only and each new entry must carry the saver's own
+account; a locked day can never change; approving or locking needs a Manager, Finance or Owner who
+did not prepare or submit the day; every save is logged with who and when (`dc_saves`).
+Finer rules (which role may record, count or reverse) are enforced by the page.
+
+**Sources and tests:** the page is built from `closing/` with `python3 closing/build.py`
+(do not edit `public/closing.html` by hand). Tests are in `tests/daily-closing-web/`
+(47 database checks, 44 browser checks with four staff working at once).
