@@ -35,6 +35,10 @@ One global type layer (end of `public/index.html`, `ty-sys`): Inter throughout, 
 
 ## Daily cash report (Cashbook → Daily Cash Report)
 Printable report in the company-document layout: company header, Receipts and Payments split into Cash / Non-cash / Total, cash reconciliation (opening, receipts, payments, transfers out, expected, counted, over/(short), status against the closing tolerance, closing carried forward), the denomination count saved at closing, notes and signature lines. One report per currency (currencies are never combined), till/account selector, previous/next day, per-account table, other-currencies summary, transaction listing, CSV export and print/PDF. Read-only: it reads the day's entries and the saved closing; it posts nothing.
+## Month log
+
+Cash Management > Month Log lists every day of a month on one page: receipts (cash and non-cash), cash payments, opening, expected and counted cash, over/(short), deposits, closing cash and status, with month totals, days short, KPI tiles and a receipts-by-day chart. Pick month, till/account and currency; click a day to open its Daily Cash Report; export CSV or print. Days that were never counted show as Not closed. Test: `tests/t1860.js` equivalent in the workspace (`w/t1860.js`).
+
 ## Daily Closing System (reconciliations, closing reports, next-day opening)
 Daily transactions > Daily closing > **Reconciliations** and **Closing reports** extend the closing control above.
 - **Bank reconciliation:** statement balance, reference and reconciling items (for example uncleared cheques). The difference to the books must be zero or have a reason.
