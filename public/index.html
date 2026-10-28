@@ -5838,7 +5838,7 @@ const oc=V.ctx;V.ctx=function(){let h=oc.apply(this,arguments);
  h=h.replace('<button class="plf" onclick="ctOpen()">+ New transaction</button>','<span style="display:flex;gap:8px;flex-wrap:wrap"><button class="plf" onclick="sdOpen()">+ Currency sale deal</button><button class="plo" onclick="ctOpen()">+ Multi-currency entry</button></span>');
  return h};
 /*UPDCHK*/
-(function(){const B='2026-10-29-fl';window.PB_BUILD=B;if(location.protocol=='file:')return;let nb=null,tm=0;
+(function(){const B='2026-10-29-fm';window.PB_BUILD=B;if(location.protocol=='file:')return;let nb=null,tm=0;
 const busy=()=>{const a=document.activeElement;return !!(document.querySelector('.ov')||(a&&/^(INPUT|TEXTAREA)$/.test(a.tagName)&&String(a.value||'').length>0))};
 function go2(){try{const k='pb_upd_'+nb,n=+(sessionStorage.getItem(k)||0);sessionStorage.setItem(k,n+1)}catch(e){}location.replace(location.pathname+'?v='+encodeURIComponent(nb))}
 function bar(){let d=document.getElementById('pbupd');if(!d){d=document.createElement('div');d.id='pbupd';d.setAttribute('role','button');d.style.cssText='position:fixed;left:50%;transform:translateX(-50%);top:10px;z-index:100000;background:#0b3d33;color:#fff;padding:11px 18px;border-radius:12px;font:700 13px Inter,system-ui,sans-serif;box-shadow:0 6px 20px rgba(0,0,0,.3);cursor:pointer;text-align:center;max-width:92vw';d.onclick=()=>{d.textContent='Updating…';go2()};document.body.appendChild(d)}d.textContent='A new version of PrimeBook is ready. Tap here to update.'}
@@ -15060,16 +15060,18 @@ function view(d,acs){const f=F0(),B=build(d),all=B.rows;
  const kg=Object.keys(pc).length?`<div class="cdr-w"><table class="cdr-t"><thead><tr><th>Currency</th><th class="n">Opening</th><th class="n">Inflow</th><th class="n">Outflow</th><th class="n">Closing</th><th class="n">Entries</th></tr></thead><tbody>${Object.keys(pc).map(c=>{const x=pc[c];return`<tr><td><b>${A(c)}</b></td><td class="n">${F(x.o)}</td><td class="n in">${F(x.i)}</td><td class="n out">${F(x.u)}</td><td class="n"><b>${F(x.c)}</b></td><td class="n">${x.n}</td></tr>`}).join('')}</tbody></table></div>`:'';
  const sh=L.slice(0,500),op=window.__cdrx||{};
  const tb=sh.map((r,ix)=>{const id='r'+ix,e=r.e,o=!!op[(e?e.id:'o')+'|'+r.k];
-  const det=e&&o?`<tr class="cdr-d"><td></td><td colspan="7"><div class="cdr-dl"><b>${A(e.vno||'Entry #'+e.id)}</b>${e.by?' · entered by '+A(e.by):''}${e.apw?' · approved: '+A(e.apprBy||''):''}${e.ref?' · ref '+A(e.ref):''}<table class="cdr-t cdr-m"><thead><tr><th>Account</th><th class="n">Debit (${A(S.base)})</th><th class="n">Credit (${A(S.base)})</th></tr></thead><tbody>${e.lines.map(y=>`<tr><td>${A(y[0])} ${A(CH[y[0]]||'')}</td><td class="n">${y[1]?F(y[1]):''}</td><td class="n">${y[2]?F(y[2]):''}</td></tr>`).join('')}</tbody></table>${window.dtxAct?dtxAct(e):''}</div></td></tr>`:'';
-  return`<tr class="cdr-r ${e?'':'op'}" ${e?`data-cdrx="${A(e.id+'|'+r.k)}" tabindex="0"`:''}><td class="mu">${r.t||'—'}</td><td><b>${A(nm(r.a))}</b></td><td>${A(r.desc)}${e&&(e.vno||e.by)?`<small>${[e.vno?A(e.vno):'',e.by?A(e.by):''].filter(Boolean).join(' · ')}</small>`:''}${e&&window.dtxPill?' '+dtxPill(e):''}</td><td><span class="cdr-ty ${r.ty.replace(/\W/g,'').toLowerCase()}">${A(r.ty)}</span></td><td>${A(r.ccy)}</td><td class="n in">${r.inn==null?'—':F(r.inn)}</td><td class="n out">${r.out==null?'—':F(r.out)}</td><td class="n"><b>${F(r.bal)}</b></td></tr>${det}`}).join('');
- return`<div class="cdr-sel noprint"><label>Account<select id="dxacc" aria-label="Account" onchange="dxAcc(this.value)"><option value="">All accounts</option>${acs.map(a=>`<option value="${A(a.id)}" ${a.id==sel?'selected':''}>${A(a.name)} · ${A(a.ccy||S.base)}</option>`).join('')}</select></label>
- <label>Type<select onchange="cdrSet('ty',this.value)"><option value="">All types</option>${types.map(t=>`<option ${t==f.ty?'selected':''}>${A(t)}</option>`).join('')}</select></label>
- <label>Currency<select onchange="cdrSet('cc',this.value)"><option value="">All currencies</option>${ccys.map(t=>`<option ${t==f.cc?'selected':''}>${A(t)}</option>`).join('')}</select></label>
- <label>Status<select onchange="cdrSet('st',this.value)"><option value="">All statuses</option>${['Posted','Approved','Reversed','Reversal'].map(t=>`<option ${t==f.st?'selected':''}>${t}</option>`).join('')}</select></label>
- <label class="grow">Search<input type="search" id="cdrq" value="${A(f.q)}" placeholder="Description, account or voucher" oninput="cdrQ(this.value)"></label>
- <span class="cdr-ac"><button type="button" class="cdk-b" onclick="cdrCsv()">Export CSV</button><button type="button" class="cdk-b" onclick="window.print()">Print</button></span></div>
- <div class="cdk-card"><h2>Position by currency <small>${A(d)}</small></h2>${kg||'<p class="cdk-em">No cash or bank balance or movement on this date.</p>'}<p class="cdr-fn">Each currency is shown in its own units and is never added to another currency.</p></div>
- <div class="cdk-card"><h2>Detailed register <small>${A(d)} · ${L.filter(r=>r.e).length} transaction${L.filter(r=>r.e).length==1?'':'s'}</small></h2><p class="cdr-fn">Every posted movement is listed on its own, with the running balance of its account. Click a row to see its journal. Drafts and items waiting for approval appear after posting.</p>${sh.length?`<div class="cdr-w"><table class="cdr-t cdr-main"><thead><tr><th>Time</th><th>Account</th><th>Description</th><th>Type</th><th>Currency</th><th class="n">Inflow</th><th class="n">Outflow</th><th class="n">Balance</th></tr></thead><tbody>${tb}</tbody></table></div>${L.length>500?`<p class="cdr-fn">Showing the first 500 of ${L.length} rows. Narrow the filters or export the CSV.</p>`:''}`:'<p class="cdk-em">Nothing matches these filters.</p>'}</div>`}
+  const det=e&&o?`<tr class="cdr-d"><td></td><td colspan="6"><div class="cdr-dl"><b>${A(e.vno||'Entry #'+e.id)}</b>${e.by?' · entered by '+A(e.by):''}${e.apw?' · approved: '+A(e.apprBy||''):''}${e.ref?' · ref '+A(e.ref):''}<table class="cdr-t cdr-m"><thead><tr><th>Account</th><th class="n">Debit (${A(S.base)})</th><th class="n">Credit (${A(S.base)})</th></tr></thead><tbody>${e.lines.map(y=>`<tr><td>${A(y[0])} ${A(CH[y[0]]||'')}</td><td class="n">${y[1]?F(y[1]):''}</td><td class="n">${y[2]?F(y[2]):''}</td></tr>`).join('')}</tbody></table>${window.dtxAct?dtxAct(e):''}</div></td></tr>`:'';
+  return`<tr class="cdr-r ${e?'':'op'}" ${e?`data-cdrx="${A(e.id+'|'+r.k)}" tabindex="0"`:''}><td class="mu">${r.t||'—'}</td><td><b>${A(nm(r.a))}</b><small>${A(r.ccy)}</small></td><td>${A(r.desc)}${e&&(e.vno||e.by)?`<small>${[e.vno?A(e.vno):'',e.by?A(e.by):''].filter(Boolean).join(' · ')}</small>`:''}${e&&window.dtxPill?' '+dtxPill(e):''}</td><td><span class="cdr-ty ${r.ty.replace(/\W/g,'').toLowerCase()}">${A(r.ty)}</span></td><td class="n in">${r.inn==null?'—':F(r.inn)}</td><td class="n out">${r.out==null?'—':F(r.out)}</td><td class="n"><b>${F(r.bal)}</b></td></tr>${det}`}).join('');
+ const ccK=f.cc&&pc[f.cc]?f.cc:(pc[S.base]?S.base:Object.keys(pc)[0]),K=ccK?pc[ccK]:null,kt=(l,v,c,sub)=>`<div class="dxk ${c}"><small>${l}</small><b>${v}</b><em>${sub}</em></div>`;
+ const kpi=K?`<div class="dxk-g" aria-label="Summary in ${A(ccK)}">${kt('Opening balance',F(K.o),'',A(ccK))}${kt('Inflow','+'+F(K.i),'in',K.n+' movement'+(K.n==1?'':'s'))}${kt('Outflow','−'+F(K.u),'out',A(ccK))}${kt('Closing balance',F(K.c),'cl',Object.keys(pc).length>1?'Other currencies are listed below':A(ccK))}</div>`:'';
+ return kpi+`<div class="cdr-sel dxs noprint"><label class="grow dxs-q"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg><input type="search" id="cdrq" value="${A(f.q)}" placeholder="Search description, account or voucher" oninput="cdrQ(this.value)" aria-label="Search"></label>
+ <label><span>Account</span><select id="dxacc" aria-label="Account" onchange="dxAcc(this.value)"><option value="">All accounts</option>${acs.map(a=>`<option value="${A(a.id)}" ${a.id==sel?'selected':''}>${A(a.name)} · ${A(a.ccy||S.base)}</option>`).join('')}</select></label>
+ <label><span>Type</span><select onchange="cdrSet('ty',this.value)"><option value="">All types</option>${types.map(t=>`<option ${t==f.ty?'selected':''}>${A(t)}</option>`).join('')}</select></label>
+ <label><span>Currency</span><select onchange="cdrSet('cc',this.value)"><option value="">All currencies</option>${ccys.map(t=>`<option ${t==f.cc?'selected':''}>${A(t)}</option>`).join('')}</select></label>
+ <label><span>Status</span><select onchange="cdrSet('st',this.value)"><option value="">All statuses</option>${['Posted','Approved','Reversed','Reversal'].map(t=>`<option ${t==f.st?'selected':''}>${t}</option>`).join('')}</select></label>
+ <span class="cdr-ac"><button type="button" class="dxi" title="Export CSV" aria-label="Export CSV" onclick="cdrCsv()"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M7 10l5 5 5-5M5 21h14"/></svg></button><button type="button" class="dxi" title="Print" aria-label="Print" onclick="window.print()"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9V3h12v6M6 18H4a1 1 0 01-1-1v-6a2 2 0 012-2h14a2 2 0 012 2v6a1 1 0 01-1 1h-2M7 14h10v7H7z"/></svg></button></span></div>
+ <div class="cdk-card"><h2>Detailed register <small>${A(d)} · ${L.filter(r=>r.e).length} transaction${L.filter(r=>r.e).length==1?'':'s'}</small></h2><p class="cdr-fn">Every posted movement is listed on its own, with the running balance of its account. Click a row to see its journal. Drafts and items waiting for approval appear after posting.</p>${sh.length?`<div class="cdr-w"><table class="cdr-t cdr-main"><thead><tr><th>Time</th><th>Account</th><th>Description</th><th>Type</th><th class="n">Inflow</th><th class="n">Outflow</th><th class="n">Balance</th></tr></thead><tbody>${tb}</tbody></table></div>${L.length>500?`<p class="cdr-fn">Showing the first 500 of ${L.length} rows. Narrow the filters or export the CSV.</p>`:''}`:'<p class="cdk-em">Nothing matches these filters.</p>'}</div>
+ <div class="cdk-card"><h2>Position by currency <small>${A(d)}</small></h2>${kg||'<p class="cdk-em">No cash or bank balance or movement on this date.</p>'}<p class="cdr-fn">Each currency is shown in its own units and is never added to another currency.</p></div>`}
 window.cdrPage=view;
 window.cdrSet=(k,v)=>{F0()[k]=v;go()};
 window.cdrQ=v=>{F0().q=v;go();setTimeout(()=>{const e=document.getElementById('cdrq');if(e){e.focus();e.setSelectionRange(v.length,v.length)}},0)};
@@ -15703,6 +15705,71 @@ html body .cx-hv .cx-db{flex-direction:row!important}
 @media(max-width:900px){html body .cxm .mh{flex-wrap:wrap}html body .cx-hv{width:100%}html body .cxm .cx-seg{grid-template-columns:repeat(2,1fr)}}`;document.head.appendChild(css2);
 })();
 
+/*DXF - fintech cash desk skin (presentation only)*/
+(()=>{const st=document.createElement('style');st.id='dxf-css';st.textContent=`
+html body .dxt{background:#F8FAFC;font-family:Inter,-apple-system,"SF Pro Text",system-ui,sans-serif;color:#0F172A}
+html body .dxt .cdk-ey{color:#64748B!important;letter-spacing:.14em!important;font:600 11.5px Inter,sans-serif!important}
+html body .dxt .cdk-h h1{font:700 34px/1.15 Inter,-apple-system,"SF Pro Display",system-ui,sans-serif!important;letter-spacing:-.025em!important;color:#0F172A!important;margin:4px 0 6px!important}
+html body .dxt .cdk-h p{font:400 14.5px/1.5 Inter,sans-serif!important;color:#64748B!important}
+html body .dxt .cdk-dt{font:600 10.5px Inter,sans-serif!important;color:#64748B!important;letter-spacing:.08em}
+html body .dxt .cdk-dt input{border:1px solid #E2E8F0!important;border-radius:10px!important;font:500 14px Inter,sans-serif!important;color:#0F172A!important;height:42px;box-sizing:border-box}
+html body .dxt .cdk-b{border-radius:10px!important;border:1px solid #CBD5E1!important;background:#fff!important;color:#0F172A!important;font:600 14px Inter,sans-serif!important;height:42px;padding:0 16px!important;box-shadow:none!important}
+html body .dxt .cdk-b:hover{background:#F8FAFC!important}
+html body .dxt .dxn.in{background:#0F172A!important;border-color:#0F172A!important;color:#fff!important;box-shadow:0 1px 2px #0f172a33!important}
+html body .dxt .dxn.in:hover{background:#1E293B!important}
+html body .dxt .dxn.out,html body .dxt .dxn.tr{background:#fff!important;border-color:#CBD5E1!important;color:#0F172A!important}
+html body .dxt .cdk-b.dk{background:#fff!important;color:#0F172A!important;border-color:#CBD5E1!important}
+html body .dxt .cbx-btn{background:#fff!important;color:#0F172A!important;border:1px solid #CBD5E1!important;border-radius:10px!important;height:42px;font:600 14px Inter,sans-serif!important}
+html body .dxt .cdk-tabs{display:flex!important;gap:28px!important;background:transparent!important;border-radius:0!important;padding:0!important;border-bottom:1px solid #E2E8F0;margin:0 0 24px!important;overflow-x:auto}
+html body .dxt .cdk-tabs button{background:transparent!important;border:0!important;border-bottom:2px solid transparent!important;border-radius:0!important;box-shadow:none!important;padding:12px 2px!important;margin-bottom:-1px;font:500 14.5px Inter,sans-serif!important;color:#64748B!important;white-space:nowrap}
+html body .dxt .cdk-tabs button:hover{color:#0F172A!important}
+html body .dxt .cdk-tabs button.on{color:#0F172A!important;font-weight:600!important;border-bottom-color:#0F172A!important;background:transparent!important;box-shadow:none!important}
+html body .dxt .cdk-tabs em{background:#0F172A!important}
+html body .dxk-g{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;margin:0 0 20px}
+html body .dxk{background:#fff;border:1px solid #E2E8F0;border-radius:16px;padding:20px 22px;box-shadow:0 1px 2px #0f172a0a;min-width:0}
+html body .dxk small{display:block;font:500 13px Inter,sans-serif;color:#64748B;margin:0 0 10px}
+html body .dxk b{display:block;font:700 27px/1.15 Inter,sans-serif;letter-spacing:-.02em;color:#0F172A;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+html body .dxk em{display:block;font:400 12.5px Inter,sans-serif;font-style:normal;color:#94A3B8;margin-top:8px}
+html body .dxk.in b{color:#059669}html body .dxk.out b{color:#E11D48}
+html body .dxk.cl{border-top:3px solid #0F172A;padding-top:18px}
+html body .dxt .cdr-sel.dxs{display:flex;align-items:flex-end;gap:12px;flex-wrap:wrap;background:#fff;border:1px solid #E2E8F0;border-radius:14px;padding:12px 14px;margin:0 0 20px}
+html body .dxt .dxs label{display:grid;gap:4px;font:500 11.5px Inter,sans-serif;color:#64748B}
+html body .dxt .dxs label span{letter-spacing:.04em}
+html body .dxt .dxs select{height:40px;border:1px solid #E2E8F0;border-radius:10px;background:#F8FAFC;font:500 13.5px Inter,sans-serif;color:#0F172A;padding:0 10px;min-width:130px}
+html body .dxt .dxs .dxs-q{position:relative;display:block;flex:1 1 260px;min-width:220px}
+html body .dxt .dxs .dxs-q svg{position:absolute;left:12px;top:12px;color:#94A3B8;pointer-events:none}
+html body .dxt .dxs .dxs-q input{width:100%;height:40px;box-sizing:border-box;padding:0 12px 0 36px;border:1px solid #E2E8F0;border-radius:10px;background:#F8FAFC;font:400 14px Inter,sans-serif;color:#0F172A}
+html body .dxt .dxs input:focus,html body .dxt .dxs select:focus{outline:2px solid #0F172A33;border-color:#0F172A;background:#fff}
+html body .dxt .dxs .cdr-ac{display:flex;gap:8px;margin-left:auto}
+html body .dxt .dxi{width:40px;height:40px;display:inline-grid;place-items:center;border:1px solid #E2E8F0;border-radius:10px;background:#fff;color:#334155;cursor:pointer}
+html body .dxt .dxi:hover{background:#F1F5F9;color:#0F172A}
+html body .dxt .cdk-card{border:1px solid #E2E8F0!important;border-radius:16px!important;box-shadow:0 1px 2px #0f172a0a!important;background:#fff!important}
+html body .dxt .cdk-card h2{font:600 17px Inter,sans-serif!important;letter-spacing:-.01em;color:#0F172A!important}
+html body .dxt .cdk-card h2 small{font:400 13px Inter,sans-serif;color:#94A3B8}
+html body .dxt .cdr-fn{font:400 13px Inter,sans-serif;color:#94A3B8}
+html body .dxt .cdr-t{font:400 14px Inter,sans-serif;color:#0F172A}
+html body .dxt .cdr-t th{background:transparent!important;color:#64748B!important;font:600 11.5px Inter,sans-serif!important;letter-spacing:.06em;padding:12px 14px!important;border-bottom:1px solid #E2E8F0!important}
+html body .dxt .cdr-t td{padding:16px 14px!important;border-bottom:1px solid #F1F5F9!important;vertical-align:middle!important}
+html body .dxt .cdr-t tr:last-child td{border-bottom:0!important}
+html body .dxt .cdr-t th,html body .dxt .cdr-t td{border-left:0!important;border-right:0!important}
+html body .dxt .cdr-main tbody tr.cdr-r:hover td{background:#F8FAFC}
+html body .dxt .cdr-t .n{font-variant-numeric:tabular-nums}
+html body .dxt .cdr-t .in{color:#059669;font-weight:500}html body .dxt .cdr-t .out{color:#E11D48;font-weight:500}
+html body .dxt .cdr-main td .dxu-p,html body .dxt .cdr-main td .cdr-ty{font:600 12px Inter,sans-serif;padding:3px 10px}
+html body .dxt .cdr-ty.deposit,html body .dxt .dxu-p.posted{background:#ECFDF5!important;color:#047857!important}
+html body .dxt .cdr-ty.payment,html body .dxt .cdr-ty.withdrawal{background:#FFF1F2!important;color:#BE123C!important}
+html body .dxt .cdr-main td:nth-child(3) small{margin-top:3px}
+html body .dxt .cdr-main td:nth-child(3) .dxu-p{margin-top:6px;display:inline-block}
+html body .dxt .cdr-r.op td{color:#64748B;background:#FCFDFE}
+html body .dxt .cdk-h>div:first-child{flex:1 1 280px;min-width:0}html body .dxt .cdk-h p{max-width:420px!important}html body .dxt .cdk-hr{flex:0 1 auto;justify-content:flex-end}
+html body .dxt .dxu-t thead th,html body .dxt .dxu-t th{background:transparent!important;color:#64748B!important;font:600 11.5px Inter,sans-serif!important;letter-spacing:.06em;border-bottom:1px solid #E2E8F0!important;padding:12px 10px!important}
+html body .dxt .dxu-t td{padding:14px 10px!important;border-bottom:1px solid #F1F5F9!important;font:400 14px Inter,sans-serif}
+html body .dxt .dxu-sm td{background:#F8FAFC!important;border-bottom:0!important;font-weight:600}
+html body .dxt .dxu-t .in{color:#059669}html body .dxt .dxu-t .out{color:#E11D48}
+@media(max-width:1000px){html body .dxk-g{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:560px){html body .dxk-g{grid-template-columns:1fr}html body .dxt .cdk-h h1{font-size:28px!important}html body .dxt .cdr-sel.dxs .cdr-ac{margin-left:0}}
+@media print{.dxs{display:none!important}}
+`;document.head.appendChild(st)})();
 /*TYPO - global typography system (presentation only)*/
 (function(){
 const CSS=`
