@@ -29,3 +29,6 @@ Customer receivables by currency, aging, customer, branch and period, built on t
 - Tie-out card proves the customer sub-ledger equals GL 1200, and flags duplicate receipt references.
 - Click any customer or invoice for balances, allocation, GL posting, audit trail and full transaction history. CSV export on customers, invoices, payments and a customer's history.
 - Payments are recorded through the existing receipt flow and its maker-checker approval (Approval centre). The dashboard is read-only.
+
+## Typography system
+One global type layer (end of `public/index.html`, `ty-sys`): Inter throughout, a single heading scale in sentence case, consistent table header and cell sizes, and tabular lining numerals on every figure so amounts, balances and rates align. A small post-render pass right-aligns numeric table columns and their headers. Presentation only; no data or accounting logic is touched.
