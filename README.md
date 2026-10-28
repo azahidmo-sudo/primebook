@@ -35,6 +35,19 @@ One global type layer (end of `public/index.html`, `ty-sys`): Inter throughout, 
 
 ## Daily cash report (Cashbook → Daily Cash Report)
 Printable report in the company-document layout: company header, Receipts and Payments split into Cash / Non-cash / Total, cash reconciliation (opening, receipts, payments, transfers out, expected, counted, over/(short), status against the closing tolerance, closing carried forward), the denomination count saved at closing, notes and signature lines. One report per currency (currencies are never combined), till/account selector, previous/next day, per-account table, other-currencies summary, transaction listing, CSV export and print/PDF. Read-only: it reads the day's entries and the saved closing; it posts nothing.
+## Daily transactions: cash in, cash out, transfers (Cash desk)
+
+- **Cash in / Cash out / Transfer** buttons on Daily transactions open the Add transaction form with the purpose pre-set.
+- **Received into / Paid from** list only eligible cash and bank asset accounts from the Chart of Accounts (active, matching currency, branch access), with branch and currency in the label and a search box. Income, expense, liability and equity accounts never appear there.
+- **Receipt type** (cash in): earned income, owner contribution, loan received, customer deposit or other non-income receipt. Only *earned income* offers an **Income category** (active income accounts) and posts as revenue; the others post to equity or liability accounts (customer deposits go to 2150).
+- **Payment type** (cash out): expense (active expense accounts), owner drawings, loan repayment, asset purchase or other. Cash and bank accounts never appear as categories, and inactive accounts are hidden.
+- Customer/source or payee, reference number and an image/PDF attachment (up to 1 MB) are stored on the journal entry. Currency is checked against the account. Balance warnings and bank overdraft limits are enforced.
+- **Transfers**: source and destination must differ; same-currency transfers post balanced legs through Bank Transfers Clearing; cross-currency transfers keep both amounts and the rate, post the fee and the realized FX gain or loss.
+- **Register** (Daily transactions): *Daily position by account* shows opening, cash in, cash out, transfers in/out, expected book balance, physical count and closing variance per account, branch and currency, totalled separately per currency. Rows expand to show the journal, details, audit trail, receipt preview, printable voucher and reversal options. Status filter: Posted, Approved, Reversed, Reversal.
+- **Movement history** tab: date range, account, type, status, user, currency and text filters, CSV export.
+- **Reversal workflow**: posted entries are never edited. Owner, Manager and Accountant roles can reverse an entry with a required reason (both legs of a transfer reverse together). Other users with cash access can request a reversal; an Owner or Manager other than the requester approves it. Reversals post today, are blocked on a closed day, and are written to the audit log.
+- Tests: `t1870` (dropdown filtering, classification, journals, overdraft, FX), `t1880` (position, reversal, approvals, history).
+
 ## Month log
 
 Cash Management > Month Log lists every day of a month on one page: receipts (cash and non-cash), cash payments, opening, expected and counted cash, over/(short), deposits, closing cash and status, with month totals, days short, KPI tiles and a receipts-by-day chart. Pick month, till/account and currency; click a day to open its Daily Cash Report; export CSV or print. Days that were never counted show as Not closed. Test: `tests/t1860.js` equivalent in the workspace (`w/t1860.js`).
