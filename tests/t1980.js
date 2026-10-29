@@ -1,0 +1,13 @@
+const {chromium}=require('playwright');let f=0;const ok=(n,c)=>{console.log(c?'ok':'FAIL',n);if(!c)f++};(async()=>{const b=await chromium.launch();const p=await b.newPage({viewport:{width:1440,height:1100}});const errs=[];p.on('pageerror',e=>errs.push(e.message));
+await p.goto('file:///home/claude/primebook/public/index.html');await p.waitForTimeout(600);
+await p.evaluate(()=>{document.getElementById('auth')?.remove();document.body.classList.remove('auon');SESS={id:'t',exp:Date.now()+1e6};S.base='CAD';S.co={name:'X'};window.B=S.br[0].id;S.users=[{name:'Z',role:'Owner',br:'All'}];S.me=0;
+post({date:today(),br:B,acc:'cash|'+B,tt:'Receipt',memo:'x',vno:'RV-1',by:'Z',lines:[['1000',5000,0],['3000',0,5000]]});view='dash';go()});await p.waitForTimeout(400);
+await p.click('.dsv-i[data-dws=ov]');await p.waitForTimeout(300);
+const opts=await p.$$eval('#dbx-acc select[aria-label=Currency] option',o=>o.map(x=>x.value));console.log(opts);
+ok('currency filter present',opts.length>=2&&opts[0]=='all');
+const n0=(await p.$$('#dbx-acc tbody tr')).length;
+await p.selectOption('#dbx-acc select[aria-label=Currency]',opts[1]);await p.waitForTimeout(400);
+ok('filter keeps selection + heading',await p.evaluate(v=>document.querySelector('#dbx-acc select[aria-label=Currency]').value==v&&/Account Details – /.test(document.querySelector('#dbx-acc h3').textContent),opts[1]));
+await p.selectOption('#dbx-acc select[aria-label=Currency]','all');await p.waitForTimeout(400);
+ok('reset shows all',(await p.$$('#dbx-acc tbody tr')).length==n0);
+ok('no errors',errs.length==0);await p.screenshot({path:'uf3.png'});await b.close();process.exit(f?1:0)})();
