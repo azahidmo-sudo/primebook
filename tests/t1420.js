@@ -1,6 +1,6 @@
 const {chromium}=require('playwright');let f=0;const ok=(c,m)=>{console.log((c?'PASS ':'FAIL ')+m);if(!c)f++};
 (async()=>{const b=await chromium.launch();const p=await b.newPage({viewport:{width:1500,height:1000}});const errs=[];p.on('pageerror',e=>errs.push(e.message));
-await p.goto('file:///home/claude/primebook/public/index.html');await p.waitForTimeout(500);
+await p.goto('file:///home/claude/primebook/public/index.html');await p.addStyleTag({content:'html body #m .dws:not(.act){display:block!important}html body #m .dws-h{display:flex!important}'});await p.waitForTimeout(500);
 await p.evaluate(()=>{document.getElementById('auth')?.remove();document.body.classList.remove('auon');SESS={id:'t',exp:Date.now()+1e6};S.users=[{name:'Ann',role:'Owner',br:'All'}];S.me=0;
 const b=S.br[0].id,d=today();S.banks=[{id:'k1',name:'TD Bank',no:'123',ccy:S.base,br:b}];post({date:d,br:b,acc:'bank|k1',bank:'k1',tt:'Deposit',memo:'Bank dep',lines:[['1010',5000,0],['4300',0,5000]]});view='dash';go()});
 await p.waitForTimeout(700);
@@ -12,7 +12,7 @@ ok(!all.includes('acc')&&!all.includes('ins'),'duplicate cards (acc, ins) not sh
 ok(new Set(all).size==all.length,'no card appears twice');
 ok(!/Your company\s*·/.test(await p.innerText('.dw[data-dwid=dbxfo]')),'Financial overview description line removed');
 ok(/Currency/.test(await p.innerText('.dw[data-dwid=dbxfo]'))&&/Total Cash Balance/.test(await p.innerText('.dw[data-dwid=dbxfo]')),'overview KPIs intact');
-ok(await p.evaluate(()=>document.querySelector('.dws[data-dws=mr]').classList.contains('col')),'settings & more collapsed');
+ok(await p.$('.dsv-i[data-dws=mr]')!=null,'navigation row has Settings & more');
 // hold-drag Quick reports onto Recent transactions (right half)
 const box=async s=>await (await p.$(s)).boundingBox();
 const src=await box('.dw[data-dwid=dbxqr] .dbx-ph h3');await p.locator('.dw[data-dwid=dbxqr]').scrollIntoViewIfNeeded();
@@ -49,7 +49,7 @@ ok((await p.$$('.dw-t')).length>5,'customize handles');
 await p.selectOption('[data-dwsel=kpt]','ov');await p.waitForTimeout(300);ok((await secs())[0].includes('kpt'),'move to section via select');
 await p.click('[data-dwx=reset]');await p.waitForTimeout(300);ok(!(await secs())[0].includes('kpt'),'reset');
 await p.click('[data-dwx=done]');await p.waitForTimeout(200);
-await p.click('[data-dwx=col][data-dws=mr]');await p.waitForTimeout(300);ok(await p.$('.dws[data-dws=mr] .dw')!=null,'expand settings & more');
+await p.click('.dsv-i[data-dws=mr]');await p.waitForTimeout(300);ok(await p.$('.dws.act[data-dws=mr] .dw')!=null,'open settings & more tab');
 // persistence across reload
 await p.evaluate(()=>save());await p.reload();await p.waitForTimeout(600);
 await p.evaluate(()=>{document.getElementById('auth')?.remove();document.body.classList.remove('auon');SESS={id:'t',exp:Date.now()+1e6};S.me=0;view='dash';go()});await p.waitForTimeout(600);

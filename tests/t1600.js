@@ -1,0 +1,13 @@
+const {chromium}=require('playwright');let f=0;const ok=(c,m)=>{console.log((c?'PASS ':'FAIL ')+m);if(!c)f++};
+(async()=>{const b=await chromium.launch();const p=await b.newPage({viewport:{width:1500,height:1400}});const errs=[];p.on('pageerror',e=>errs.push(e.message));
+await p.goto('file:///home/claude/primebook/public/index.html');await p.addStyleTag({content:'html body #m .dws:not(.act){display:block!important}html body #m .dws-h{display:flex!important}'});await p.waitForTimeout(600);
+await p.evaluate(()=>{document.getElementById('auth')?.remove();document.body.classList.remove('auon');SESS={id:'t',exp:Date.now()+1e6};S.users=[{name:'Ann',role:'Owner',br:'All'}];S.me=0;S.base='CAD';S.j=[];
+S.cust=[{id:'m1',type:'Customer',code:'CUS-0001',name:'MEHARY',phone:'1',credit:0,status:'Active',terms:'Due on receipt',ctype:'Individual',created:today()},{id:'m2',type:'Customer',code:'CUS-0002',name:'OTHER',phone:'2',credit:0,status:'Active',terms:'Due on receipt',ctype:'Individual',created:today()}];
+post({date:today(),br:S.br[0].id,cust:'m1',tt:'Deposit',memo:'Payment received from MEHARY',lines:[['1000',500,0],['1200',0,500]]});
+post({date:today(),br:S.br[0].id,cust:'m2',tt:'Sale',memo:'Sale',lines:[['1200',100,0],['4000',0,100]]});view='dash';go()});await p.waitForTimeout(1000);
+const r=await p.evaluate(()=>({ar:arG(S.j),adv:advG(S.j),raw:bal(1200,S.j)}));console.log(r);
+ok(r.ar==100&&r.adv==500,'receivables 100 (other customer only), customer deposits 500');
+const t=await p.evaluate(()=>document.body.innerText);ok(/Customer deposits/.test(t),'dashboard shows Customer deposits');
+await p.evaluate(()=>{ro='Balance Sheet';view='rpt';go()});await p.waitForTimeout(800);
+const bs=await p.locator('#bsr').innerText();ok(/Customer Deposits & Advances/.test(bs)&&/TOTAL LIABILITIES\s+500\.00/.test(bs)&&/Balanced/.test(bs),'Balance Sheet lists deposits as a liability and balances');
+ok(errs.length==0,'no page errors');console.log(f?'FAILED '+f:'ALL PASS');await b.close()})();

@@ -1,0 +1,13 @@
+const {chromium}=require('playwright');(async()=>{const b=await chromium.launch();const p=await b.newPage({viewport:{width:1440,height:900}});const errs=[];p.on('pageerror',e=>errs.push(e.message));let f=0;const ck=(n,c)=>{if(!c){f++;console.log('FAIL',n)}};
+await p.goto('file:///home/claude/primebook/public/index.html');await p.waitForTimeout(600);
+await p.evaluate(()=>{document.getElementById('auth')?.remove();document.body.classList.remove('auon');SESS={id:'t',exp:Date.now()+1e6};S.base='CAD';window.B=S.br[0].id;S.users=[{name:'Z',role:'Owner',br:'All'}];S.me=0;S.dwl={};view='dash';go()});await p.waitForTimeout(400);
+const tabs=await p.$$eval('.dsv-i',e=>e.map(x=>x.innerText.replace(/\s+/g,' ').trim()));ck('5 tabs',tabs.length==5&&/FINANCIAL OVERVIEW/i.test(tabs[0])&&/SETTINGS/i.test(tabs[4]));
+const ys=await p.$$eval('.dsv-i',e=>e.map(x=>Math.round(x.getBoundingClientRect().top)));ck('single row',new Set(ys).size==1);
+ck('overview active',await p.$eval('.dsv-i.on',e=>e.dataset.dws)=='ov');
+await p.click('.dsv-i[data-dws=rp]');await p.waitForTimeout(300);
+ck('reports active',await p.$eval('.dsv-i.on',e=>e.dataset.dws)=='rp'&&await p.evaluate(()=>[...document.querySelectorAll('.dws.act')].map(s=>s.dataset.dws).join())=='rp');
+ck('only active visible',await p.evaluate(()=>[...document.querySelectorAll('.dws')].filter(s=>s.offsetParent).length)==1);
+await p.keyboard.press('ArrowRight');await p.waitForTimeout(300);ck('arrow key moves',await p.$eval('.dsv-i.on',e=>e.dataset.dws)=='mr');
+ck('remembered',await p.evaluate(()=>S.dwl.Z.tab)=='mr');
+await p.setViewportSize({width:420,height:800});await p.waitForTimeout(300);ck('no page overflow at 420',await p.evaluate(()=>document.documentElement.scrollWidth-document.documentElement.clientWidth)<=2);
+console.log(f?'FAILED '+f:'ALL PASS',errs);await b.close()})();
