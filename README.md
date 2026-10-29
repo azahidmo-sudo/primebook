@@ -52,6 +52,17 @@ Printable report in the company-document layout: company header, Receipts and Pa
 
 Cash Management > Month Log lists every day of a month on one page: receipts (cash and non-cash), cash payments, opening, expected and counted cash, over/(short), deposits, closing cash and status, with month totals, days short, KPI tiles and a receipts-by-day chart. Pick month, till/account and currency; click a day to open its Daily Cash Report; export CSV or print. Days that were never counted show as Not closed. Test: `tests/t1860.js` equivalent in the workspace (`w/t1860.js`).
 
+## Daily cash count upgrade (multi-currency, Daily transactions > Daily closing > Close a day)
+The existing count wizard was upgraded in place; there is no second workflow.
+- **Money:** counts, subtotals and variances are integer minor units per currency (0, 2 or 3 decimals; `S.rates[c].dp` or a built-in table such as JPY 0, KWD/BHD/OMR 3). Floats are display only. Variance is always counted minus expected, positive = over.
+- **Step 1:** preflight checks (period open, earlier days closed, permission, exchange rates), cutoff time and zone, previous closing, saved draft with editor identity. A manager or owner can continue past "earlier days closed" with a recorded reason.
+- **Step 2:** status table per currency (Not started, In progress, Counted, Variance, Verified, Not applicable) with currency, status and variance-only filters; per-currency Confirm count, Recount (reason required), Clear count (audited), Save draft; count per denomination with counted-by and time; counts above 100,000 are rejected; blank is never zero, so a zero count is an attested, audited action; other/loose amounts above the variance tolerance need a note; first count versus recount differences need a manager or owner to adjudicate.
+- **Step 3/4:** converted totals are labelled as management figures with the rate source and an unapproved/stale badge; advisory insights are stored apart and never read by posting; the posting preview comes from the same function that posts (`varPost`).
+- **Approval:** maker is not checker, the approver re-enters their password (or name where the sign-in has no local password), approval is all-or-nothing, a closing posts at most once per id and version, and approval is refused if entries were posted after the count started or the accounting period is closed. The approved record keeps a rate snapshot, a version and a hash.
+- **Reports** (Closing reports): currency-by-currency cash count, shortages/overages and recounts, closing approval with hash and pending GL preview, plus a cash-count CSV.
+- **Pilot flag:** Closing policy > Strict count rules (owner only). Turning it off returns to the earlier count behaviour.
+- Tests: `tests/t1890.js` (1,000 random denomination sets against a BigInt reference, 10,000 repeated approvals, stale, period lock, reopen and repost, hash, permissions, drafts, filters, reports).
+
 ## Daily Closing System (reconciliations, closing reports, next-day opening)
 Daily transactions > Daily closing > **Reconciliations** and **Closing reports** extend the closing control above.
 - **Bank reconciliation:** statement balance, reference and reconciling items (for example uncleared cheques). The difference to the books must be zero or have a reason.
