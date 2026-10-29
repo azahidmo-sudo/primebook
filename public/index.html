@@ -5838,7 +5838,7 @@ const oc=V.ctx;V.ctx=function(){let h=oc.apply(this,arguments);
  h=h.replace('<button class="plf" onclick="ctOpen()">+ New transaction</button>','<span style="display:flex;gap:8px;flex-wrap:wrap"><button class="plf" onclick="sdOpen()">+ Currency sale deal</button><button class="plo" onclick="ctOpen()">+ Multi-currency entry</button></span>');
  return h};
 /*UPDCHK*/
-(function(){const B='2026-10-29-ft';window.PB_BUILD=B;if(location.protocol=='file:')return;let nb=null,tm=0;
+(function(){const B='2026-10-29-fu';window.PB_BUILD=B;if(location.protocol=='file:')return;let nb=null,tm=0;
 const busy=()=>{const a=document.activeElement;return !!(document.querySelector('.ov')||(a&&/^(INPUT|TEXTAREA)$/.test(a.tagName)&&String(a.value||'').length>0))};
 function go2(){try{const k='pb_upd_'+nb,n=+(sessionStorage.getItem(k)||0);sessionStorage.setItem(k,n+1)}catch(e){}location.replace(location.pathname+'?v='+encodeURIComponent(nb))}
 function bar(){let d=document.getElementById('pbupd');if(!d){d=document.createElement('div');d.id='pbupd';d.setAttribute('role','button');d.style.cssText='position:fixed;left:50%;transform:translateX(-50%);top:10px;z-index:100000;background:#0b3d33;color:#fff;padding:11px 18px;border-radius:12px;font:700 13px Inter,system-ui,sans-serif;box-shadow:0 6px 20px rgba(0,0,0,.3);cursor:pointer;text-align:center;max-width:92vw';d.onclick=()=>{d.textContent='Updating…';go2()};document.body.appendChild(d)}d.textContent='A new version of PrimeBook is ready. Tap here to update.'}
@@ -12544,7 +12544,7 @@ function posTable(m,full){
  <div class="cs-fcs noprint">${chip('all','All Currencies')}${chip('in','In Stock')}${chip('low','Low Stock')}${chip('out','Out of Stock')}${chip('ord','Ordered')}<span class="cs-mu cs-fn">Values in ${E(S.base)} unless noted</span></div>
  ${R.length?`<div class="cs-w"><table class="cs-t cs-bal"><thead><tr>${th('c','Currency')}${th('av','Available balance',1)}${th('ss','Status')}${th('loc','Stock location')}${th('q','On hand',1,1)}<th class="n">Reserved</th>${th('avg','Avg cost',1,1)}${th('mid','Board mid',1,1)}<th class="cs-x">Trend</th>${th('v','Cost value',1,1)}${th('mk','Market value',1)}${th('g','Unrealised',1,1)}${th('sh','Share',1,1)}${th('cov','Cover',1,1)}</tr></thead><tbody>${body}</tbody><tfoot><tr><td>Total</td><td></td><td></td><td></td><td class="cs-x"></td><td></td><td class="cs-x"></td><td class="cs-x"></td><td class="cs-x"></td><td class="n cs-x">${mf(tot.v)}</td><td class="n">${mf(tot.mk)}</td><td class="n cs-x ${dn(tot.g)}">${sgn(tot.g)}</td><td class="cs-x"></td><td class="cs-x"></td></tr></tfoot></table></div>`:`<div class="cs-empty">${Object.keys(S.rates).length?'No currency matches your filter.':'No currencies registered yet.<br><small>Add currencies under Settings → Currencies, then buy stock in Transactions.</small>'}</div>`}</div>`}
 
-const WID=[['kp','Key figures',12],['ask','Ask your currency stock',12],['in','Smart insights',8],['al','Allocation',4],['po','Currency Stock Balances',12],['ac','Deal activity',8],['br','By branch',4]],SPANS=[4,6,8,12];
+const WID=[['kp','Key figures',12],['al','Allocation',4],['po','Currency Stock Balances',12],['ac','Deal activity',8],['br','By branch',4]],SPANS=[4,6,8,12];
 let wedit=false,dragId='';
 const layKey=()=>String(me().name||'user');
 function lay(){const cs=stt();cs.lay=cs.lay||{};let L=cs.lay[layKey()];if(!L)L=cs.lay[layKey()]={order:WID.map(w=>w[0]),hide:[],span:{}};
