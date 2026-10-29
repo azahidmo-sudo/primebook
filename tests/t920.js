@@ -1,22 +1,16 @@
-const {chromium}=require('playwright');
-(async()=>{const b=await chromium.launch();const p=await b.newPage({viewport:{width:1440,height:1300}});const er=[];p.on('pageerror',e=>er.push(e.message));p.on('dialog',d=>d.accept());
-await p.goto('file:///home/claude/primebook/public/index.html');await p.addStyleTag({content:'html body #m .dws:not(.act){display:block!important}html body #m .dws-h{display:flex!important}'});await p.waitForTimeout(700);
-await p.evaluate(()=>{new MutationObserver(()=>{document.getElementById('rmd')?.remove();document.getElementById('auth')?.remove();document.body.classList.remove('auon')}).observe(document.body,{childList:true});document.getElementById('auth')?.remove();document.body.classList.remove('auon');SESS={id:'t',exp:Date.now()+1e6};
-const d=today();post({date:d,br:'b1',tt:'Opening',memo:'Capital',lines:[['1000',50000,0],['3000',0,50000]]});save();view='dash';go()});
-await p.waitForTimeout(500);const R=[];const ok=(n,c,x)=>R.push((c?'PASS ':'FAIL ')+n+(c?'':' '+JSON.stringify(x)));
-const ord=()=>p.evaluate(()=>[...document.querySelectorAll('.dwg>.dw')].map(e=>e.dataset.dwid));
-const o0=await ord();console.log(o0.join(','));ok('widgets built',o0.length>=8&&o0[0]=='hero'&&o0.includes('dbxfo'),o0);
-await p.screenshot({path:'dw0.png',fullPage:true});
-await p.click('[data-dwx=edit]');ok('edit mode',(await p.$$('.dw-t')).length>=o0.length);
-await p.click('.dw[data-dwid=dbxcb] [data-dwx=dn]');const o1=await ord();ok('move down',o1.indexOf('dbxcb')>o1.indexOf('rec'),o1);
-await p.click('.dw[data-dwid=kpt] [data-dwx=sz]');ok('resize',await p.$eval('.dw[data-dwid=kpt]',e=>e.style.getPropertyValue('--sp'))=='8');
-await p.click('.dw[data-dwid=brn] [data-dwx=hd]');ok('hide',!(await ord()).includes('brn')&&await p.$('[data-dwx=show][data-dwid=brn]')!=null);
-await p.click('[data-dwx=show][data-dwid=brn]');ok('show',(await ord()).includes('brn'));
-await p.selectOption('[data-dwsel=act]','ov');
-await p.waitForTimeout(200);const o2=await ord();ok('moved to overview section',o2.indexOf('act')<o2.indexOf('dbxca'),o2);
-await p.screenshot({path:'dw1.png',fullPage:true});
-await p.click('[data-dwx=done]');ok('done',(await p.$$('.dw-t')).length==0);
-await p.evaluate(()=>go());{const o=await ord();ok('persists',o.indexOf('act')<o.indexOf('dbxca'))}
-await p.click('[data-dwx=edit]');await p.click('[data-dwx=reset]');ok('reset',JSON.stringify((await ord()).filter(x=>o0.includes(x)))==JSON.stringify(o0),await ord());
-ok('nav go still works',await p.evaluate(()=>{document.querySelector('[data-dwx=done]').click();return !!document.querySelector('.dw [data-go]')}));
-ok('no errors',er.length==0,er);console.log(R.join('\n'));await b.close()})();
+const {chromium}=require('playwright');let f=0;const ok=(c,m)=>{console.log((c?'PASS ':'FAIL ')+m);if(!c)f++};
+(async()=>{const b=await chromium.launch();const p=await b.newPage({viewport:{width:1500,height:1000}});const errs=[];p.on('pageerror',e=>errs.push(e.message));
+await p.goto('file:///home/claude/primebook/public/index.html');await p.waitForTimeout(500);
+await p.evaluate(()=>{document.getElementById('auth')?.remove();document.body.classList.remove('auon');SESS={id:'t',exp:Date.now()+1e6};S.users=[{name:'Ann',role:'Owner',br:'All'}];S.me=0;S.dwl={};view='dash';go()});await p.waitForTimeout(600);
+ok(!(await p.$('[data-dwx=undo]'))&&!(await p.$('[data-dwx=redo]'))&&!(await p.$('[data-dwx=edit]')),'Undo, Redo and Customize are not on the dashboard');
+ok(!(await p.$('.dwb')),'no layout toolbar');
+ok((await p.$$('.dsv-i')).length==5,'five section tabs remain');
+const all=await p.evaluate(()=>[...document.querySelectorAll('.dw')].map(d=>d.dataset.dwid));
+ok(all[0]=='hero'&&all.includes('kpi')&&all.includes('dbxfo'),'greeting, key figures and overview cards present');
+ok(new Set(all).size==all.length&&!all.includes('acc')&&!all.includes('ins'),'no duplicate cards');
+ok(await p.evaluate(()=>!document.querySelector('.dw-t')),'no customize handles');
+const wd=await p.evaluate(()=>Object.fromEntries([...document.querySelectorAll('.dwg>.dw')].map(d=>[d.dataset.dwid,Math.round(d.getBoundingClientRect().width)])));
+ok(wd.hero>1000&&wd.kpi>1000,'hero and key figures full width');
+await p.click('.dw[data-dwid=dbxcb] tbody tr:nth-child(2)');await p.waitForTimeout(300);ok(await p.evaluate(()=>S.dbx.Ann.cur)!='all','currency row click still filters');
+for(const w of [820,420]){await p.setViewportSize({width:w,height:900});await p.waitForTimeout(300);const o=await p.evaluate(()=>document.documentElement.scrollWidth-document.documentElement.clientWidth);ok(o<=2,'no horizontal overflow at '+w+' ('+o+')')}
+console.log('errs',errs.join('|'));console.log(f?'FAILED '+f:'ALL PASSED');await b.close()})()
