@@ -1,0 +1,14 @@
+const {chromium}=require('playwright');(async()=>{const b=await chromium.launch();const p=await b.newPage({viewport:{width:1440,height:1100}});p.on('dialog',d=>d.accept());const errs=[];p.on('pageerror',e=>errs.push(e.message));let f=0;const ck=(n,c)=>{if(!c){f++;console.log('FAIL',n)}};
+await p.goto('file:///home/claude/primebook/public/index.html');await p.waitForTimeout(600);
+await p.evaluate(()=>{document.getElementById('auth')?.remove();document.body.classList.remove('auon');SESS={id:'t',exp:Date.now()+1e6};S.base='CAD';S.co={name:'X'};window.B=S.br[0].id;S.users=[{name:'Z',role:'Owner',br:'All'}];S.me=0;S.j=[];const A=accts()[0];
+S.dord=[{id:'o0',no:'ORD-1',cust:'c1',acct:A.id,g:'CAD',p:'USD',amt:1000,rate:.72,date:today(),fees:[],pays:[]},{id:'o1',no:'ORD-2',cust:'c1',acct:A.id,g:'CAD',p:'USD',amt:500,rate:.72,date:today(),fees:[],pays:[{amt:100,date:today()}]}];view='ctx';go()});
+await p.waitForTimeout(300);
+ck('rows',await p.evaluate(()=>document.querySelectorAll('.ctx2-body tbody tr').length)==2);
+ck('paid locked',await p.evaluate(()=>[...document.querySelectorAll('.ctx2-body tbody tr')].find(r=>r.textContent.includes('ORD-2')).querySelector('button.dl').disabled));
+await p.evaluate(()=>ordDelAsk('o1'));ck('blocked paid',await p.evaluate(()=>!document.getElementById('dl_r')));
+await p.evaluate(()=>ordDelAsk('o0'));await p.evaluate(()=>{document.getElementById('dl_r').value='x';delGo()});ck('short reason kept',await p.evaluate(()=>S.dord.length)==2);
+await p.evaluate(()=>{document.getElementById('dl_r').value='duplicate entry';delGo()});
+ck('deleted',await p.evaluate(()=>S.dord.length==1&&S.dord[0].id=='o1'));
+ck('logged',await p.evaluate(()=>(S.del||[]).some(x=>x.kind=='order'&&x.ref=='ORD-1'&&x.reason=='duplicate entry'&&x.snap)));
+await p.evaluate(()=>ctxTab('log'));ck('log tab',(await p.evaluate(()=>document.querySelector('.ctx2-body').innerText)).includes('Deleted'));
+console.log(f?'FAILED '+f:'ALL PASS',errs);await b.close()})();

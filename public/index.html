@@ -5838,7 +5838,7 @@ const oc=V.ctx;V.ctx=function(){let h=oc.apply(this,arguments);
  h=h.replace('<button class="plf" onclick="ctOpen()">+ New transaction</button>','<span style="display:flex;gap:8px;flex-wrap:wrap"><button class="plf" onclick="sdOpen()">+ Currency sale deal</button><button class="plo" onclick="ctOpen()">+ Multi-currency entry</button></span>');
  return h};
 /*UPDCHK*/
-(function(){const B='2026-10-29-fn';window.PB_BUILD=B;if(location.protocol=='file:')return;let nb=null,tm=0;
+(function(){const B='2026-10-29-fo';window.PB_BUILD=B;if(location.protocol=='file:')return;let nb=null,tm=0;
 const busy=()=>{const a=document.activeElement;return !!(document.querySelector('.ov')||(a&&/^(INPUT|TEXTAREA)$/.test(a.tagName)&&String(a.value||'').length>0))};
 function go2(){try{const k='pb_upd_'+nb,n=+(sessionStorage.getItem(k)||0);sessionStorage.setItem(k,n+1)}catch(e){}location.replace(location.pathname+'?v='+encodeURIComponent(nb))}
 function bar(){let d=document.getElementById('pbupd');if(!d){d=document.createElement('div');d.id='pbupd';d.setAttribute('role','button');d.style.cssText='position:fixed;left:50%;transform:translateX(-50%);top:10px;z-index:100000;background:#0b3d33;color:#fff;padding:11px 18px;border-radius:12px;font:700 13px Inter,system-ui,sans-serif;box-shadow:0 6px 20px rgba(0,0,0,.3);cursor:pointer;text-align:center;max-width:92vw';d.onclick=()=>{d.textContent='Updating…';go2()};document.body.appendChild(d)}d.textContent='A new version of PrimeBook is ready. Tap here to update.'}
@@ -6196,6 +6196,15 @@ window.delGo=function(){
   L.reason=r;L.rids=S.j.slice(n0).map(j=>j.id);__log(L);
  }catch(e){__restore(t0);return alert(e&&e.message?e.message:'Could not delete this transaction.')}
  MD=null;dl=null;ctMsg='Transaction deleted and reversed. It is kept in the audit trail below.';save();go()};
+// ---- pending currency sale deal: delete (only while nothing has been paid, covered or paid out)
+window.ordDelAsk=function(id){if(!canW('cust'))return deny('cust');const o=(S.dord||[]).find(x=>x.id==id);if(!o)return;
+ if(o.closed||(o.pays||[]).length||(o.covers||[]).length||(o.pouts||[]).length)return alert('This deal already has payments, market cover or payouts recorded, so it cannot be deleted. Open it to continue or correct it.');
+ const c=(S.cust.find(x=>x.id==o.cust)||{}).name||'';dl={kind:'order',key:id,sum:'<b>'+E(o.no)+'</b> · '+E(c)+'<br>'+fmt(o.amt)+' '+E(o.g)+' → '+E(o.p)+'<br>'+o.date};MD=mDel;go()};
+const _dg=window.delGo;window.delGo=function(){if(!dl||dl.kind!='order')return _dg.apply(this,arguments);
+ const r=(q('dl_r').value||'').trim();if(r.length<3){q('dl_e').textContent='Please give a short reason (at least 3 characters).';return}
+ const i=(S.dord||[]).findIndex(x=>x.id==dl.key),o=S.dord[i];if(!o)return;if((o.pays||[]).length||(o.covers||[]).length||(o.pouts||[]).length)return alert('Payments were recorded on this deal, so it can no longer be deleted.');
+ __log({act:'Deleted',kind:'order',ref:o.no,date:o.date,cust:o.cust,desc:fmt(o.amt)+' '+o.g+' → '+o.p+' (pending deal, nothing posted)',amt:+o.amt||0,snap:JSON.parse(JSON.stringify(o)),reason:r,rids:[]});
+ S.dord.splice(i,1);if(window.alog)alog('Customer deals','Deleted pending deal '+o.no+': '+r);MD=null;dl=null;ctMsg='Pending deal '+o.no+' deleted. It is kept in the changes log.';save();go()};
 // ---- simple transaction edit
 const FIELDS=['ct_type','ct_cust','ct_acct','ct_date','ct_ccy','ct_rate','ct_amt','ct_cur','ct_qty','ct_frate','ct_paid','ct_desc'];
 const openSimple=src=>{window.dealEditRef=null;ctC=src?src.ct_cust:(typeof sc!='undefined'&&sc&&CUS().some(c=>c.id==sc)?sc:'');MD=mCt;go();ctCalc();
@@ -15887,6 +15896,75 @@ html body .dxt .dxu-t .in{color:#059669}html body .dxt .dxu-t .out{color:#E11D48
 @media(max-width:560px){html body .dxk-g{grid-template-columns:repeat(2,minmax(0,1fr))}html body .dxk b{font-size:21px}html body .dxk{padding:16px}html body .dxt .cdk-h h1{font-size:28px!important}html body .dxt .cdr-sel.dxs .cdr-ac{margin-left:0}}
 @media print{.dxs{display:none!important}}
 `;document.head.appendChild(st)})();
+/*CTX2 - simple customer transactions page (presentation over the existing engines)*/
+(()=>{
+const E=x=>String(x==null?'':x).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const st=document.createElement('style');st.id='ctx2-css';st.textContent=`
+html body .ctx2{font-family:Inter,-apple-system,"SF Pro Text",system-ui,sans-serif;color:#0F172A}
+html body .ctx2-h{display:flex;justify-content:space-between;align-items:flex-start;gap:14px;flex-wrap:wrap;margin:0 0 18px}
+html body .ctx2-h h2{margin:0;font:700 28px/1.2 Inter,system-ui,sans-serif!important;letter-spacing:-.02em;color:#0F172A!important;text-transform:none!important}
+html body .ctx2-h p{margin:4px 0 0;font:400 14px Inter,system-ui,sans-serif;color:#64748B}
+html body .ctx2-b{display:flex;gap:8px;flex-wrap:wrap}
+html body .ctx2 .cb{height:40px;padding:0 16px;border-radius:10px;border:1px solid #CBD5E1;background:#fff;color:#0F172A;font:600 14px Inter,system-ui,sans-serif;cursor:pointer}
+html body .ctx2 .cb.pri{background:#142B49;border-color:#142B49;color:#fff}html body .ctx2 .cb:hover{filter:brightness(.97)}
+html body .ctx2-k{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:0 0 18px}
+html body .ctx2-k>div{background:#fff;border:1px solid #E2E8F0;border-radius:14px;padding:16px 18px;min-width:0}
+html body .ctx2-k small{display:block;font:500 13px Inter,system-ui,sans-serif;color:#64748B;margin:0 0 6px}
+html body .ctx2-k b{display:block;font:700 22px/1.2 Inter,system-ui,sans-serif;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+html body .ctx2-k em{display:block;font:400 12.5px Inter,system-ui,sans-serif;font-style:normal;color:#94A3B8;margin-top:4px}
+html body .ctx2-t{display:flex;gap:24px;border-bottom:1px solid #E2E8F0;margin:0 0 14px;overflow-x:auto}
+html body .ctx2-t button{background:none;border:0;border-bottom:2px solid transparent;padding:10px 2px;margin-bottom:-1px;font:500 14.5px Inter,system-ui,sans-serif;color:#64748B;cursor:pointer;white-space:nowrap}
+html body .ctx2-t button.on{color:#0F172A;font-weight:600;border-bottom-color:#0F172A}html body .ctx2-t em{font-style:normal;font-size:11.5px;background:#142B49;color:#fff;border-radius:99px;padding:1px 7px;margin-left:6px}
+html body .ctx2-s{display:flex;gap:10px;margin:0 0 12px}html body .ctx2-s input{flex:1;max-width:420px;height:40px;border:1px solid #E2E8F0;border-radius:10px;padding:0 12px;background:#fff;font:14px Inter,system-ui,sans-serif}
+html body .ctx2-c{background:#fff;border:1px solid #E2E8F0;border-radius:14px;overflow:hidden;margin:0 0 14px}
+html body .ctx2-c table{width:100%;border-collapse:collapse;font:400 14px Inter,system-ui,sans-serif}
+html body .ctx2-c th{padding:12px 16px;text-align:left;font:600 11.5px Inter,system-ui,sans-serif;letter-spacing:.06em;text-transform:uppercase;color:#64748B;background:#F8FAFC;border-bottom:1px solid #E2E8F0}
+html body .ctx2-c td{padding:14px 16px;border-bottom:1px solid #F1F5F9;vertical-align:middle}html body .ctx2-c tr:last-child td{border-bottom:0}
+html body .ctx2-c th.n,html body .ctx2-c td.n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+html body .ctx2-c td small{display:block;color:#94A3B8;font-size:12px;margin-top:2px}
+html body .ctx2-st{display:inline-block;padding:3px 10px;border-radius:99px;font:600 12px Inter,system-ui,sans-serif;background:#FEF3C7;color:#92400E}html body .ctx2-st.tr{background:#DBEAFE;color:#1E40AF}html body .ctx2-st.ok{background:#DCFCE7;color:#166534}
+html body .ctx2-a{display:flex;gap:6px;justify-content:flex-end}html body .ctx2-a button{height:32px;padding:0 12px;border-radius:8px;border:1px solid #CBD5E1;background:#fff;color:#0F172A;font:600 12.5px Inter,system-ui,sans-serif;cursor:pointer}html body .ctx2-a button.dl{color:#B42318;border-color:#FECACA}html body .ctx2-a button:disabled{opacity:.45;cursor:not-allowed}
+html body .ctx2-em{padding:36px 16px;text-align:center;color:#64748B;font:14px Inter,system-ui,sans-serif}
+html body .ctx2 .p{margin:0 0 14px;border:1px solid #E2E8F0;border-radius:14px;box-shadow:none;background:#fff}
+html body .ctx2 .rt-t thead th,html body .ctx2 .ta-t thead th{background:#F8FAFC!important;color:#64748B!important}
+html body .ctx2 .cpf{margin:0}
+html body .ctx2 .ctx2-c th{background:#F8FAFC!important;color:#64748B!important;border-bottom:1px solid #E2E8F0!important}
+html body .ctx2 .ctx2-t button{background:transparent!important;color:#64748B!important;border-radius:0!important;box-shadow:none!important;height:auto!important}
+html body .ctx2 .ctx2-t button.on{color:#0F172A!important;border-bottom:2px solid #0F172A!important}
+html body .ctx2 .ctx2-t button em{background:#142B49;color:#fff}
+html body .ctx2 .ctx2-a{display:flex!important;align-items:center}
+html body .ctx2 .ctx2-a button{width:auto!important;min-width:0!important;flex:0 0 auto;height:32px!important;line-height:30px;padding:0 14px!important}
+html body .ctx2 .ctx2-a button.dl{color:#B42318!important;background:#fff!important}
+html body .ctx2 .ctx2-c td{color:#0F172A}
+@media(max-width:900px){html body .ctx2-k{grid-template-columns:repeat(2,minmax(0,1fr))}html body .ctx2-c{overflow-x:auto}html body .ctx2-c table{min-width:720px}}
+@media(max-width:520px){html body .ctx2-k{grid-template-columns:1fr}html body .ctx2-h h2{font-size:24px}}`;document.head.appendChild(st);
+const prev=V.ctx;
+window.ctxTab=k=>{window.__ctt=k;go()};
+window.ctxQ=v=>{window.__ctq=v;const q=String(v||'').toLowerCase();document.querySelectorAll('.ctx2 .ctx2-body tbody tr').forEach(r=>{r.style.display=!q||r.textContent.toLowerCase().includes(q)?'':'none'})};
+const pend=()=>OD0().filter(o=>!o.closed&&(br=='all'||(oacc(o)||{}).br==br)).slice().reverse();
+const OD0=()=>S.dord||[];
+const oacc=o=>{try{return accts().find(x=>x.id==o.acct)||accts()[0]}catch(e){return{}}};
+const fm2=v=>Number(v).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2});
+V.ctx=function(){
+ const h=prev.apply(this,arguments),i0=h.indexOf('<section class="cpf"'),i1=h.indexOf('</section>',i0),r1=h.indexOf('Recent customer transactions'),r0=r1<0?-1:h.lastIndexOf('<div class="p">',r1),d1=h.indexOf('Deleted &amp; edited'),d0=d1<0?-1:h.lastIndexOf('<div class="p">',d1);
+ if(i0<0||r0<0||d0<0)return h;
+ const top=h.slice(0,i0),port=h.slice(i0,i1+10),recent=h.slice(r0,d0),log=h.slice(d0);
+ const P=pend(),can=canW('cust'),by={};
+ const owe={},rem={};P.forEach(o=>{const du=Math.max(0,(+o.amt||0)+((o.fees||[]).reduce((t,f)=>t+(+f.amt||0),0))-((o.pays||[]).reduce((t,x)=>t+(+x.amt||0),0)));owe[o.g]=(owe[o.g]||0)+du});
+ let ar=0,dep=0;try{(S.j||[]).filter(x=>!x.rev&&!x.revd&&(br=='all'||x.br==br)).forEach(x=>x.lines.forEach(y=>{const c=String(y[0]);if(c=='1200')ar+=(+y[1]||0)-(+y[2]||0);if(c=='2150')dep+=(+y[2]||0)-(+y[1]||0)}))}catch(e){}
+ const lst=o=>Object.keys(o).filter(k=>o[k]>.004).map(k=>fm2(o[k])+' '+E(k)).join(' · ')||'None';
+ const tab=window.__ctt||(P.length?'pend':'bal'),T=(k,t,n)=>`<button type="button" class="${tab==k?'on':''}" onclick="ctxTab('${k}')">${t}${n?`<em>${n}</em>`:''}</button>`;
+ const rows=P.map(o=>{const paid0=(o.pays||[]).reduce((t,x)=>t+(+x.amt||0),0),due0=(+o.amt||0)+(o.fees||[]).reduce((t,f)=>t+(+f.amt||0),0),m={ow:o.rdiv?(o.rate>0?o.amt/o.rate:0):(+o.amt||0)*(+o.rate||0)},stt=!(o.pays||[]).length?['Awaiting payment','']:paid0<due0-.005?['Part payment','']:['Paid in full','ok'],lk=!!(o.closed||(o.pays||[]).length||(o.covers||[]).length||(o.pouts||[]).length),c=(S.cust.find(x=>x.id==o.cust)||{}).name||'',paid=(o.pays||[]).reduce((t,x)=>t+(+x.amt||0),0);
+  return`<tr><td><b>${E(o.no)}</b><small>${E(o.date)}</small></td><td>${E(c)}<small>${E(bn((oacc(o)||{}).br))}</small></td><td class="n">${fm2(o.amt)} ${E(o.g)}<small>paid ${fm2(paid)}</small></td><td class="n">${fm2(m.ow||0)} ${E(o.p)}<small>rate ${E(String(o.rate||''))}</small></td><td><span class="ctx2-st ${stt[1]||''}">${E(stt[0])}</span></td><td><div class="ctx2-a"><button type="button" onclick="ordOpen('${o.id}')">${lk?'Open':'Edit'}</button>${can?`<button type="button" class="dl" ${lk?'disabled title="Payments, cover or payouts are recorded, so this deal cannot be deleted"':''} onclick="ordDelAsk('${o.id}')">Delete</button>`:''}</div></td></tr>`}).join('');
+ const pendHtml=P.length?`<div class="ctx2-c"><table><thead><tr><th>Deal</th><th>Customer</th><th class="n">Pay-in</th><th class="n">Payout expected</th><th>Status</th><th></th></tr></thead><tbody>${rows}</tbody></table></div><p class="mu" style="font-size:12.5px">Edit changes the deal while nothing is paid. Delete removes a deal that has no payments, cover or payouts; it stays in the changes log. Once money is recorded, open the deal to continue or correct it.</p>`:`<div class="ctx2-c"><div class="ctx2-em">No pending deals. New currency sale deals that are not settled appear here.</div></div>`;
+ const body=tab=='pend'?pendHtml:tab=='bal'?port:tab=='log'?log:recent;
+ return top+`<div class="ctx2"><div class="ctx2-h"><div><p style="margin:0;font-size:15px">Deals, receipts and payments with your customers.</p></div>${can?`<div class="ctx2-b"><button type="button" class="cb pri" onclick="ordNew()">+ New deal</button><button type="button" class="cb" onclick="entOpen()">+ Simple transaction</button></div>`:''}</div>
+ <div class="ctx2-k"><div><small>Pending deals</small><b>${P.length}</b><em>not yet settled</em></div><div><small>Customers still owe on deals</small><b>${lst(owe)}</b><em>each currency on its own</em></div><div><small>Receivable (${E(S.base)})</small><b>${fm2(ar)}</b><em>owed on customer accounts</em></div><div><small>Deposits held (${E(S.base)})</small><b>${fm2(dep)}</b><em>customer credit</em></div></div>
+ <div class="ctx2-t" role="tablist">${T('pend','Pending',P.length)}${T('all','All activity')}${T('bal','Customer balances')}${T('log','Changes log')}</div>
+ ${tab=='pend'||tab=='all'?`<div class="ctx2-s noprint"><input type="search" placeholder="Search customer, deal or description" value="${E(window.__ctq||'')}" oninput="ctxQ(this.value)" aria-label="Search"></div>`:''}
+ <div class="ctx2-body">${body}</div></div>`};
+const _rd=window.go;
+})();
 /*TYPO - global typography system (presentation only)*/
 (function(){
 const CSS=`
