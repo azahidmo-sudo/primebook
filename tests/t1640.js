@@ -13,7 +13,7 @@ ok('credit 61,920',/Customer Credit BalancesCAD 61,920.001 customer/.test(k));
 ok('overdue 0',/Overdue ReceivablesCAD 0.000 customers/.test(k));
 ok('cash 61,920',/Total Cash & Bank BalanceCAD 61,920.00/.test(k));
 ok('no negative on kpis',!/-\d/.test(k));
-ok('title',/Good (morning|afternoon|evening), Zahid/.test(await T('.dtp-hh h1')));
+ok('greeting removed, actions stay',!(await p.$('.dtp-hh h1'))&&(await p.$$('.dtp-ha .dtp-b')).length>=2);
 ok('3 header buttons',(await p.$$('.dtp-ha .dtp-b')).length==3);
 ok('banner',/Customer verification incomplete/.test(await T('.dtp-bn')));
 ok('old 6 kpis gone',(await p.$$('.dsh-k')).length==0);

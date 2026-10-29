@@ -5838,7 +5838,7 @@ const oc=V.ctx;V.ctx=function(){let h=oc.apply(this,arguments);
  h=h.replace('<button class="plf" onclick="ctOpen()">+ New transaction</button>','<span style="display:flex;gap:8px;flex-wrap:wrap"><button class="plf" onclick="sdOpen()">+ Currency sale deal</button><button class="plo" onclick="ctOpen()">+ Multi-currency entry</button></span>');
  return h};
 /*UPDCHK*/
-(function(){const B='2026-10-30-fy';window.PB_BUILD=B;if(location.protocol=='file:')return;let nb=null,tm=0;
+(function(){const B='2026-10-30-fz';window.PB_BUILD=B;if(location.protocol=='file:')return;let nb=null,tm=0;
 const busy=()=>{const a=document.activeElement;return !!(document.querySelector('.ov')||(a&&/^(INPUT|TEXTAREA)$/.test(a.tagName)&&String(a.value||'').length>0))};
 function go2(){try{const k='pb_upd_'+nb,n=+(sessionStorage.getItem(k)||0);sessionStorage.setItem(k,n+1)}catch(e){}location.replace(location.pathname+'?v='+encodeURIComponent(nb))}
 function bar(){let d=document.getElementById('pbupd');if(!d){d=document.createElement('div');d.id='pbupd';d.setAttribute('role','button');d.style.cssText='position:fixed;left:50%;transform:translateX(-50%);top:10px;z-index:100000;background:#0b3d33;color:#fff;padding:11px 18px;border-radius:12px;font:700 13px Inter,system-ui,sans-serif;box-shadow:0 6px 20px rgba(0,0,0,.3);cursor:pointer;text-align:center;max-width:92vw';d.onclick=()=>{d.textContent='Updating…';go2()};document.body.appendChild(d)}d.textContent='A new version of PrimeBook is ready. Tap here to update.'}
@@ -14492,7 +14492,7 @@ function build(h){
  const ch=Math.abs(st.prev)>.004?(st.cash-st.prev)/Math.abs(st.prev)*100:null;
  const sub1=ch===null?'No balance at last month-end':`<span class="${ch>=0?'up':'dn'}">${ch>=0?'▲':'▼'} ${Math.abs(ch)>999?'999%+':Math.abs(ch).toFixed(1)+'%'}</span> vs. last month-end`;
  const cn=n=>n+' customer'+(n==1?'':'s');
- const head=`<div class="dtp-hh"><div><h1>${gr}, ${A(me().name)}</h1><p>Here's what's happening with your business today.</p></div><div class="dtp-ha noprint">${cw?`<button type="button" class="dtp-b pri" onclick="mfOpen()">${ic(P.plus)}New Transaction</button>`:''}<button type="button" class="dtp-b" data-go="ccy">${ic(P.fx)}Quick FX Rate</button><button type="button" class="dtp-b" data-go="rpt">${ic(P.doc)}View Reports</button></div></div>`;
+ const head=`<div class="dtp-hh"><div class="dtp-ha noprint">${cw?`<button type="button" class="dtp-b pri" onclick="mfOpen()">${ic(P.plus)}New Transaction</button>`:''}<button type="button" class="dtp-b" data-go="ccy">${ic(P.fx)}Quick FX Rate</button><button type="button" class="dtp-b" data-go="rpt">${ic(P.doc)}View Reports</button></div></div>`;
  const kp=`<div class="dtp-kg">${kpi('k1','cash','Total Cash &amp; Bank Balance',st.cash,sub1,'cash')}${kpi('k2','ar','Accounts Receivable',c.ar,cn(c.arN),'clist')}${kpi('k3','cr','Customer Credit Balances',c.adv,cn(c.advN),'clist')}${kpi('k4','od','Overdue Receivables',c.od,cn(c.odN),'clist')}</div>`
   +((typeof canW=='function'&&canW('cust')&&c.n&&c.verP<100)?`<div class="dtp-bn" role="note"><span class="dtp-bi">${ic(P.i)}</span><div><b>Customer verification incomplete</b><span>${c.verP}% of your customers have completed identity verification.</span></div><button type="button" onclick="rlGo('cust');rlSeg('nodoc')">Verify Now →</button></div>`:'');
  const t=document.createElement('template');t.innerHTML=h;const hero=t.content.querySelector('.dsh>.dsh-hero'),k=t.content.querySelector('.dsh>.dsh-kp');if(!hero||!k)return h;
@@ -14501,7 +14501,7 @@ function build(h){
 const _d=V.dash;V.dash=function(){const h=_d.apply(this,arguments);try{return build(h)}catch(e){console.error('DTP',e);return h}};
 const s=document.createElement('style');s.textContent=`
 html body .dsh-hero.dtp-h{display:block;background:transparent!important;box-shadow:none!important;border:0;padding:4px 0 0;color:#0F172A}
-html body .dtp-hh{display:flex;justify-content:space-between;align-items:flex-end;gap:20px;flex-wrap:wrap}
+html body .dtp-hh{display:flex;justify-content:flex-end;align-items:flex-end;gap:20px;flex-wrap:wrap}
 html body .dtp-hh h1{margin:0;font:600 32px/1.2 Inter,system-ui,sans-serif;color:#0F172A;letter-spacing:-.015em}
 html body .dtp-hh p{margin:6px 0 0;font:400 16px Inter,system-ui,sans-serif;color:#64748B}
 html body .dtp-ha{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
