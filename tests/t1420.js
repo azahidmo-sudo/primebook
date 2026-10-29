@@ -11,6 +11,6 @@ ok(new Set(all).size==all.length&&!all.includes('acc')&&!all.includes('ins'),'no
 ok(await p.evaluate(()=>!document.querySelector('.dw-t')),'no customize handles');
 const wd=await p.evaluate(()=>Object.fromEntries([...document.querySelectorAll('.dwg>.dw')].map(d=>[d.dataset.dwid,Math.round(d.getBoundingClientRect().width)])));
 ok(wd.hero>1000&&wd.kpi>1000,'hero and key figures full width');
-await p.click('.dw[data-dwid=dbxcb] tbody tr:nth-child(2)');await p.waitForTimeout(300);ok(await p.evaluate(()=>S.dbx.Ann.cur)!='all','currency row click still filters');
+await p.click('.dw[data-dwid=dbxuf] .ufo-c:nth-child(1)');await p.waitForTimeout(300);ok(await p.evaluate(()=>S.dbx.Ann.cur)!='all','currency card click still filters');
 for(const w of [820,420]){await p.setViewportSize({width:w,height:900});await p.waitForTimeout(300);const o=await p.evaluate(()=>document.documentElement.scrollWidth-document.documentElement.clientWidth);ok(o<=2,'no horizontal overflow at '+w+' ('+o+')')}
 console.log('errs',errs.join('|'));console.log(f?'FAILED '+f:'ALL PASSED');await b.close()})()

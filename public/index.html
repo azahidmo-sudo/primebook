@@ -5838,7 +5838,7 @@ const oc=V.ctx;V.ctx=function(){let h=oc.apply(this,arguments);
  h=h.replace('<button class="plf" onclick="ctOpen()">+ New transaction</button>','<span style="display:flex;gap:8px;flex-wrap:wrap"><button class="plf" onclick="sdOpen()">+ Currency sale deal</button><button class="plo" onclick="ctOpen()">+ Multi-currency entry</button></span>');
  return h};
 /*UPDCHK*/
-(function(){const B='2026-10-29-fv';window.PB_BUILD=B;if(location.protocol=='file:')return;let nb=null,tm=0;
+(function(){const B='2026-10-29-fw';window.PB_BUILD=B;if(location.protocol=='file:')return;let nb=null,tm=0;
 const busy=()=>{const a=document.activeElement;return !!(document.querySelector('.ov')||(a&&/^(INPUT|TEXTAREA)$/.test(a.tagName)&&String(a.value||'').length>0))};
 function go2(){try{const k='pb_upd_'+nb,n=+(sessionStorage.getItem(k)||0);sessionStorage.setItem(k,n+1)}catch(e){}location.replace(location.pathname+'?v='+encodeURIComponent(nb))}
 function bar(){let d=document.getElementById('pbupd');if(!d){d=document.createElement('div');d.id='pbupd';d.setAttribute('role','button');d.style.cssText='position:fixed;left:50%;transform:translateX(-50%);top:10px;z-index:100000;background:#0b3d33;color:#fff;padding:11px 18px;border-radius:12px;font:700 13px Inter,system-ui,sans-serif;box-shadow:0 6px 20px rgba(0,0,0,.3);cursor:pointer;text-align:center;max-width:92vw';d.onclick=()=>{d.textContent='Updating…';go2()};document.body.appendChild(d)}d.textContent='A new version of PrimeBook is ready. Tap here to update.'}
@@ -10792,10 +10792,10 @@ html[data-theme=dark] body .rd-in,html[data-theme=dark] body .rd-fg div{backgrou
 const A=x=>String(x==null?'':x).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const SIZES=[4,6,8,12];
 const SECS=[['ov','Financial overview'],['ac','Accounts'],['tx','Transactions'],['rp','Reports'],['mr','Settings & more']];
-const SEC0={hero:'ov',kpi:'ov',dxday:'ov',dbxfo:'ov',dbxcf:'ov',dbxai:'ov',dbxcb:'ov',dbxca:'ac',qa:'ov',rec:'tx',act:'tx',deals:'tx',dbxqr:'rp',kpt:'rp',brn:'rp',exp:'rp',rates:'mr',snp:'mr',acc:'mr',ins:'mr'};
-const ORD0=['hero','kpi','dbxcb','rec','dbxcf','qa','dxday','dbxai','dbxfo','dbxca','act','deals','dbxqr','kpt','brn','exp','rates','snp','acc','ins'];
-const NAMES={hero:'Financial health',kpi:'Key figures',ins:'Smart insights',kpt:'Key performance indicators',qa:'Quick actions',deals:'Pending sales deals',rates:'Exchange rates',acc:'Account balances',brn:'Branch performance',act:'Action center',rec:'Recent transactions',exp:'Expense breakdown',snp:'Business snapshot'};
-const DEF={dxday:8,dbxfo:12,dbxcb:8,dbxcf:8,dbxai:4,dbxca:12,dbxqr:6,hero:12,kpi:12,ins:6,kpt:6,qa:4,deals:6,rates:12,acc:12,brn:8,act:6,rec:4,exp:4,snp:4};
+const SEC0={hero:'ov',kpi:'ov',dxday:'ov',dbxfo:'ov',dbxuf:'ov',dbxcf:'ov',dbxai:'ov',dbxcb:'ov',dbxca:'ac',qa:'ov',rec:'tx',act:'tx',deals:'tx',dbxqr:'rp',kpt:'rp',brn:'rp',exp:'rp',rates:'mr',snp:'mr',acc:'mr',ins:'mr'};
+const ORD0=['hero','kpi','dbxfo','dbxuf','dbxcb','rec','dbxcf','qa','dxday','dbxai','dbxfo','dbxca','act','deals','dbxqr','kpt','brn','exp','rates','snp','acc','ins'];
+const NAMES={dbxuf:'Financial overview and accounts',hero:'Financial health',kpi:'Key figures',ins:'Smart insights',kpt:'Key performance indicators',qa:'Quick actions',deals:'Pending sales deals',rates:'Exchange rates',acc:'Account balances',brn:'Branch performance',act:'Action center',rec:'Recent transactions',exp:'Expense breakdown',snp:'Business snapshot'};
+const DEF={dbxuf:12,dxday:8,dbxfo:12,dbxcb:8,dbxcf:8,dbxai:4,dbxca:12,dbxqr:6,hero:12,kpi:12,ins:6,kpt:6,qa:4,deals:6,rates:12,acc:12,brn:8,act:6,rec:4,exp:4,snp:4};
 const HEAD={'account balances':'acc','branch performance':'brn','action center':'act','recent transactions':'rec','expense breakdown':'exp','business snapshot':'snp'};
 let edit=false,note='',lastIds=[];const U=[],RD=[];let who='';
 const key=()=>((me()||{}).name)||'u';
@@ -10830,6 +10830,8 @@ function build(){const m=document.getElementById('m');if(!m||view!='dash'||m.que
  /* v7: premium layout. Main sections open by default (an earlier build could leave them all collapsed), and card widths follow the new defaults. */
  if(!lay.mig7){lay.mig7=1;if(lay.col&&['ov','ac','tx','rp'].every(k=>lay.col[k]))lay.col={mr:true};save()}
  /* v8: Financial overview lives under Financial overview; Recent transactions under Transactions (clears older saved placements). */
+ /* v9: currency balances and account details are merged into one Financial Overview card. */
+ if(!lay.mig9){lay.mig9=1;lay.hid=lay.hid||[];['dbxcb','dbxca'].forEach(i=>{if(!lay.hid.includes(i))lay.hid.push(i)});lay.hid=lay.hid.filter(i=>i!='dbxuf');lay.sec=lay.sec||{};lay.sec.dbxuf='ov';save()}
  if(!lay.mig8){lay.mig8=1;lay.sec=lay.sec||{};lay.sec.dbxfo='ov';lay.sec.rec='tx';lay.hid=(lay.hid||[]).filter(i=>i!='dbxfo'&&i!='rec');save()}
  const rank=id=>{const i=lay.ord.indexOf(id);if(i>=0)return i;const j=ORD0.indexOf(id);return 1000+(j>=0?j:500)};
  const ids=W.map(w=>w.id).sort((a,b)=>rank(a)-rank(b));lastIds=ids.slice();
@@ -10845,7 +10847,9 @@ function build(){const m=document.getElementById('m');if(!m||view!='dash'||m.que
   mine.forEach(id=>{const w=byId[id];if(col)return;const fixed=id=='hero'||id=='kpi',sp=fixed?12:(lay.sp[id]||DEF[id]||12),d=document.createElement('div');d.className='dw';d.dataset.dwid=id;d.dataset.sp=sp;d.style.setProperty('--sp',sp);
    if(edit){const i=mine.indexOf(id);d.innerHTML=`<div class="dw-t" data-dwgrip="${id}"><span class="dw-g" aria-hidden="true">⋮⋮</span><b>${A(w.label)}</b><span class="dw-a"><select data-dwsel="${id}" aria-label="Move ${A(w.label)} to section">${SECS.map(([k,n])=>`<option value="${k}" ${k==sid?'selected':''}>${A(n)}</option>`).join('')}</select><button type="button" data-dwx="up" data-dwid="${id}" title="Move earlier" aria-label="Move ${A(w.label)} earlier"${i==0?' disabled':''}>↑</button><button type="button" data-dwx="dn" data-dwid="${id}" title="Move later" aria-label="Move ${A(w.label)} later"${i==mine.length-1?' disabled':''}>↓</button>${fixed?'':`<button type="button" data-dwx="sz" data-dwid="${id}" title="Change width">${sp==12?'Full':sp==8?'2/3':sp==6?'Half':'1/3'}</button>`}<button type="button" data-dwx="hd" data-dwid="${id}" title="Hide this card" aria-label="Hide ${A(w.label)}">Hide</button></span></div>`}
    d.appendChild(w.el);g.appendChild(d)});
-  if(!col)s.appendChild(g);wrap.appendChild(s)});
+  if(!col)s.appendChild(g);
+  if(sid=='ac'&&!mine.length){const e=document.createElement('div');e.className='dsy-empty';e.innerHTML='<b>Account details now live in Financial Overview.</b><span>Every cash and bank account, by currency, is listed there. To add or manage accounts, open <button type="button" class="dbx-bt" data-go="cbd">Cashbook &amp; Banks</button>.</span>';s.appendChild(e)}
+  wrap.appendChild(s)});
  hid.forEach(i=>{const w=byId[i];if(w&&w.el&&w.el.parentNode&&!w.el.closest('.dw'))w.el.remove()});
  /* cards in a collapsed section are not shown */
  W.forEach(w=>{if(w.el.parentNode&&!w.el.closest('.dw'))w.el.remove()});
@@ -13166,9 +13170,15 @@ window.dbx={acc(c){view='cbd';go();try{window.scrollTo(0,0)}catch(e){}},cur(c,sc
 window.dbxBuy=()=>{fxwNew();fxwSel('type','buy');view='fdk';go()};window.dbxSell=()=>{fxwNew();fxwSel('type','sell');view='fdk';go()};
 /* ---------- dashboard wiring ---------- */
 function head(){const s=ST(),cs=ccList(),per=(window.F||window.T)?((window.F||'start')+' to '+(window.T||'today')):'All time';
- return `<div class="dbx-fo"><div class="dbx-fh"><div><h2>Financial overview</h2></div><div class="dbx-fl"><label>Currency<select onchange="dbx.set('cur',this.value)"><option value="all" ${s.cur=='all'?'selected':''}>All currencies (shown separately)</option>${cs.map(c=>`<option ${s.cur==c?'selected':''}>${A(c)}</option>`).join('')}</select></label><span class="dbx-ft" title="Change these in the header">Date range and branch follow the header filters</span></div></div>${kpis()}</div>`}
+ return `<div class="dbx-fo"><div class="dbx-fh"><div><h2>Today's position</h2></div><div class="dbx-fl"><label>Currency<select onchange="dbx.set('cur',this.value)"><option value="all" ${s.cur=='all'?'selected':''}>All currencies (shown separately)</option>${cs.map(c=>`<option ${s.cur==c?'selected':''}>${A(c)}</option>`).join('')}</select></label><span class="dbx-ft" title="Change these in the header">Date range and branch follow the header filters</span></div></div>${kpis()}</div>`}
+/* ---------- unified Financial Overview: horizontal currency row + account details ---------- */
+function ufo(){const s=ST(),B=balances(),cs=ccList().filter(c=>c==S.base||Math.abs(B[c].cash)+Math.abs(B[c].bank)>.004||Math.abs(B[c].res)>.004);
+ let tb=0;const cards=cs.map(c=>{const b=B[c],tot=b.cash+b.bank,av=tot-b.res,mid=c==S.base?1:(window.mid?mid(c):1),bv=tot*mid;tb+=bv;
+  return`<button type="button" class="ufo-c${s.cur==c?' on':''}${Math.abs(tot)<.005?' z':''}" onclick="dbx.cur('${c}')" aria-pressed="${s.cur==c}" title="Show ${A(c)} accounts only"><span class="ufo-k">${FL(c)}<b>${A(c)}</b>${c==S.base?'<em>base</em>':''}</span><span class="ufo-v${tot<-.004?' neg':''}">${nf(tot)}</span><span class="ufo-b">${A(S.base)} ${nf(bv)}</span><span class="ufo-s">Cash ${nf(b.cash)} · Bank ${nf(b.bank)}${b.res>.004?' · Available '+nf(av):''}</span></button>`}).join('');
+ let acc=accTable().replace('<h3>Cash &amp; bank accounts</h3>','<h3>Account Details – '+(s.cur=='all'?'All Currencies':A(s.cur))+'</h3>');
+ return `<div class="dbx-uf"><div class="ufo-h"><div><h2>Financial Overview</h2><p>Currency balance summary</p></div><span class="ufo-live"><i></i>Live balances</span></div><div class="ufo-r" role="group" aria-label="Currency balance summary">${cards||'<div class="dbx-m">No balances yet</div>'}</div><div class="ufo-t"><span>Total across currencies at board mid-rates: <b>${A(S.base)} ${nf(tb)}</b></span>${s.cur!='all'?'<button type="button" class="dbx-bt" onclick="dbx.set(\'cur\',\'all\')">Show all currencies</button>':''}</div><div class="ufo-a">${acc}</div></div>`}
 const W=(id,label,html)=>`<div data-dwid="${id}" data-dwl="${label}">${html}</div>`;
-const _d=V.dash;V.dash=function(){let h=_d.apply(this,arguments);let L='';try{L=W('dbxfo','Financial overview',head())+W('dbxcb','Currency balances',curTable())+W('dbxcf','Cash flow trend',trend().html)+W('dbxai','AI cashbook insights',aiPanel())+W('dbxca','Cash & bank accounts',accTable())+W('dbxqr','Quick reports',qrPanel())}catch(e){console.error('DBX',e);return h}
+const _d=V.dash;V.dash=function(){let h=_d.apply(this,arguments);let L='';try{L=W('dbxfo','Financial overview',head())+W('dbxuf','Financial overview and accounts',ufo())+W('dbxcb','Currency balances',curTable())+W('dbxcf','Cash flow trend',trend().html)+W('dbxai','AI cashbook insights',aiPanel())+W('dbxca','Cash & bank accounts',accTable())+W('dbxqr','Quick reports',qrPanel())}catch(e){console.error('DBX',e);return h}
  const t=document.createElement('template');t.innerHTML=h;const top=t.content.querySelector('.top');const f=document.createRange().createContextualFragment(L);const wb=t.content.querySelector('.dwb');if(top)top.after(f);else t.content.prepend(f);
  return t.innerHTML};
 const css=document.createElement('style');css.textContent=`
@@ -16130,10 +16140,32 @@ html body #m .plf,html body .plf{background:var(--dsy-acc)!important;background-
 html body #m .plf:hover,html body .plf:hover{background:#1E40AF!important}
 html body #m .od-fc,html body #m .od-fcs button{background:#fff!important;border:1px solid #D1D5DB!important;color:var(--dsy-text)!important;box-shadow:none!important}
 html body #m .od-fc.on{background:var(--dsy-acc-s)!important;border-color:var(--dsy-acc)!important;color:var(--dsy-acc)!important}
+html body .dsy-empty{background:#fff;border:1px dashed #D1D5DB;border-radius:12px;padding:28px;text-align:center;color:#6B7280;font:14px Inter,system-ui,sans-serif;display:flex;flex-direction:column;gap:8px;align-items:center}html body .dsy-empty b{color:#111827;font-weight:600}
 /* ---- reduced motion ---- */
 @media(prefers-reduced-motion:reduce){html body *{transition:none!important;animation:none!important}}
 /* ---- tablet ---- */
 @media(max-width:1100px) and (min-width:721px){html body nav#nav{width:230px}html body nav#nav button.nv,html body nav#nav button.gh{font-size:14px!important}}
+`;document.head.appendChild(st)})();
+/*UFO - unified financial overview skin*/
+(()=>{const st=document.createElement('style');st.id='ufo-css';st.textContent=`
+html body .dbx-uf{background:#fff;border:1px solid #E5E7EB;border-radius:12px;box-shadow:0 1px 2px rgba(17,24,39,.04);padding:22px 24px;color:#1F2937}
+html body .ufo-h{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap;margin:0 0 16px}
+html body .ufo-h h2{margin:0;font:650 20px/1.2 Inter,system-ui,sans-serif;color:#111827;letter-spacing:-.01em}
+html body .ufo-h p{margin:4px 0 0;font:400 13.5px Inter,system-ui,sans-serif;color:#6B7280}
+html body .ufo-live{display:inline-flex;align-items:center;gap:7px;font:600 12px Inter,system-ui,sans-serif;color:#047857;background:#ECFDF5;border:1px solid #A7F3D0;border-radius:99px;padding:4px 10px}html body .ufo-live i{width:7px;height:7px;border-radius:50%;background:#10B981}
+html body .ufo-r{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(220px,320px);gap:14px;overflow-x:auto;padding-bottom:4px;scroll-snap-type:x proximity}
+html body .ufo-c{display:flex;flex-direction:column;align-items:flex-start;gap:6px;text-align:left;background:#fff;border:1px solid #E5E7EB;border-radius:12px;padding:16px 18px;cursor:pointer;font-family:Inter,system-ui,sans-serif;color:#1F2937;scroll-snap-align:start;transition:border-color .15s,box-shadow .15s}
+html body .ufo-c:hover{border-color:#9CA3AF;box-shadow:0 2px 8px rgba(17,24,39,.06)}
+html body .ufo-c.on{border-color:#1D4ED8;box-shadow:0 0 0 1px #1D4ED8;background:#F8FAFF}
+html body .ufo-c.z{opacity:.72}
+html body .ufo-k{display:flex;align-items:center;gap:8px;font:600 13px Inter,system-ui,sans-serif;letter-spacing:.04em;color:#374151}html body .ufo-k em{font:500 10.5px Inter;font-style:normal;background:#F3F4F6;color:#6B7280;border-radius:99px;padding:1px 7px}
+html body .ufo-v{font:700 26px/1.15 Inter,system-ui,sans-serif;letter-spacing:-.02em;font-variant-numeric:tabular-nums;color:#111827}html body .ufo-v.neg{color:#B42318}
+html body .ufo-b{font:500 13.5px Inter,system-ui,sans-serif;color:#4B5563;font-variant-numeric:tabular-nums}
+html body .ufo-s{font:400 12px Inter,system-ui,sans-serif;color:#9CA3AF;font-variant-numeric:tabular-nums}
+html body .ufo-t{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin:12px 0 22px;font:400 12.5px Inter,system-ui,sans-serif;color:#6B7280}html body .ufo-t b{color:#111827;font-variant-numeric:tabular-nums}
+html body .ufo-a .dbx-p{border:0!important;box-shadow:none!important;padding:0!important;background:transparent!important}
+html body .ufo-a .dbx-ph h3{font:650 16px Inter,system-ui,sans-serif!important;color:#111827!important}
+@media(max-width:720px){html body .dbx-uf{padding:16px}html body .ufo-r{grid-auto-columns:minmax(180px,78%)}}
 `;document.head.appendChild(st)})();
 /*TYPO - global typography system (presentation only)*/
 (function(){

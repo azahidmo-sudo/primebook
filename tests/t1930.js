@@ -1,0 +1,15 @@
+const {chromium}=require('playwright');(async()=>{const b=await chromium.launch();const p=await b.newPage({viewport:{width:1440,height:900}});const errs=[];p.on('pageerror',e=>errs.push(e.message));let f=0;const ck=(n,c)=>{if(!c){f++;console.log('FAIL',n)}};
+await p.goto('file:///home/claude/primebook/public/index.html');await p.waitForTimeout(600);
+await p.evaluate(()=>{document.getElementById('auth')?.remove();document.body.classList.remove('auon');SESS={id:'t',exp:Date.now()+1e6};S.base='CAD';window.B=S.br[0].id;S.users=[{name:'Z',role:'Owner',br:'All'}];S.me=0;S.j=[];S.dwl={};
+post({date:today(),br:B,acc:'cash|'+B,tt:'Receipt',memo:'x',vno:'RV-1',by:'Z',lines:[['1000',100000,0],['3000',0,100000]]});view='dash';go()});await p.waitForTimeout(500);
+const n=await p.$$('.dw[data-dwid=dbxuf]');ck('unified card once',n.length==1);
+ck('currency row is horizontal',await p.evaluate(()=>{const c=[...document.querySelectorAll('.ufo-c')].map(x=>Math.round(x.getBoundingClientRect().top));return c.length>=1&&new Set(c).size==1}));
+ck('base currency card shows total',/100,000\.00/.test(await p.innerText('.ufo-c')));
+ck('account details table with columns',/Account Details – All Currencies/.test(await p.innerText('.ufo-a'))&&/Currency/.test(await p.innerText('.ufo-a thead'))&&/Type/.test(await p.innerText('.ufo-a thead'))&&/balance/i.test(await p.innerText('.ufo-a thead')));
+ck('account rows listed',(await p.$$('.ufo-a tbody tr')).length>=1);
+ck('no duplicate old tables',(await p.$$('.dw[data-dwid=dbxcb]')).length==0&&(await p.$$('.dw[data-dwid=dbxca]')).length==0);
+await p.click('.ufo-c');await p.waitForTimeout(300);ck('card filters accounts',/Account Details – CAD/.test(await p.innerText('.ufo-a'))&&await p.evaluate(()=>S.dbx.Z.cur)=='CAD');
+await p.click('.ufo-t button');await p.waitForTimeout(300);ck('show all again',/All Currencies/.test(await p.innerText('.ufo-a')));
+await p.click('.dsv-i[data-dws=ac]');await p.waitForTimeout(300);ck('Accounts tab explains',/live in Financial Overview/.test(await p.innerText('.dws.act')));
+await p.click('.dsv-i[data-dws=ov]');await p.setViewportSize({width:420,height:900});await p.waitForTimeout(300);ck('no overflow on phone',await p.evaluate(()=>document.documentElement.scrollWidth-document.documentElement.clientWidth)<=2);
+console.log(f?'FAILED '+f:'ALL PASS',errs);await b.close()})();

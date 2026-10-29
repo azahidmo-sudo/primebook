@@ -19,7 +19,7 @@ ok(['Total Cash Balance','Total Bank Balance',"Today's Receipts","Today's Paymen
 const k0=await p.locator('.dbx-k').nth(0).innerText();console.log(k0.replace(/\n/g,' | '));
 ok(/USD/.test(k0)&&/EUR/.test(k0),'cash KPI lists USD and EUR separately');
 // numbers: base cash = 100000-6000-5000 = 89000 ; EUR cash stock 5100
-const bal=await ev(()=>{const t=document.querySelectorAll('.dbx-t')[0];return [...t.querySelectorAll('tbody tr')].map(r=>[...r.children].map(c=>c.innerText.replace(/\n/g,' ')))});console.log(JSON.stringify(bal));
+const bal=await ev(()=>[...document.querySelectorAll('.ufo-c')].map(c=>{const t=c.innerText,m=/Cash ([\d,.-]+) · Bank ([\d,.-]+)/.exec(t);return [c.querySelector('.ufo-k').innerText.replace(/\n/g,' '),m?m[1]:'',m?m[2]:'',c.querySelector('.ufo-v').innerText]}));console.log(JSON.stringify(bal));
 const usd=bal.find(r=>/USD/.test(r[0])),eur=bal.find(r=>/EUR/.test(r[0]));
 ok(usd&&usd[1]=='189,000.00'&&usd[2]=='55,000.00'&&usd[3]=='244,000.00','USD cash 189,000 / bank 55,000 (50,000 + 5,000 transfer) / total 244,000 (transfer neutral)');
 ok(eur&&eur[1]=='5,100.00'&&eur[2]=='2,000.00'&&eur[3]=='7,100.00','EUR cash = stock 5,100, bank 2,000 (native amount), total 7,100');
