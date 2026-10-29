@@ -5838,7 +5838,7 @@ const oc=V.ctx;V.ctx=function(){let h=oc.apply(this,arguments);
  h=h.replace('<button class="plf" onclick="ctOpen()">+ New transaction</button>','<span style="display:flex;gap:8px;flex-wrap:wrap"><button class="plf" onclick="sdOpen()">+ Currency sale deal</button><button class="plo" onclick="ctOpen()">+ Multi-currency entry</button></span>');
  return h};
 /*UPDCHK*/
-(function(){const B='2026-10-29-fo';window.PB_BUILD=B;if(location.protocol=='file:')return;let nb=null,tm=0;
+(function(){const B='2026-10-29-fp';window.PB_BUILD=B;if(location.protocol=='file:')return;let nb=null,tm=0;
 const busy=()=>{const a=document.activeElement;return !!(document.querySelector('.ov')||(a&&/^(INPUT|TEXTAREA)$/.test(a.tagName)&&String(a.value||'').length>0))};
 function go2(){try{const k='pb_upd_'+nb,n=+(sessionStorage.getItem(k)||0);sessionStorage.setItem(k,n+1)}catch(e){}location.replace(location.pathname+'?v='+encodeURIComponent(nb))}
 function bar(){let d=document.getElementById('pbupd');if(!d){d=document.createElement('div');d.id='pbupd';d.setAttribute('role','button');d.style.cssText='position:fixed;left:50%;transform:translateX(-50%);top:10px;z-index:100000;background:#0b3d33;color:#fff;padding:11px 18px;border-radius:12px;font:700 13px Inter,system-ui,sans-serif;box-shadow:0 6px 20px rgba(0,0,0,.3);cursor:pointer;text-align:center;max-width:92vw';d.onclick=()=>{d.textContent='Updating…';go2()};document.body.appendChild(d)}d.textContent='A new version of PrimeBook is ready. Tap here to update.'}
@@ -10795,7 +10795,7 @@ const SECS=[['ov','Financial overview'],['ac','Accounts'],['tx','Transactions'],
 const SEC0={hero:'ov',kpi:'ov',dxday:'ov',dbxfo:'ov',dbxcf:'ov',dbxai:'ov',dbxcb:'ov',dbxca:'ac',qa:'ov',rec:'ov',act:'tx',deals:'tx',dbxqr:'rp',kpt:'rp',brn:'rp',exp:'rp',rates:'mr',snp:'mr',acc:'mr',ins:'mr'};
 const ORD0=['hero','kpi','dbxcb','rec','dbxcf','qa','dxday','dbxai','dbxfo','dbxca','act','deals','dbxqr','kpt','brn','exp','rates','snp','acc','ins'];
 const NAMES={hero:'Financial health',kpi:'Key figures',ins:'Smart insights',kpt:'Key performance indicators',qa:'Quick actions',deals:'Pending sales deals',rates:'Exchange rates',acc:'Account balances',brn:'Branch performance',act:'Action center',rec:'Recent transactions',exp:'Expense breakdown',snp:'Business snapshot'};
-const DEF={dxday:8,dbxfo:12,dbxcb:8,dbxcf:8,dbxai:4,dbxca:12,dbxqr:6,hero:12,kpi:12,ins:6,kpt:6,qa:4,deals:12,rates:12,acc:12,brn:8,act:6,rec:4,exp:4,snp:4};
+const DEF={dxday:8,dbxfo:12,dbxcb:8,dbxcf:8,dbxai:4,dbxca:12,dbxqr:6,hero:12,kpi:12,ins:6,kpt:6,qa:4,deals:6,rates:12,acc:12,brn:8,act:6,rec:4,exp:4,snp:4};
 const HEAD={'account balances':'acc','branch performance':'brn','action center':'act','recent transactions':'rec','expense breakdown':'exp','business snapshot':'snp'};
 let edit=false,note='',lastIds=[];const U=[],RD=[];let who='';
 const key=()=>((me()||{}).name)||'u';
@@ -10826,6 +10826,8 @@ function build(){const m=document.getElementById('m');if(!m||view!='dash'||m.que
  /* v3: duplicates merged. Account balances (same cash and bank figures as Currency balances) and Smart insights (covered by AI insights and Action center) start hidden; restore them from Hidden cards. */
  if(!lay.mig3){lay.mig3=1;['acc','ins'].forEach(i=>{if(!lay.hid.includes(i))lay.hid.push(i)});lay.sec=lay.sec||{};save()}
  lay.sec=lay.sec||{};
+ /* v7: premium layout. Main sections open by default (an earlier build could leave them all collapsed), and card widths follow the new defaults. */
+ if(!lay.mig7){lay.mig7=1;if(lay.col&&['ov','ac','tx','rp'].every(k=>lay.col[k]))lay.col={mr:true};save()}
  const rank=id=>{const i=lay.ord.indexOf(id);if(i>=0)return i;const j=ORD0.indexOf(id);return 1000+(j>=0?j:500)};
  const ids=W.map(w=>w.id).sort((a,b)=>rank(a)-rank(b));lastIds=ids.slice();
  const hid=lay.hid.filter(i=>byId[i]);
@@ -15965,6 +15967,32 @@ V.ctx=function(){
  <div class="ctx2-body">${tab=='bal'?'':ban}${body}</div></div>`};
 const _rd=window.go;
 })();
+/*DSX - premium fintech dashboard skin (presentation only)*/
+(()=>{const st=document.createElement('style');st.id='dsx-css';st.textContent=`
+html body #m .dwb{margin:0 0 6px}html body #m .dwb-hint{display:none}
+html body #m .dwa{display:flex;flex-direction:column;gap:26px;margin-top:6px}
+html body #m .dws-h{border-bottom:0;padding-bottom:0;margin:0 0 12px}
+html body #m .dws-t{font:600 12px Inter,system-ui,sans-serif!important;letter-spacing:.09em;text-transform:uppercase;color:#64748B!important}
+html body #m .dws-n{display:none}
+html body #m .dwg{gap:18px;align-items:stretch}
+html body #m .dwg>.dw{display:flex;flex-direction:column}
+html body #m .dwg>.dw>*{flex:1 1 auto;margin:0!important;max-width:none}
+/* generic premium card */
+/* key figures */
+html body #m .dtp-kg{gap:18px!important}html body #m .dtp-k{border-radius:18px!important;padding:22px 24px!important;box-shadow:0 1px 2px rgba(15,23,42,.04),0 8px 24px -12px rgba(15,23,42,.10)!important;position:relative;overflow:hidden}html body #m .dtp-k::before{content:'';position:absolute;left:0;top:0;right:0;height:3px;background:linear-gradient(90deg,#142B49,#2563EB)}html body #m .dtp-kg>.dtp-k:nth-child(2)::before{background:linear-gradient(90deg,#B45309,#F59E0B)}html body #m .dtp-kg>.dtp-k:nth-child(3)::before{background:linear-gradient(90deg,#6D28D9,#A78BFA)}html body #m .dtp-kg>.dtp-k:nth-child(4)::before{background:linear-gradient(90deg,#BE123C,#FB7185)}
+/* headings inside cards */
+html body #m .dwg h3{font:650 16px Inter,system-ui,sans-serif!important;letter-spacing:-.01em;color:#0F172A!important}
+html body #m .dwg .p{padding:20px 22px}
+/* tables: light header, hairline rows */
+html body #m .dwg table th,html body #m .dwg table thead th{background:#F8FAFC!important;color:#64748B!important;font:600 11px Inter,system-ui,sans-serif!important;letter-spacing:.07em;text-transform:uppercase;border-bottom:1px solid #E2E8F0!important}
+html body #m .dwg table td,html body #m .dwg table tbody td{border-bottom:1px solid #F1F5F9!important;color:#0F172A}
+html body #m .dwg table tbody tr:last-child td{border-bottom:0!important}
+html body #m .dwg table tbody tr:hover td{background:#F8FAFC}
+html body #m .dwg td.n,html body #m .dwg th.n{font-variant-numeric:tabular-nums}
+/* buttons */
+html body #m .dwg .od-b.p{background:#142B49!important;border-color:#142B49!important;color:#fff!important}html body #m .dwg .od-b{height:36px;padding:0 14px;border-radius:10px}
+html body #m .dwg .b.s,html body #m .dwg .rt-b{border-radius:10px}
+`;document.head.appendChild(st)})();
 /*TYPO - global typography system (presentation only)*/
 (function(){
 const CSS=`
