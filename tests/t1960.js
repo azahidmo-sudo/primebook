@@ -1,0 +1,18 @@
+const {chromium}=require('playwright');(async()=>{const b=await chromium.launch();const p=await b.newPage({viewport:{width:1440,height:900}});const errs=[];p.on('pageerror',e=>errs.push(e.stack.split('\n').slice(0,4).join(' | ')));p.on('dialog',d=>d.accept());let f=0;const ck=(n,c)=>{if(!c){f++;console.log('FAIL',n)}};
+await p.goto('file:///home/claude/primebook/public/index.html');await p.waitForTimeout(600);
+await p.evaluate(()=>{document.getElementById('auth')?.remove();document.body.classList.remove('auon');SESS={id:'t',exp:Date.now()+1e6};S.base='CAD';window.B=S.br[0].id;S.users=[{name:'Z',role:'Owner',br:'All'}];S.me=0;S.dwl={Z:{ord:[],hid:[],sp:{qa:4},sec:{qa:'ov'},mig6:1,mig3:1,mig7:1,mig8:1,mig9:1,mig10:1,mig11:1}};view='dash';go()});await p.waitForTimeout(500);
+ck('not under Financial Overview',!(await p.evaluate(()=>!!document.querySelector('.dws[data-dws=ov] .qa3'))));
+await p.click('.dsv-i[data-dws=ac]');await p.waitForTimeout(300);
+ck('under Accounts',await p.evaluate(()=>!!document.querySelector('.dws.act[data-dws=ac] .qa3')));
+const t=await p.innerText('.qa3');
+ck('all eleven actions present',['New Sales Deal','New Forex Purchase','New Forex Sale','Deposit','Withdrawal','Pay Bill','New Entry','Transfer','Daily Closing','Reconcile','Reports'].every(x=>t.includes(x)));
+ck('three groups',(await p.$$('.qa3-g')).length==3);
+ck('once only',(await p.$$('.qa3')).length==1);
+await p.click('.qa3-c:has-text("Daily Closing")');await p.waitForTimeout(400);ck('Daily Closing opens',await p.evaluate(()=>view)=='dcl');
+await p.evaluate(()=>{view='dash';go()});await p.waitForTimeout(300);await p.click('.dsv-i[data-dws=ac]');await p.waitForTimeout(300);
+await p.click('.qa3-c:has-text("Deposit")');await p.waitForTimeout(400);ck('Deposit opens form',await p.evaluate(()=>!!document.querySelector('.mo,.mf,.modal,[role=dialog],#md,.rpx')||typeof MD!='undefined'&&!!MD));
+await p.evaluate(()=>{MD=null;view='dash';go()});await p.waitForTimeout(300);await p.click('.dsv-i[data-dws=ac]');await p.waitForTimeout(300);
+await p.click('.qa3-pill >> nth=2');await p.waitForTimeout(300);ck('Reports pill opens Reports',await p.evaluate(()=>view)=='rpt');
+await p.evaluate(()=>{view='dash';go()});await p.waitForTimeout(300);await p.click('.dsv-i[data-dws=ac]');await p.setViewportSize({width:420,height:900});await p.waitForTimeout(300);
+ck('no overflow on phone',await p.evaluate(()=>document.documentElement.scrollWidth-document.documentElement.clientWidth)<=2);
+console.log(f?'FAILED '+f:'ALL PASS',errs);await b.close()})();
