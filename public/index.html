@@ -15948,7 +15948,7 @@ const fm2=v=>Number(v).toLocaleString(undefined,{minimumFractionDigits:2,maximum
 V.ctx=function(){
  const h=prev.apply(this,arguments),i0=h.indexOf('<section class="cpf"'),i1=h.indexOf('</section>',i0),r1=h.indexOf('Recent customer transactions'),r0=r1<0?-1:h.lastIndexOf('<div class="p">',r1),d1=h.indexOf('Deleted &amp; edited'),d0=d1<0?-1:h.lastIndexOf('<div class="p">',d1);
  if(i0<0||r0<0||d0<0)return h;
- const top=h.slice(0,i0),port=h.slice(i0,i1+10),recent=h.slice(r0,d0),log=h.slice(d0);
+ const top=h.slice(0,i0),port=h.slice(i0,i1+10)+(r0>i1+10?h.slice(i1+10,r0):''),recent=h.slice(r0,d0),bn0=h.indexOf('<div class="p rl3b'),ban=bn0<0?'':(h.slice(bn0).match(/^[\s\S]*?(?=<div class="p">|<section|$)/)||[''])[0],log=h.slice(d0);
  const P=pend(),can=canW('cust'),by={};
  const owe={},rem={};P.forEach(o=>{const du=Math.max(0,(+o.amt||0)+((o.fees||[]).reduce((t,f)=>t+(+f.amt||0),0))-((o.pays||[]).reduce((t,x)=>t+(+x.amt||0),0)));owe[o.g]=(owe[o.g]||0)+du});
  let ar=0,dep=0;try{(S.j||[]).filter(x=>!x.rev&&!x.revd&&(br=='all'||x.br==br)).forEach(x=>x.lines.forEach(y=>{const c=String(y[0]);if(c=='1200')ar+=(+y[1]||0)-(+y[2]||0);if(c=='2150')dep+=(+y[2]||0)-(+y[1]||0)}))}catch(e){}
@@ -15962,7 +15962,7 @@ V.ctx=function(){
  <div class="ctx2-k"><div><small>Pending deals</small><b>${P.length}</b><em>not yet settled</em></div><div><small>Customers still owe on deals</small><b>${lst(owe)}</b><em>each currency on its own</em></div><div><small>Receivable (${E(S.base)})</small><b>${fm2(ar)}</b><em>owed on customer accounts</em></div><div><small>Deposits held (${E(S.base)})</small><b>${fm2(dep)}</b><em>customer credit</em></div></div>
  <div class="ctx2-t" role="tablist">${T('pend','Pending',P.length)}${T('all','All activity')}${T('bal','Customer balances')}${T('log','Changes log')}</div>
  ${tab=='pend'||tab=='all'?`<div class="ctx2-s noprint"><input type="search" placeholder="Search customer, deal or description" value="${E(window.__ctq||'')}" oninput="ctxQ(this.value)" aria-label="Search"></div>`:''}
- <div class="ctx2-body">${body}</div></div>`};
+ <div class="ctx2-body">${tab=='bal'?'':ban}${body}</div></div>`};
 const _rd=window.go;
 })();
 /*TYPO - global typography system (presentation only)*/
