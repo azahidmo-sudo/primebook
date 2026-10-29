@@ -5838,7 +5838,7 @@ const oc=V.ctx;V.ctx=function(){let h=oc.apply(this,arguments);
  h=h.replace('<button class="plf" onclick="ctOpen()">+ New transaction</button>','<span style="display:flex;gap:8px;flex-wrap:wrap"><button class="plf" onclick="sdOpen()">+ Currency sale deal</button><button class="plo" onclick="ctOpen()">+ Multi-currency entry</button></span>');
  return h};
 /*UPDCHK*/
-(function(){const B='2026-10-30-fz';window.PB_BUILD=B;if(location.protocol=='file:')return;let nb=null,tm=0;
+(function(){const B='2026-10-30-ga';window.PB_BUILD=B;if(location.protocol=='file:')return;let nb=null,tm=0;
 const busy=()=>{const a=document.activeElement;return !!(document.querySelector('.ov')||(a&&/^(INPUT|TEXTAREA)$/.test(a.tagName)&&String(a.value||'').length>0))};
 function go2(){try{const k='pb_upd_'+nb,n=+(sessionStorage.getItem(k)||0);sessionStorage.setItem(k,n+1)}catch(e){}location.replace(location.pathname+'?v='+encodeURIComponent(nb))}
 function bar(){let d=document.getElementById('pbupd');if(!d){d=document.createElement('div');d.id='pbupd';d.setAttribute('role','button');d.style.cssText='position:fixed;left:50%;transform:translateX(-50%);top:10px;z-index:100000;background:#0b3d33;color:#fff;padding:11px 18px;border-radius:12px;font:700 13px Inter,system-ui,sans-serif;box-shadow:0 6px 20px rgba(0,0,0,.3);cursor:pointer;text-align:center;max-width:92vw';d.onclick=()=>{d.textContent='Updating…';go2()};document.body.appendChild(d)}d.textContent='A new version of PrimeBook is ready. Tap here to update.'}
@@ -10792,7 +10792,7 @@ html[data-theme=dark] body .rd-in,html[data-theme=dark] body .rd-fg div{backgrou
 const A=x=>String(x==null?'':x).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const SIZES=[4,6,8,12];
 const SECS=[['ov','Financial overview'],['ac','Accounts'],['tx','Transactions'],['rp','Reports'],['mr','Settings & more']];
-const SEC0={hero:'ov',kpi:'ov',dxday:'ov',dbxfo:'ov',dbxuf:'ov',dbxsn:'mr',dbxcf:'ov',dbxai:'ov',dbxcb:'ov',dbxca:'ac',qa:'ov',rec:'tx',act:'tx',deals:'tx',dbxqr:'rp',kpt:'rp',brn:'rp',exp:'rp',rates:'mr',snp:'mr',acc:'mr',ins:'mr'};
+const SEC0={hero:'rp',kpi:'ov',dxday:'ov',dbxfo:'ov',dbxuf:'ov',dbxsn:'mr',dbxcf:'ov',dbxai:'ov',dbxcb:'ov',dbxca:'ac',qa:'ov',rec:'tx',act:'tx',deals:'tx',dbxqr:'rp',kpt:'rp',brn:'rp',exp:'rp',rates:'mr',snp:'mr',acc:'mr',ins:'mr'};
 const ORD0=['hero','kpi','dbxfo','dbxuf','dbxcb','dbxsn','rec','dbxcf','qa','dxday','dbxai','dbxfo','dbxca','act','deals','dbxqr','kpt','brn','exp','rates','snp','acc','ins'];
 const NAMES={dbxsn:'Operations overview',dbxuf:'Financial overview and accounts',hero:'Financial health',kpi:'Key figures',ins:'Smart insights',kpt:'Key performance indicators',qa:'Quick actions',deals:'Pending sales deals',rates:'Exchange rates',acc:'Account balances',brn:'Branch performance',act:'Action center',rec:'Recent transactions',exp:'Expense breakdown',snp:'Business snapshot'};
 const DEF={dbxsn:12,dbxuf:12,dxday:8,dbxfo:12,dbxcb:8,dbxcf:8,dbxai:4,dbxca:12,dbxqr:6,hero:12,kpi:12,ins:6,kpt:6,qa:4,deals:6,rates:12,acc:12,brn:8,act:6,rec:4,exp:4,snp:4};
@@ -10832,6 +10832,7 @@ function build(){const m=document.getElementById('m');if(!m||view!='dash'||m.que
  /* v8: Financial overview lives under Financial overview; Recent transactions under Transactions (clears older saved placements). */
  /* v9: currency balances and account details are merged into one Financial Overview card. */
  if(!lay.mig9){lay.mig9=1;lay.hid=lay.hid||[];['dbxcb','dbxca'].forEach(i=>{if(!lay.hid.includes(i))lay.hid.push(i)});lay.hid=lay.hid.filter(i=>i!='dbxuf');lay.sec=lay.sec||{};lay.sec.dbxuf='ov';save()}
+ if(!lay.mig11){lay.mig11=1;lay.sec=lay.sec||{};lay.sec.hero='rp';save()}
  if(!lay.mig10){lay.mig10=1;lay.sec=lay.sec||{};lay.sec.dbxsn='mr';lay.hid=(lay.hid||[]).filter(i=>i!='dbxsn');if(!lay.hid.includes('snp'))lay.hid.push('snp');save()}
  if(!lay.mig8){lay.mig8=1;lay.sec=lay.sec||{};lay.sec.dbxfo='ov';lay.sec.rec='tx';lay.hid=(lay.hid||[]).filter(i=>i!='dbxfo'&&i!='rec');save()}
  const rank=id=>{const i=lay.ord.indexOf(id);if(i>=0)return i;const j=ORD0.indexOf(id);return 1000+(j>=0?j:500)};

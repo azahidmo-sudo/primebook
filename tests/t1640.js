@@ -1,6 +1,6 @@
 const {chromium}=require('playwright');let bad=0;const ok=(n,c)=>{console.log((c?'PASS ':'FAIL ')+n);if(!c)bad++};
 (async()=>{const b=await chromium.launch();const p=await b.newPage({viewport:{width:1500,height:1000}});p.on('pageerror',e=>{console.log('ERR',e.message);bad++});
-await p.goto('file:///home/claude/primebook/public/index.html');await p.waitForTimeout(600);
+await p.goto('file:///home/claude/primebook/public/index.html');await p.addStyleTag({content:'html body #m .dws:not(.act){display:block!important}'});await p.waitForTimeout(600);
 await p.evaluate(()=>{document.getElementById('auth')?.remove();document.body.classList.remove('auon');SESS={id:'t',exp:Date.now()+1e6};S.users=[{name:'Zahid',role:'Owner',br:'All'}];S.me=0;S.base='CAD';S.j=[];
 S.cust=[{id:'m1',type:'Customer',code:'CUS-0001',name:'MEHARY',status:'Active',terms:'Due on receipt',created:today()},{id:'m2',type:'Customer',code:'CUS-0002',name:'Acme',status:'Active',terms:'Net 30',created:today()}];
 post({date:today(),br:S.br[0].id,cust:'m1',tt:'Deposit',memo:'Advance',lines:[['1000',61920,0],['1200',0,61920]]});
