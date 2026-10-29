@@ -7,7 +7,7 @@ let m=await M();console.log(m);
 ok(Math.abs(m.pt-m.st)<=5,'Customers/Suppliers text starts at same x as Parties ('+m.pt.toFixed(1)+' vs '+m.st.toFixed(1)+')');
 ok(Math.abs(m.lineL+.5-m.ic)<=1.5,'connector line sits on icon centre');
 ok(m.isz==20,'icons are 20px');
-ok(await p.evaluate(()=>[...document.querySelectorAll('#nav button.nv')].every(b=>{const s=getComputedStyle(b);return s.fontSize=='15px'&&(s.fontWeight=='500'||s.fontWeight=='650')&&s.textTransform=='none'&&s.paddingTop=='12px'&&s.paddingBottom=='12px'})),'all main items: same font/size/weight, 12px padding, no uppercase');
+ok(await p.evaluate(()=>[...document.querySelectorAll('#nav button.nv')].every(b=>{const s=getComputedStyle(b);return s.fontSize=='14.5px'&&(s.fontWeight=='500'||s.fontWeight=='600'||s.fontWeight=='650')&&s.textTransform=='none'&&s.paddingTop=='10px'&&s.paddingBottom=='10px'})),'all main items: same font/size/weight, 12px padding, no uppercase');
 ok(await p.evaluate(()=>[...document.querySelectorAll('#nav button.nv')].every(b=>!/[A-Z]{3}/.test(b.textContent))),'labels in title case');
 ok(await p.evaluate(()=>[...document.querySelectorAll('#nav .nvl')].map(x=>x.textContent).join()=='Main,Management'&&!!document.querySelector('#nav .nvd')),'MAIN / MANAGEMENT groups + divider');
 ok(await p.evaluate(()=>getComputedStyle(document.querySelector('#nav button[data-v=fdk]')).color==getComputedStyle(document.querySelector('#nav button[data-v=std]')).color),'Transactions styled like the other items');

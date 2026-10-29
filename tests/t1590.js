@@ -1,0 +1,18 @@
+const {chromium}=require('playwright');let f=0;const ok=(c,m)=>{console.log((c?'PASS ':'FAIL ')+m);if(!c)f++};
+(async()=>{const b=await chromium.launch();const p=await b.newPage({viewport:{width:1440,height:1000}});const errs=[];p.on('pageerror',e=>errs.push(e.message));
+await p.goto('file:///home/claude/primebook/public/index.html');await p.waitForTimeout(600);
+await p.evaluate(()=>{document.getElementById('auth')?.remove();document.body.classList.remove('auon');SESS={id:'t',exp:Date.now()+1e6};window.alert=m=>console.log('ALERT '+m);S.users=[{name:'Ann',role:'Owner',br:'All'}];S.me=0;S.base='CAD';S.cust=[];S.j=[];view='cadd';ce='';go()});await p.waitForTimeout(1200);
+const hdr=await p.evaluate(()=>{const h=document.querySelector('.ca2>.th h3'),c=getComputedStyle(h);return c.color});console.log(hdr);
+ok(hdr=='rgb(15, 23, 42)','title is dark and readable on a light card');
+const ic=await p.evaluate(()=>{const f=document.querySelector('.ca2 input[name=phone]').parentElement.querySelector('.fic'),i=document.querySelector('.ca2 input[name=phone]');const a=f.getBoundingClientRect(),c=i.getBoundingClientRect();return Math.abs((a.top+a.height/2)-(c.top+c.height/2))<3&&a.left>c.left&&a.right<c.left+50});
+ok(ic,'field icon sits inside its input, vertically centred');
+const th=await p.evaluate(()=>getComputedStyle(document.querySelector('.ca2 .obt thead th')).backgroundColor);ok(th=='rgb(248, 250, 252)'||th=='rgb(249, 250, 251)','opening balance header is light: '+th);
+await p.fill('input[name=name]','Mehary Trading');await p.fill('input[name=phone]','254700111222');
+await p.click('.ca2 .tf button');await p.waitForTimeout(700);
+const dlg=await p.evaluate(()=>document.querySelector('.rg-md')?document.querySelector('.rg-md').innerText.slice(0,200):'none');console.log(dlg.replace(/\n/g,' | '));
+ok(/Mehary Trading/.test(dlg)||/Review/.test(dlg),'review dialog opens (existing save flow intact)');
+console.log(errs.length?errs:'no errors');ok(errs.length==0,'no page errors');
+await p.setViewportSize({width:390,height:900});await p.evaluate(()=>{document.querySelector('.rg-ov')?.remove();go()});await p.waitForTimeout(800);
+ok(await p.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth+2),'no horizontal page scroll on phone');
+await p.screenshot({path:'/tmp/pt/cadd_m.png'});
+console.log(f?'FAILED '+f:'ALL PASS');await b.close()})();
