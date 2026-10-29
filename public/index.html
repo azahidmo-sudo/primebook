@@ -5838,7 +5838,7 @@ const oc=V.ctx;V.ctx=function(){let h=oc.apply(this,arguments);
  h=h.replace('<button class="plf" onclick="ctOpen()">+ New transaction</button>','<span style="display:flex;gap:8px;flex-wrap:wrap"><button class="plf" onclick="sdOpen()">+ Currency sale deal</button><button class="plo" onclick="ctOpen()">+ Multi-currency entry</button></span>');
  return h};
 /*UPDCHK*/
-(function(){const B='2026-10-29-fx';window.PB_BUILD=B;if(location.protocol=='file:')return;let nb=null,tm=0;
+(function(){const B='2026-10-30-fy';window.PB_BUILD=B;if(location.protocol=='file:')return;let nb=null,tm=0;
 const busy=()=>{const a=document.activeElement;return !!(document.querySelector('.ov')||(a&&/^(INPUT|TEXTAREA)$/.test(a.tagName)&&String(a.value||'').length>0))};
 function go2(){try{const k='pb_upd_'+nb,n=+(sessionStorage.getItem(k)||0);sessionStorage.setItem(k,n+1)}catch(e){}location.replace(location.pathname+'?v='+encodeURIComponent(nb))}
 function bar(){let d=document.getElementById('pbupd');if(!d){d=document.createElement('div');d.id='pbupd';d.setAttribute('role','button');d.style.cssText='position:fixed;left:50%;transform:translateX(-50%);top:10px;z-index:100000;background:#0b3d33;color:#fff;padding:11px 18px;border-radius:12px;font:700 13px Inter,system-ui,sans-serif;box-shadow:0 6px 20px rgba(0,0,0,.3);cursor:pointer;text-align:center;max-width:92vw';d.onclick=()=>{d.textContent='Updating…';go2()};document.body.appendChild(d)}d.textContent='A new version of PrimeBook is ready. Tap here to update.'}
@@ -10792,10 +10792,10 @@ html[data-theme=dark] body .rd-in,html[data-theme=dark] body .rd-fg div{backgrou
 const A=x=>String(x==null?'':x).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const SIZES=[4,6,8,12];
 const SECS=[['ov','Financial overview'],['ac','Accounts'],['tx','Transactions'],['rp','Reports'],['mr','Settings & more']];
-const SEC0={hero:'ov',kpi:'ov',dxday:'ov',dbxfo:'ov',dbxuf:'ov',dbxcf:'ov',dbxai:'ov',dbxcb:'ov',dbxca:'ac',qa:'ov',rec:'tx',act:'tx',deals:'tx',dbxqr:'rp',kpt:'rp',brn:'rp',exp:'rp',rates:'mr',snp:'mr',acc:'mr',ins:'mr'};
-const ORD0=['hero','kpi','dbxfo','dbxuf','dbxcb','rec','dbxcf','qa','dxday','dbxai','dbxfo','dbxca','act','deals','dbxqr','kpt','brn','exp','rates','snp','acc','ins'];
-const NAMES={dbxuf:'Financial overview and accounts',hero:'Financial health',kpi:'Key figures',ins:'Smart insights',kpt:'Key performance indicators',qa:'Quick actions',deals:'Pending sales deals',rates:'Exchange rates',acc:'Account balances',brn:'Branch performance',act:'Action center',rec:'Recent transactions',exp:'Expense breakdown',snp:'Business snapshot'};
-const DEF={dbxuf:12,dxday:8,dbxfo:12,dbxcb:8,dbxcf:8,dbxai:4,dbxca:12,dbxqr:6,hero:12,kpi:12,ins:6,kpt:6,qa:4,deals:6,rates:12,acc:12,brn:8,act:6,rec:4,exp:4,snp:4};
+const SEC0={hero:'ov',kpi:'ov',dxday:'ov',dbxfo:'ov',dbxuf:'ov',dbxsn:'mr',dbxcf:'ov',dbxai:'ov',dbxcb:'ov',dbxca:'ac',qa:'ov',rec:'tx',act:'tx',deals:'tx',dbxqr:'rp',kpt:'rp',brn:'rp',exp:'rp',rates:'mr',snp:'mr',acc:'mr',ins:'mr'};
+const ORD0=['hero','kpi','dbxfo','dbxuf','dbxcb','dbxsn','rec','dbxcf','qa','dxday','dbxai','dbxfo','dbxca','act','deals','dbxqr','kpt','brn','exp','rates','snp','acc','ins'];
+const NAMES={dbxsn:'Operations overview',dbxuf:'Financial overview and accounts',hero:'Financial health',kpi:'Key figures',ins:'Smart insights',kpt:'Key performance indicators',qa:'Quick actions',deals:'Pending sales deals',rates:'Exchange rates',acc:'Account balances',brn:'Branch performance',act:'Action center',rec:'Recent transactions',exp:'Expense breakdown',snp:'Business snapshot'};
+const DEF={dbxsn:12,dbxuf:12,dxday:8,dbxfo:12,dbxcb:8,dbxcf:8,dbxai:4,dbxca:12,dbxqr:6,hero:12,kpi:12,ins:6,kpt:6,qa:4,deals:6,rates:12,acc:12,brn:8,act:6,rec:4,exp:4,snp:4};
 const HEAD={'account balances':'acc','branch performance':'brn','action center':'act','recent transactions':'rec','expense breakdown':'exp','business snapshot':'snp'};
 let edit=false,note='',lastIds=[];const U=[],RD=[];let who='';
 const key=()=>((me()||{}).name)||'u';
@@ -10832,6 +10832,7 @@ function build(){const m=document.getElementById('m');if(!m||view!='dash'||m.que
  /* v8: Financial overview lives under Financial overview; Recent transactions under Transactions (clears older saved placements). */
  /* v9: currency balances and account details are merged into one Financial Overview card. */
  if(!lay.mig9){lay.mig9=1;lay.hid=lay.hid||[];['dbxcb','dbxca'].forEach(i=>{if(!lay.hid.includes(i))lay.hid.push(i)});lay.hid=lay.hid.filter(i=>i!='dbxuf');lay.sec=lay.sec||{};lay.sec.dbxuf='ov';save()}
+ if(!lay.mig10){lay.mig10=1;lay.sec=lay.sec||{};lay.sec.dbxsn='mr';lay.hid=(lay.hid||[]).filter(i=>i!='dbxsn');if(!lay.hid.includes('snp'))lay.hid.push('snp');save()}
  if(!lay.mig8){lay.mig8=1;lay.sec=lay.sec||{};lay.sec.dbxfo='ov';lay.sec.rec='tx';lay.hid=(lay.hid||[]).filter(i=>i!='dbxfo'&&i!='rec');save()}
  const rank=id=>{const i=lay.ord.indexOf(id);if(i>=0)return i;const j=ORD0.indexOf(id);return 1000+(j>=0?j:500)};
  const ids=W.map(w=>w.id).sort((a,b)=>rank(a)-rank(b));lastIds=ids.slice();
@@ -13177,6 +13178,7 @@ function ufo(){const s=ST(),B=balances(),cs=ccList().filter(c=>c==S.base||Math.a
   return`<button type="button" class="ufo-c${s.cur==c?' on':''}${Math.abs(tot)<.005?' z':''}" onclick="dbx.cur('${c}')" aria-pressed="${s.cur==c}" title="Show ${A(c)} accounts only"><span class="ufo-k">${FL(c)}<b>${A(c)}</b>${c==S.base?'<em>base</em>':''}</span><span class="ufo-v${tot<-.004?' neg':''}">${nf(tot)}</span><span class="ufo-b">${A(S.base)} ${nf(bv)}</span><span class="ufo-s">Cash ${nf(b.cash)} · Bank ${nf(b.bank)}${b.res>.004?' · Available '+nf(av):''}</span></button>`}).join('');
  let acc=accTable().replace('<h3>Cash &amp; bank accounts</h3>','<h3>Account Details – '+(s.cur=='all'?'All Currencies':A(s.cur))+'</h3>');
  return `<div class="dbx-uf"><div class="ufo-h"><div><h2>Financial Overview</h2><p>Currency balance summary</p></div><span class="ufo-live"><i></i>Live balances</span></div><div class="ufo-r" role="group" aria-label="Currency balance summary">${cards||'<div class="dbx-m">No balances yet</div>'}</div>${s.cur!='all'?'<div class="ufo-t"><span></span><button type="button" class="dbx-bt" onclick="dbx.set(\'cur\',\'all\')">Show all currencies</button></div>':'<div class="ufo-gap"></div>'}<div class="ufo-a">${acc}</div></div>`}
+window.__dbxX={bal:balances,cc:ccList};
 const W=(id,label,html)=>`<div data-dwid="${id}" data-dwl="${label}">${html}</div>`;
 const _d=V.dash;V.dash=function(){let h=_d.apply(this,arguments);let L='';try{L=W('dbxfo','Financial overview',head())+W('dbxuf','Financial overview and accounts',ufo())+W('dbxcb','Currency balances',curTable())+W('dbxcf','Cash flow trend',trend().html)+W('dbxai','AI cashbook insights',aiPanel())+W('dbxca','Cash & bank accounts',accTable())+W('dbxqr','Quick reports',qrPanel())}catch(e){console.error('DBX',e);return h}
  const t=document.createElement('template');t.innerHTML=h;const top=t.content.querySelector('.top');const f=document.createRange().createContextualFragment(L);const wb=t.content.querySelector('.dwb');if(top)top.after(f);else t.content.prepend(f);
@@ -16167,6 +16169,86 @@ html body .ufo-a .dbx-p{border:0!important;box-shadow:none!important;padding:0!i
 html body .ufo-a .dbx-ph h3{font:650 16px Inter,system-ui,sans-serif!important;color:#111827!important}
 @media(max-width:720px){html body .dbx-uf{padding:16px}html body .ufo-r{grid-auto-columns:minmax(180px,78%)}}
 `;document.head.appendChild(st)})();
+/*SNP - Operations overview (Settings & more): live snapshot panels, all from the app's own records*/
+(()=>{
+const A=x=>String(x==null?'':x).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const nf=v=>Number(v||0).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2});
+const flag=c=>/^[A-Z]{3}$/.test(c)&&!/^(USDT|USDC)$/.test(c)?String.fromCodePoint(...c.slice(0,2).split('').map(h=>127397+h.charCodeAt(0))):'\u{1F7E2}';
+const midr=c=>c==S.base?1:(S.rates&&S.rates[c]?(+S.rates[c].b+ +S.rates[c].s)/2:0);
+const ico={wallet:'<path d="M3 7a2 2 0 012-2h12v4"/><path d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2v-8a2 2 0 00-2-2H5"/><circle cx="16.5" cy="13" r="1.2"/>',users:'<circle cx="9" cy="8" r="3.4"/><path d="M2.8 20v-1.2a5.2 5.2 0 015.2-5.2h2a5.2 5.2 0 015.2 5.2V20M16 4.8a3.4 3.4 0 010 6.4M18.2 14.2a5.2 5.2 0 013 4.6V20"/>',bag:'<path d="M6 8h12l1 12H5z"/><path d="M9 8V6a3 3 0 016 0v2"/>',bld:'<rect x="4" y="3" width="16" height="18" rx="2"/><path d="M9 7h2M13 7h2M9 11h2M13 11h2M10 21v-4h4v4"/>',coin:'<circle cx="12" cy="12" r="9"/><path d="M14.5 9.2c-.4-.8-1.4-1.2-2.5-1.2-1.4 0-2.5.8-2.5 1.9 0 2.6 5.2 1.3 5.2 3.9 0 1.1-1.100 2-2.700 2-1.200 0-2.200-.5-2.600-1.400M12 6.500V8M12 16v1.500"/>',box:'<path d="M12 2.8l8.500 4.500v9.400L12 21.200l-8.500-4.500V7.300z"/><path d="M3.500 7.300L12 12l8.500-4.700M12 12v9.200"/>',user:'<circle cx="12" cy="8" r="3.6"/><path d="M5 20v-1a6 6 0 016-6h2a6 6 0 016 6v1"/>',fx:'<circle cx="12" cy="12" r="9"/><path d="M8 10h8l-2.500-2.500M16 14H8l2.500 2.500"/>',hist:'<path d="M3 12a9 9 0 109-9"/><path d="M3 4v5h5M12 7v5l3 2"/>',chev:'<path d="M9 6l6 6-6 6"/>',plus:'<path d="M12 5v14M5 12h14"/>',down:'<path d="M12 4v16M6 14l6 6 6-6"/>',doc:'<path d="M14 3H7a2 2 0 00-2 2v14a2 2 0 002 2h10a2 2 0 002-2V8z"/><path d="M14 3v5h5"/>',cal:'<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/>'};
+const I=(k,z)=>`<svg viewBox="0 0 24 24" width="${z||20}" height="${z||20}" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ico[k]||''}</svg>`;
+function build(){
+ const X=window.__dbxX;if(!X)return'';
+ const B=X.bal(),cs=X.cc().filter(c=>c==S.base||Math.abs(B[c].cash)+Math.abs(B[c].bank)>.004);
+ const inBr=x=>br=='all'||x.br==br,J=(S.j||[]).filter(x=>!x.rev&&!x.revd&&inBr(x)),today_=today();
+ /* currency cards */
+ const cards=cs.map(c=>{const b=B[c],t=b.cash+b.bank;return`<div class="sn-cc"><span class="sn-ci">${flag(c)}</span><div><small>Total ${A(c)} Balance</small><b>${A(c)} ${nf(t)}</b><div class="sn-cb"><span>Cash <b>${nf(b.cash)}</b></span><span>Bank <b>${nf(b.bank)}</b></span></div></div></div>`}).join('')||'<div class="sn-em">No balances yet.</div>';
+ /* rates tile */
+ const rc=Object.keys(S.rates||{}).filter(c=>c!=S.base&&midr(c)>0);
+ const rates=`<div class="sn-rt"><div class="sn-rh"><span class="sn-ri">${I('fx',22)}</span><div><b>Live Exchange Rates</b><small>${rc.length} currenc${rc.length==1?'y':'ies'} on your board</small></div></div>${rc.slice(0,4).map(c=>`<div class="sn-rr"><span>${flag(c)} 1 ${A(c)}</span><b>${(+midr(c)).toFixed(4)} ${A(S.base)}</b></div>`).join('')}<button type="button" data-go="ccy" class="sn-rb">View rates ${I('chev',16)}</button></div>`;
+ /* snapshot */
+ const nCust=(S.cust||[]).filter(c=>c.type=='Customer'&&c.id!='c1').length,nSup=(S.cust||[]).filter(c=>c.type=='Supplier').length,nStock=Object.values(S.pos||{}).filter(v=>+v.q>0).length;
+ const snap=[['users','Customers',nCust,'cust'],['bag','Suppliers',nSup,'sup'],['bld','Branches',(S.br||[]).length,'br'],['coin','Currencies',cs.length,'ccy'],['box','In stock',nStock,'std'],['user','Employees',(S.emp||[]).length,'pyd']].map(([i,l,n,g])=>`<button type="button" class="sn-sc" data-go="${g}"><span class="sn-si">${I(i,22)}</span><small>${l}</small><b>${n}</b></button>`).join('');
+ /* currency balance overview (bar = share of the largest base value, label = own currency) */
+ const rows=cs.map(c=>{const t=B[c].cash+B[c].bank,m=c==S.base?1:midr(c);return{c,t,v:Math.max(0,t*(m||0))}}),mx=Math.max(1,...rows.map(r=>r.v));
+ const bars=rows.map(r=>`<div class="sn-br"><div><span>${flag(r.c)} <b>${A(r.c)}</b></span><b>${nf(r.t)}</b></div><i><u style="width:${Math.max(r.v>0?3:0,r.v/mx*100)}%"></u></i></div>`).join('')||'<div class="sn-em">No balances yet.</div>';
+ /* this month income / expenses / net, base currency */
+ const m0=today_.slice(0,7),sum=(f)=>J.filter(x=>x.date.slice(0,7)==m0).reduce((t,x)=>t+x.lines.reduce((a,y)=>a+f(String(y[0]),+y[1]||0,+y[2]||0),0),0);
+ const inc=sum((c,d,k)=>c[0]=='4'?k-d:0),exp=sum((c,d,k)=>/^[5-9]/.test(c)?d-k:0),net=inc-exp;
+ const days=[];for(let k=7;k>=0;k--){const d=new Date(today_+'T12:00:00');d.setDate(d.getDate()-k);const iso=d.toISOString().slice(0,10);let i=0,e=0;J.filter(x=>x.date==iso).forEach(x=>x.lines.forEach(y=>{const c=String(y[0]);if(c[0]=='4')i+=(+y[2]||0)-(+y[1]||0);else if(/^[5-9]/.test(c))e+=(+y[1]||0)-(+y[2]||0)}));days.push({l:iso.slice(5),i,e})}
+ const W=520,H=170,L0=22,B0=22,T0=10,top=Math.max(1,...days.flatMap(d=>[d.i,d.e])),X_=k=>L0+k*((W-2*L0)/7),Y=v=>T0+(H-T0-B0)*(1-v/top),pl=a=>a.map((v,k)=>(k?'L':'M')+X_(k).toFixed(1)+' '+Y(v).toFixed(1)).join(' ');
+ const chart=`<svg viewBox="0 0 ${W} ${H}" class="sn-ch" role="img" aria-label="Income and expenses, last 8 days"><path d="${pl(days.map(d=>d.i))}" fill="none" stroke="#1D4ED8" stroke-width="2.2" stroke-linejoin="round"/><path d="${pl(days.map(d=>d.e))}" fill="none" stroke="#9CA3AF" stroke-width="2.2" stroke-linejoin="round" stroke-dasharray="5 4"/>${days.map((d,k)=>`<text x="${X_(k)}" y="${H-6}" text-anchor="middle" font-size="10" fill="#9CA3AF">${d.l}</text>`).join('')}</svg>`;
+ const fin=`<div class="sn-p"><div class="sn-ph"><span class="sn-pi">${I('wallet',20)}</span><div><b>Financial Overview</b><small>This month, ${A(S.base)} ledger values</small></div></div><div class="sn-fg"><div><small>Income</small><b>${nf(inc)}</b></div><div><small>Expenses</small><b>${nf(exp)}</b></div><div><small>Net profit</small><b class="${net<0?'neg':''}">${nf(net)}</b></div><div><small>Entries</small><b>${J.filter(x=>x.date.slice(0,7)==m0).length}</b></div></div><div class="sn-lg"><span><i style="background:#1D4ED8"></i>Income</span><span><i class="d"></i>Expenses</span><small>Last 8 days</small></div>${chart}</div>`;
+ /* recent transactions */
+ const kind=j=>j.lines.some(y=>String(y[0])[0]=='4')?'Income':j.lines.some(y=>/^[5-9]/.test(String(y[0])))?'Expense':'Transfer';
+ const tot=j=>j.lines.reduce((t,y)=>t+(+y[1]||0),0),dt=j=>j.at?new Date(j.at):null;
+ const rt=J.slice(-6).reverse().map(j=>{const d=dt(j);return`<tr><td>${A(j.date.slice(5))}${d?' <small>'+String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0')+'</small>':''}</td><td>${kind(j)}</td><td class="sn-ds">${A(j.memo||'Journal entry')}</td><td class="n">${nf(tot(j))}</td><td><span class="sn-ok">Posted</span></td></tr>`}).join('')||'<tr><td colspan="5" class="sn-em">No transactions yet.</td></tr>';
+ const rtx=`<div class="sn-p"><div class="sn-ph"><span class="sn-pi">${I('hist',20)}</span><div><b>Recent Transactions</b></div><a class="sn-vl" data-go="jr" tabindex="0" role="link">View all</a></div><div class="sn-tw"><table class="sn-t"><thead><tr><th>Date</th><th>Type</th><th>Description</th><th class="n">${A(S.base)}</th><th>Status</th></tr></thead><tbody>${rt}</tbody></table></div></div>`;
+ /* activity, branches, links */
+ const act=(S.alog||[]).slice(-5).reverse().map(a=>`<div class="sn-ar"><b>${A(a.k||'Activity')}</b><span>${A(String(a.m||'').slice(0,70))}</span><small>${A(a.by||'')} · ${A(String(a.at||'').slice(5,16).replace('T',' '))}</small></div>`).join('')||'<div class="sn-em">No activity yet.</div>';
+ const brs=(S.br||[]).map(b=>{const n=(S.j||[]).filter(x=>!x.rev&&!x.revd&&x.br==b.id&&x.date==today_).length;return`<div class="sn-bs"><div><b>${A(b.name)}</b><small>${n} entr${n==1?'y':'ies'} today</small></div><span class="${n?'on':''}">${n?'Active':'Quiet'}</span></div>`}).join('');
+ const links=[['New Transaction',"mfOpen()",'plus'],['Add Funds',"rpOpen()",'down'],['Exchange Rates',"go2('ccy')",'fx'],['Reports',"go2('rpt')",'doc'],['Daily Closing',"go2('dcl')",'cal']].map(([t,o,i])=>`<button type="button" class="sn-ql" onclick="${o}"><span>${I(i,18)}${t}</span>${I('chev',16)}</button>`).join('');
+ return `<div class="sn"><div class="sn-hd"><div><h2>Operations overview</h2><p>A live snapshot of balances, activity and branches</p></div></div><div class="sn-g"><div class="sn-main"><div class="sn-cr">${cards}</div><div class="sn-two"><div class="sn-p"><div class="sn-ph"><span class="sn-pi">${I('bld',20)}</span><div><b>Business Snapshot</b><small>Counts from your records</small></div></div><div class="sn-sg">${snap}</div></div><div class="sn-p"><div class="sn-ph"><span class="sn-pi">${I('coin',20)}</span><div><b>Currency Balance Overview</b></div><a class="sn-vl" data-go="cbd" tabindex="0" role="link">View all</a></div>${bars}</div></div><div class="sn-two b">${fin}${rtx}</div></div><div class="sn-side">${rates}<div class="sn-p"><div class="sn-ph"><span class="sn-pi">${I('hist',20)}</span><div><b>Recent Activity</b></div></div>${act}</div><div class="sn-p"><div class="sn-ph"><span class="sn-pi">${I('bld',20)}</span><div><b>Branch Status</b></div></div>${brs||'<div class="sn-em">No branches.</div>'}</div><div class="sn-p"><div class="sn-ph"><span class="sn-pi">${I('plus',20)}</span><div><b>Quick Links</b></div></div>${links}</div></div></div></div>`}
+window.go2=v=>{view=v;go()};
+const _d=V.dash;V.dash=function(){const h=_d.apply(this,arguments);let L='';try{L=`<div data-dwid="dbxsn" data-dwl="Operations overview">${build()}</div>`}catch(e){console.error('SNP',e);return h}
+ const t=document.createElement('template');t.innerHTML=h;const top=t.content.querySelector('.top'),f=document.createRange().createContextualFragment(L);if(top)top.after(f);else t.content.prepend(f);return t.innerHTML};
+const st=document.createElement('style');st.id='snp-css';st.textContent=`
+html body .sn{color:#1F2937;font-family:Inter,system-ui,sans-serif}
+html body .sn-hd h2{margin:0;font:650 20px/1.2 Inter,system-ui,sans-serif;color:#111827}html body .sn-hd p{margin:4px 0 16px;font-size:13.5px;color:#6B7280}
+html body .sn-g{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:18px;align-items:start}
+html body .sn-main,html body .sn-side{display:flex;flex-direction:column;gap:18px;min-width:0}
+html body .sn-cr{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
+html body .sn-cc,html body .sn-p{background:#fff;border:1px solid #E5E7EB;border-radius:12px;box-shadow:0 1px 2px rgba(17,24,39,.04)}
+html body .sn-cc{display:flex;gap:14px;padding:16px 18px;align-items:flex-start}
+html body .sn-ci{display:grid;place-items:center;width:44px;height:44px;border-radius:12px;background:#F3F4F6;font-size:24px;flex:none}
+html body .sn-cc small{display:block;font-size:12.5px;color:#6B7280}html body .sn-cc>div>b{display:block;font:700 20px/1.25 Inter;font-variant-numeric:tabular-nums;color:#111827;margin:2px 0 8px}
+html body .sn-cb{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:#6B7280}html body .sn-cb b{color:#374151;font-variant-numeric:tabular-nums}
+html body .sn-two{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}html body .sn-two.b{grid-template-columns:minmax(0,5fr) minmax(0,7fr)}html body #m .dwg>.dw>[data-dwid=dbxsn],html body #m .dwg>.dw>.sn{background:transparent!important;border:0!important;box-shadow:none!important;padding:0!important}
+html body .sn-p{padding:18px 20px}
+html body .sn-ph{display:flex;align-items:center;gap:12px;margin:0 0 14px}html body .sn-ph>div{flex:1;min-width:0}html body .sn-ph b{display:block;font:600 15px Inter;color:#111827}html body .sn-ph small{font-size:12px;color:#6B7280}
+html body .sn-pi{display:grid;place-items:center;width:36px;height:36px;border-radius:10px;background:#F3F4F6;color:#374151;flex:none}
+html body .sn-vl{font:500 12.5px Inter;color:#1D4ED8;cursor:pointer;text-decoration:none}html body .sn-vl:hover{text-decoration:underline}
+html body .sn-sg{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+html body .sn-sc{display:flex;flex-direction:column;align-items:flex-start;gap:4px;padding:12px;border:1px solid #E5E7EB;border-radius:10px;background:#fff;cursor:pointer;text-align:left;font-family:Inter}html body .sn-sc:hover{border-color:#9CA3AF}
+html body .sn-si{color:#374151}html body .sn-sc small{font-size:12px;color:#6B7280;line-height:1.2}html body .sn-sc b{font:700 20px Inter;color:#111827}
+html body .sn-br{margin:0 0 14px}html body .sn-br>div{display:flex;justify-content:space-between;font-size:13px;margin:0 0 6px}html body .sn-br b{font-variant-numeric:tabular-nums}
+html body .sn-br i{display:block;height:8px;border-radius:99px;background:#F3F4F6;overflow:hidden}html body .sn-br u{display:block;height:100%;border-radius:99px;background:#1D4ED8}
+html body .sn-fg{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:0 0 10px}html body .sn-fg>div{border:1px solid #E5E7EB;border-radius:10px;padding:10px 12px}html body .sn-fg small{display:block;font-size:12px;color:#6B7280}html body .sn-fg b{font:700 16px Inter;font-variant-numeric:tabular-nums;color:#111827}html body .sn-fg b.neg{color:#B42318}
+html body .sn-lg{display:flex;align-items:center;gap:14px;font-size:12px;color:#6B7280;margin:4px 0}html body .sn-lg i{display:inline-block;width:14px;height:3px;border-radius:2px;margin-right:6px;vertical-align:middle}html body .sn-lg i.d{background:repeating-linear-gradient(90deg,#9CA3AF 0 5px,transparent 5px 9px)}html body .sn-lg small{margin-left:auto}
+html body .sn-ch{width:100%;height:auto}
+html body .sn-tw{overflow-x:auto}html body .sn-t{width:100%;border-collapse:collapse;font-size:13px}html body .sn-t th{text-align:left;font:600 11px Inter;letter-spacing:.06em;text-transform:uppercase;color:#6B7280;background:#F9FAFB;padding:9px 10px}html body .sn-t td{padding:10px;border-bottom:1px solid #F1F2F4;white-space:nowrap}html body .sn-t td.n,html body .sn-t th.n{text-align:right;font-variant-numeric:tabular-nums}html body .sn-t td small{color:#9CA3AF}html body .sn-ds{max-width:160px;overflow:hidden;text-overflow:ellipsis}
+html body .sn-ok{background:#ECFDF5;color:#047857;border-radius:99px;padding:2px 9px;font:600 11.5px Inter}
+html body .sn-rt{background:#1D4ED8;color:#fff;border-radius:12px;padding:18px 20px}html body .sn-rh{display:flex;gap:12px;align-items:center;margin:0 0 12px}html body .sn-rh b{display:block;font:600 15px Inter}html body .sn-rh small{font-size:12px;opacity:.85}html body .sn-ri{display:grid;place-items:center;width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,.18)}
+html body .sn-rr{display:flex;justify-content:space-between;font-size:13px;padding:6px 0;border-top:1px solid rgba(255,255,255,.18)}html body .sn-rr b{font-variant-numeric:tabular-nums}
+html body .sn-rb{margin-top:10px;width:100%;display:flex;justify-content:center;align-items:center;gap:6px;height:38px;border-radius:8px;border:1px solid rgba(255,255,255,.45);background:rgba(255,255,255,.14);color:#fff;font:600 14px Inter;cursor:pointer}html body .sn-rb:hover{background:rgba(255,255,255,.24)}
+html body .sn-ar{padding:9px 0;border-bottom:1px solid #F1F2F4}html body .sn-ar:last-child{border:0}html body .sn-ar b{display:block;font:600 13px Inter;color:#111827}html body .sn-ar span{display:block;font-size:12.5px;color:#4B5563}html body .sn-ar small{font-size:11.5px;color:#9CA3AF}
+html body .sn-bs{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid #F1F2F4}html body .sn-bs:last-child{border:0}html body .sn-bs b{display:block;font:600 13px Inter}html body .sn-bs small{font-size:12px;color:#6B7280}html body .sn-bs span{font:600 11.5px Inter;border-radius:99px;padding:2px 9px;background:#F3F4F6;color:#6B7280}html body .sn-bs span.on{background:#ECFDF5;color:#047857}
+html body .sn-ql{display:flex;justify-content:space-between;align-items:center;width:100%;padding:11px 4px;border:0;border-bottom:1px solid #F1F2F4;background:transparent;font:500 13.5px Inter;color:#1F2937;cursor:pointer}html body .sn-ql:last-child{border:0}html body .sn-ql span{display:flex;align-items:center;gap:10px}html body .sn-ql:hover{color:#1D4ED8}
+html body .sn-em{color:#9CA3AF;font-size:13px;padding:8px 0}
+@media(max-width:1100px){html body .sn-g{grid-template-columns:minmax(0,1fr)}html body .sn-two,html body .sn-two.b{grid-template-columns:minmax(0,1fr)}}
+@media(max-width:560px){html body .sn-sg{grid-template-columns:repeat(2,minmax(0,1fr))}html body .sn-fg{grid-template-columns:repeat(2,minmax(0,1fr))}}
+`;document.head.appendChild(st);
+})();
 /*TYPO - global typography system (presentation only)*/
 (function(){
 const CSS=`
