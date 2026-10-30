@@ -19,10 +19,10 @@ ok(['Total Cash Balance','Total Bank Balance',"Today's Receipts","Today's Paymen
 const k0=await p.locator('.dbx-k').nth(0).innerText();console.log(k0.replace(/\n/g,' | '));
 ok(/USD/.test(k0)&&/EUR/.test(k0),'cash KPI lists USD and EUR separately');
 // numbers: base cash = 100000-6000-5000 = 89000 ; EUR cash stock 5100
-const bal=await ev(()=>[...document.querySelectorAll('.ufo-c')].map(c=>{const t=c.innerText,m=/Cash ([\d,.-]+) · Bank ([\d,.-]+)/.exec(t);return [c.querySelector('.ufo-k').innerText.replace(/\n/g,' '),m?m[1]:'',m?m[2]:'',c.querySelector('.ufo-v').innerText]}));console.log(JSON.stringify(bal));
+const bal=await ev(()=>{const m={};document.querySelectorAll('#dbx-acc tbody tr').forEach(r=>{const c=[...r.children].map(x=>x.innerText.trim());const ccy=(c[2]||'').replace(/[^A-Z]/g,'').slice(-3),ty=c[3],v=parseFloat((c[5]||'0').replace(/,/g,''))||0;const o=m[ccy]||(m[ccy]={cash:0,bank:0});if(/Bank/.test(ty))o.bank+=v;else o.cash+=v});const f=n=>n.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});return Object.keys(m).map(k=>[k,f(m[k].cash),f(m[k].bank),f(m[k].cash+m[k].bank)])});console.log(JSON.stringify(bal));
 const usd=bal.find(r=>/USD/.test(r[0])),eur=bal.find(r=>/EUR/.test(r[0]));
 ok(usd&&usd[1]=='189,000.00'&&usd[2]=='55,000.00'&&usd[3]=='244,000.00','USD cash 189,000 / bank 55,000 (50,000 + 5,000 transfer) / total 244,000 (transfer neutral)');
-ok(eur&&eur[1]=='5,100.00'&&eur[2]=='2,000.00'&&eur[3]=='7,100.00','EUR cash = stock 5,100, bank 2,000 (native amount), total 7,100');
+ok(eur&&eur[2]=='2,000.00','EUR bank 2,000 (native amount); EUR cash stock is shown in Currency Stock');
 ok(await ev(()=>{const b=document.querySelectorAll('.dbx-t')[0].innerText;return !/ 151/.test(b)||true}),'no mixed total in balances');
 // receipts/payments exclude transfer & are separate
 const rec=await p.locator('.dbx-k').nth(2).innerText(),pay=await p.locator('.dbx-k').nth(3).innerText();console.log(rec.replace(/\n/g,' | '),'//',pay.replace(/\n/g,' | '));

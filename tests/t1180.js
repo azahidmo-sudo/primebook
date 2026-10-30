@@ -10,7 +10,7 @@ ok(m.isz==20,'icons are 20px');
 ok(await p.evaluate(()=>[...document.querySelectorAll('#nav button.nv')].every(b=>{const s=getComputedStyle(b);return s.fontSize=='14.5px'&&(s.fontWeight=='500'||s.fontWeight=='600'||s.fontWeight=='650')&&s.textTransform=='none'&&s.paddingTop=='10px'&&s.paddingBottom=='10px'})),'all main items: same font/size/weight, 12px padding, no uppercase');
 ok(await p.evaluate(()=>[...document.querySelectorAll('#nav button.nv')].every(b=>!/[A-Z]{3}/.test(b.textContent))),'labels in title case');
 ok(await p.evaluate(()=>[...document.querySelectorAll('#nav .nvl')].map(x=>x.textContent).join()=='Main,Management'&&!!document.querySelector('#nav .nvd')),'MAIN / MANAGEMENT groups + divider');
-ok(await p.evaluate(()=>getComputedStyle(document.querySelector('#nav button[data-v=fdk]')).color==getComputedStyle(document.querySelector('#nav button[data-v=std]')).color),'Transactions styled like the other items');
+ok(await p.evaluate(()=>getComputedStyle(document.querySelector('#nav button[data-v=dcw]')).color==getComputedStyle(document.querySelector('#nav button[data-v=std]')).color),'Daily Closing styled like the other items');
 ok(await p.evaluate(()=>Math.round(parseFloat(getComputedStyle(document.querySelector('#nav .sub.on'),'::before').width))==2),'active sub-item has 2px bar');
 // toggle
 await p.click('#nav .gh[data-g=cmd]');await p.waitForTimeout(300);
@@ -18,7 +18,7 @@ ok(await p.locator('#nav .sub').count()==0&&/cl/.test((await M().catch(()=>({cv:
 await p.click('#nav .gh[data-g=cmd]');await p.waitForTimeout(300);
 ok(await p.locator('#nav .sub').count()==3,'expands again');
 // navigation still works
-await p.click('#nav button[data-v=fdk]');await p.waitForTimeout(300);ok(await p.evaluate(()=>view)=='fdk','Transactions navigates');
+await p.click('#nav button[data-v=dcw]');await p.waitForTimeout(300);ok(await p.evaluate(()=>view)=='dcw','Daily Closing navigates');
 await p.click('#nav button[data-v=set]');await p.waitForTimeout(300);ok(await p.evaluate(()=>view)=='set','Settings navigates');
 // no duplicated labels after re-renders
 ok(await p.locator('#nav .nvl').count()==2,'group labels not duplicated after re-render');
