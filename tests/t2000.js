@@ -1,0 +1,16 @@
+const {chromium}=require('playwright');let f=0;const ok=(n,c)=>{console.log(c?'ok':'FAIL',n);if(!c)f++};(async()=>{const b=await chromium.launch();const p=await b.newPage({viewport:{width:1500,height:1000}});const errs=[];p.on('pageerror',e=>errs.push(e.message));
+await p.goto('file:///home/claude/primebook/public/index.html');await p.waitForTimeout(600);
+await p.evaluate(()=>{document.getElementById('auth')?.remove();document.body.classList.remove('auon');SESS={id:'t',exp:Date.now()+1e6};S.users=[{name:'Zahid',role:'Owner',br:'All'}];S.me=0;S.base='CAD';S.j=[];S.closings=[];
+post({date:today(),br:S.br[0].id,acc:'cash|'+S.br[0].id,tt:'Receipt',memo:'a',lines:[['1000',2795,0],['3000',0,2795]]});view='dcl';go()});await p.waitForTimeout(600);
+const T=await p.textContent('.crc');
+ok('summary band',/Daily Financial Summary/.test(T)&&/Total cash in/.test(T)&&/Net cash position/.test(T)&&/Currency count/.test(T));
+ok('closing details',/Closing Details/.test(T));ok('transaction summary',/Transaction Summary/.test(T));ok('currency breakdown',/Currency Breakdown/.test(T)&&/Closing balance/.test(T));
+ok('status and alerts',/Status & Alerts/.test(T)&&/Cashier & Account Information/.test(T));
+ok('two-column layout',await p.evaluate(()=>{const l=document.querySelector('.crc-l').getBoundingClientRect(),r=document.querySelector('.crc-r').getBoundingClientRect();return r.left>l.right-2&&r.width>300}));
+ok('cashier input kept inside side panel',await p.evaluate(()=>!!document.querySelector('.crc-r .crc-ds input.rn')));
+ok('card headers readable (light bg)',await p.evaluate(()=>getComputedStyle(document.querySelector('.crc-card>h4')).backgroundColor=='rgb(255, 255, 255)'));
+await p.click('.crc-hd .crc-top');await p.waitForTimeout(500);
+ok('Close Day button starts counting',/Count|count/.test(await p.textContent('.crc'))&&await p.evaluate(()=>!document.querySelector('.crc-lay')));
+await p.evaluate(()=>{view='dcl';go()});await p.setViewportSize({width:390,height:900});await p.waitForTimeout(400);
+ok('no h-scroll on phone',await p.evaluate(()=>document.documentElement.scrollWidth<=392));
+ok('no errors',errs.length==0);if(errs.length)console.log(errs);await b.close();process.exit(f?1:0)})();

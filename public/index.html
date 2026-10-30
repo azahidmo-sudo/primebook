@@ -5838,7 +5838,7 @@ const oc=V.ctx;V.ctx=function(){let h=oc.apply(this,arguments);
  h=h.replace('<button class="plf" onclick="ctOpen()">+ New transaction</button>','<span style="display:flex;gap:8px;flex-wrap:wrap"><button class="plf" onclick="sdOpen()">+ Currency sale deal</button><button class="plo" onclick="ctOpen()">+ Multi-currency entry</button></span>');
  return h};
 /*UPDCHK*/
-(function(){const B='2026-10-31-ha';window.PB_BUILD=B;if(location.protocol=='file:')return;let nb=null,tm=0;
+(function(){const B='2026-10-31-hb';window.PB_BUILD=B;if(location.protocol=='file:')return;let nb=null,tm=0;
 const busy=()=>{const a=document.activeElement;return !!(document.querySelector('.ov')||(a&&/^(INPUT|TEXTAREA)$/.test(a.tagName)&&String(a.value||'').length>0))};
 function go2(){try{const k='pb_upd_'+nb,n=+(sessionStorage.getItem(k)||0);sessionStorage.setItem(k,n+1)}catch(e){}location.replace(location.pathname+'?v='+encodeURIComponent(nb))}
 function bar(){let d=document.getElementById('pbupd');if(!d){d=document.createElement('div');d.id='pbupd';d.setAttribute('role','button');d.style.cssText='position:fixed;left:50%;transform:translateX(-50%);top:10px;z-index:100000;background:#0b3d33;color:#fff;padding:11px 18px;border-radius:12px;font:700 13px Inter,system-ui,sans-serif;box-shadow:0 6px 20px rgba(0,0,0,.3);cursor:pointer;text-align:center;max-width:92vw';d.onclick=()=>{d.textContent='Updating…';go2()};document.body.appendChild(d)}d.textContent='A new version of PrimeBook is ready. Tap here to update.'}
@@ -16848,6 +16848,63 @@ try{const i=MENU.findIndex(m=>m[0]=='fdk');if(i>=0)MENU[i]=['dcw','DAILY CLOSING
 const dwi=V.dash;V.dash=function(){let h=dwi.apply(this,arguments);try{const[b,d]=sel(),s=status(b,d),t=tot(cmpl(b,d)),B=E(S.base),w=`<div data-dwid="dcwst" data-dwl="Daily Closing"><section class="dcw-p dcw-dash"><div class="dcw-dh"><div><h3>Daily Closing</h3><p class="dcw-mu">${E(bName(b))} · ${E(d)}</p></div>${chip(s)}<button type="button" class="dcw-b pri" onclick="view='dcw';ST_dcw()">Open Daily Closing</button></div><div class="dcw-ks dcw-mini6">${[['Opening',t.open],['Inflows',t.i],['Outflows',t.o],['Expected closing',t.exp]].map(([l,v])=>`<div class="dcw-k"><small>${l}</small><b>${B} ${M(v)}</b></div>`).join('')}</div></section></div>`;const t2=document.createElement('template');t2.innerHTML=h;const top=t2.content.querySelector('.top'),fr=document.createRange().createContextualFragment(w);if(top)top.after(fr);else t2.content.prepend(fr);return t2.innerHTML}catch(e){console.error('DCW dash',e);return h}};
 window.ST_dcw=()=>{ST.step=0;go()};
 const sty2=document.createElement('style');sty2.textContent='.dcw-dh{display:flex;gap:12px;align-items:center;flex-wrap:wrap;justify-content:space-between}.dcw-dh h3{margin:0}.dcw-dash .dcw-mini6{grid-template-columns:repeat(4,minmax(0,1fr));margin:12px 0 0}@media(max-width:640px){.dcw-dash .dcw-mini6{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}}';document.head.appendChild(sty2);
+})();
+/*CRX - Daily Cash Closing set-up screen laid out as summary band, details, transaction summary, currency breakdown and a status side panel (presentation only; counting, validation and closing logic unchanged)*/
+(()=>{const E=x=>aesc(String(x==null?'':x)),M=n=>fmt(n);
+const st=document.createElement('style');st.textContent=`
+html body .crc-lay{display:grid;grid-template-columns:minmax(0,1fr) 360px;gap:16px;align-items:start;margin:0 0 14px}
+html body .crc-l,html body .crc-r{display:flex;flex-direction:column;gap:14px;min-width:0}
+html body .crc-lay .crc-card{margin:0;border:1px solid #E2E8F0;border-radius:14px;box-shadow:0 1px 2px #0f172a08;background:#fff}
+html body .crc .crc-card>h4{background:#fff!important;color:#0F172A!important;border-bottom:1px solid #EEF2F7;font:700 15px Inter,system-ui,sans-serif!important;letter-spacing:0!important;text-transform:none!important;padding:14px 18px!important;display:flex;align-items:center;gap:10px}
+html body .crc .crc-card>h4::before{content:"";width:30px;height:30px;border-radius:8px;background:#EFF6FF url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%232563EB' stroke-width='1.9' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M7 3h8l4 4v14H7z'/%3E%3Cpath d='M15 3v4h4M10 12h6M10 16h6'/%3E%3C/svg%3E") center/18px no-repeat;flex:none}
+html body .crc-hd{background:#fff!important;color:#0F172A!important;border:1px solid #E2E8F0;box-shadow:0 1px 2px #0f172a08;border-radius:14px}
+html body .crc-hd h2{color:#0F172A!important}html body .crc-hd p{color:#64748B;opacity:1}
+html body .crc-hd .crc-pill{background:#ECFDF5!important;color:#15803D!important;border:1px solid #BBF7D0}
+html body .crc-hd .crc-top{height:42px;padding:0 20px;border-radius:10px;border:0;background:#1D4ED8;color:#fff;font:600 14px Inter,sans-serif;cursor:pointer}html body .crc-hd .crc-top:disabled{opacity:.5;cursor:not-allowed}
+html body .crc-bt,html body #crc_nx{background:#1D4ED8!important;color:#fff!important;border-radius:10px}
+html body .crc-sum{display:grid;grid-template-columns:minmax(200px,.8fr) minmax(0,3fr);border-radius:14px;overflow:hidden;background:#1D4ED8;box-shadow:0 1px 2px #0f172a10}
+html body .crc-sum-h{display:flex;align-items:center;gap:12px;padding:18px;color:#fff}html body .crc-sum-h i{width:42px;height:42px;border-radius:50%;background:#fff;color:#1D4ED8;display:grid;place-items:center;font:700 18px Inter;font-style:normal;flex:none}
+html body .crc-sum-h b{display:block;font:700 17px/1.25 Inter,sans-serif}html body .crc-sum-h small{display:block;color:#DBEAFE;font:500 12.5px Inter;margin-top:3px}
+html body .crc-sum-g{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:0;background:#fff;margin:10px 10px 10px 0;border-radius:10px}
+html body .crc-sum-g>div{padding:14px 14px;border-left:1px solid #EEF2F7;display:flex;flex-direction:column;gap:4px;min-width:0}html body .crc-sum-g>div:first-child{border-left:0}
+html body .crc-sum-g small{font:600 12px Inter;color:#475569}html body .crc-sum-g b{font:700 17px Inter;color:#0F172A;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}html body .crc-sum-g b.in{color:#15803D}html body .crc-sum-g b.out{color:#B91C1C}html body .crc-sum-g em{font:500 11.5px Inter;color:#64748B;font-style:normal}
+html body .crc-det{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:0}html body .crc-det>div{padding:14px 18px;border-left:1px solid #EEF2F7;min-width:0}html body .crc-det>div:first-child{border-left:0}html body .crc-det small{display:block;font:500 12px Inter;color:#64748B;margin:0 0 4px}html body .crc-det b{font:600 14px Inter;color:#0F172A;overflow-wrap:anywhere}html body .crc-det span{display:block;color:#64748B;font:400 11.5px Inter}
+html body .crc-bd{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,340px));gap:12px;padding:14px 18px 4px}
+html body .crc-bd>div{border:1px solid #E2E8F0;border-radius:12px;padding:12px 14px}html body .crc-bd h5{display:flex;align-items:center;justify-content:space-between;margin:0 0 8px;font:700 14px Inter;color:#0F172A}html body .crc-bd h5 span{background:#ECFDF5;color:#15803D;border-radius:999px;padding:2px 10px;font:600 11.5px Inter}
+html body .crc-bd p{display:flex;justify-content:space-between;margin:0;padding:3px 0;font:400 12.5px Inter;color:#475569;font-variant-numeric:tabular-nums}html body .crc-bd p.t{border-top:1px solid #EEF2F7;margin-top:4px;padding-top:7px;font-weight:700;color:#0F172A}
+html body .crc-sel-l{padding:6px 18px 0;font:600 12px Inter;color:#64748B}
+html body .crc-r .crc-card .crc-pf{padding:6px 18px}html body .crc-r .crc-emp{margin:4px 18px 16px;padding:12px 14px;border-radius:10px;background:#EFF6FF;color:#1E40AF;border:1px solid #DBEAFE;font:400 12.5px/1.5 Inter}
+html body .crc-r .crc-ds{display:flex;flex-direction:column;gap:12px;padding:14px 18px;border:0;background:transparent;margin:0}html body .crc-r .crc-ds>div{border:0;padding:0;background:transparent;display:flex;flex-direction:column;gap:5px}html body .crc-r .crc-ds>div:first-child{display:none}html body .crc-r .crc-ds small{font:600 12px Inter;color:#475569;letter-spacing:0;text-transform:none}html body .crc-r .crc-ds b,html body .crc-r .crc-ds input{min-height:40px;border:1px solid #CBD5E1;border-radius:8px;padding:9px 12px;font:500 13.5px Inter;background:#fff;color:#0F172A;width:100%;display:flex;align-items:center;gap:6px}
+html body .crc-r .crc-card.warn{background:#FFFBEB;border-color:#FDE68A}html body .crc-r .crc-card.warn>h4{background:#FFFBEB!important;color:#92400E!important}html body .crc-r .crc-card.warn .crc-pv{padding:4px 18px 16px;color:#92400E}
+html body .crc-foot{display:flex;align-items:center;gap:12px;justify-content:flex-end}html body .crc-foot .hint{color:#64748B;font:400 12.5px Inter;margin-left:auto}
+html body .fi-qa>button.on,html body .fi-qa>button.on:hover{background:#1D4ED8!important;color:#fff!important;box-shadow:0 8px 18px -10px #1D4ED8!important}html body .fi-qa>button.on span,html body .fi-qa>button.on .fiic{color:#fff!important}html body .crc-s.on{background:#EFF6FF!important;color:#1D4ED8!important;border-color:#BFDBFE!important}
+@media(max-width:1100px){html body .crc-lay{grid-template-columns:minmax(0,1fr)}html body .crc-sum{grid-template-columns:minmax(0,1fr)}html body .crc-sum-g{margin:0 10px 10px;grid-template-columns:repeat(2,minmax(0,1fr))}html body .crc-det{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:560px){html body .crc-sum-g,html body .crc-det{grid-template-columns:minmax(0,1fr)}}
+@media print{html body .crc-top,html body .crc-foot .hint{display:none!important}}
+`;document.head.appendChild(st);
+const flag=c=>({CAD:'🇨🇦',USD:'🇺🇸',EUR:'🇪🇺',GBP:'🇬🇧',KES:'🇰🇪',ETB:'🇪🇹',AED:'🇦🇪'})[c]||'';
+function run(){try{if(view!='dcl')return;const c=document.querySelector('.crc');if(!c||c.dataset.crx)return;const cards=[...c.querySelectorAll(':scope>.crc-card')],T=x=>(x.querySelector('h4')||{}).textContent||'';
+ const pf=cards.find(x=>/Preflight/.test(T(x))),bk=cards.find(x=>/Books position/.test(T(x))),cu=cards.find(x=>/Currencies in this closing/.test(T(x))),pv=cards.find(x=>/Previous closing/.test(T(x))),ds=c.querySelector(':scope>.crc-ds'),nv=c.querySelector(':scope>.crc-nv'),hd=c.querySelector(':scope>.crc-hd'),sp=c.querySelector(':scope>.crc-sp');
+ if(!pf||!bk||!cu||!ds||!nv)return;c.dataset.crx=1;
+ const x=dcx(),rows=dayRows(x.a.id,x.d),B=E(S.base),bn=(S.br.find(q=>q.id==x.a.br)||{}).name||'';
+ const sum=rows.reduce((t,r)=>{const m=mid(r.ccy)||1;t.i+=r.i*m;t.o+=r.o*m;t.e+=r.exp*m;t.op+=r.open*m;return t},{i:0,o:0,e:0,op:0});
+ const cashier=(ds.querySelector('input')||{}).value||(typeof me=='function'?me().name:'');
+ const band=document.createElement('div');band.className='crc-sum';band.innerHTML=`<div class="crc-sum-h"><i>$</i><div><b>Daily Financial Summary</b><small>${E(x.d)} · ${E(bn)}</small></div></div><div class="crc-sum-g"><div><small>Total cash in</small><b class="in">${B} ${M(sum.i)}</b></div><div><small>Total cash out</small><b class="out">${B} ${M(sum.o)}</b></div><div><small>Net cash position</small><b>${B} ${M(sum.i-sum.o)}</b></div><div><small>Expected in books</small><b>${B} ${M(sum.e)}</b></div><div><small>Currency count</small><b>${rows.length}</b><em>${E(rows.map(r=>r.ccy).join(', '))}</em></div></div>`;
+ const det=document.createElement('section');det.className='crc-card';det.innerHTML=`<h4>Closing Details</h4><div class="crc-det"><div><small>Closing date</small><b>${E(x.d)}</b></div><div><small>Cash on hand (start)</small><b>${B} ${M(sum.op)}</b></div><div><small>Cashier</small><b>${E(cashier)}</b></div><div><small>Account</small><b>${E(x.a.label)}</b><span>GL ${E(x.a.gl||'')}</span></div><div><small>Branch</small><b>${E(bn)}</b></div></div>`;
+ const h=bk.querySelector('h4');if(h)h.textContent='Transaction Summary';
+ const ch=cu.querySelector('h4');if(ch)ch.textContent='Currency Breakdown';
+ const bd=document.createElement('div');bd.className='crc-bd';bd.innerHTML=rows.map(r=>`<div><h5><span style="background:none;color:#0F172A;padding:0;font:700 14px Inter">${flag(r.ccy)} ${E(r.ccy)}</span><span>Expected</span></h5><p><span>Opening balance</span><span>${M(r.open)}</span></p><p><span>Receipts</span><span>${M(r.i)}</span></p><p><span>Payments</span><span>${M(r.o)}</span></p><p class="t"><span>Closing balance</span><span>${M(r.exp)}</span></p></div>`).join('');
+ const lab=document.createElement('div');lab.className='crc-sel-l';lab.textContent='Choose a currency to count, or add another currency';
+ if(ch)ch.after(bd);bd.after(lab);
+ const pfh=pf.querySelector('h4');if(pfh)pfh.textContent='Status & Alerts';
+ const side=document.createElement('section');side.className='crc-card';side.innerHTML='<h4>Cashier &amp; Account Information</h4>';side.appendChild(ds);
+ if(pv){pv.classList.toggle('warn',/No earlier/i.test(pv.textContent))}
+ const lay=document.createElement('div');lay.className='crc-lay';const L=document.createElement('div');L.className='crc-l';const R=document.createElement('div');R.className='crc-r';
+ L.append(band,det,bk,cu);R.append(pf,side);if(pv)R.append(pv);lay.append(L,R);(sp||hd).after(lay);
+ if(hd&&!hd.querySelector('.crc-top')){const nx=document.getElementById('crc_nx'),b=document.createElement('button');b.type='button';b.className='crc-top noprint';b.textContent='Close Day →';b.disabled=!nx||nx.disabled;b.onclick=()=>{const n=document.getElementById('crc_nx');if(n&&!n.disabled)n.click()};hd.appendChild(b)}
+ const hint=document.createElement('span');hint.className='hint';hint.textContent='Review the preflight checks above to continue.';nv.classList.add('crc-foot');const sps=nv.querySelector('.sp');if(sps)sps.after(hint);else nv.prepend(hint)
+}catch(e){console.error('CRX',e)}}
+const _g=go;go=function(){const r=_g.apply(this,arguments);run();return r};
 })();
 </script>
 </body></html>
