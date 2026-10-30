@@ -5838,7 +5838,7 @@ const oc=V.ctx;V.ctx=function(){let h=oc.apply(this,arguments);
  h=h.replace('<button class="plf" onclick="ctOpen()">+ New transaction</button>','<span style="display:flex;gap:8px;flex-wrap:wrap"><button class="plf" onclick="sdOpen()">+ Currency sale deal</button><button class="plo" onclick="ctOpen()">+ Multi-currency entry</button></span>');
  return h};
 /*UPDCHK*/
-(function(){const B='2026-10-31-ia';window.PB_BUILD=B;if(location.protocol=='file:')return;let nb=null,tm=0;
+(function(){const B='2026-10-31-ib';window.PB_BUILD=B;if(location.protocol=='file:')return;let nb=null,tm=0;
 const busy=()=>{const a=document.activeElement;return !!(document.querySelector('.ov')||(a&&/^(INPUT|TEXTAREA)$/.test(a.tagName)&&String(a.value||'').length>0))};
 function go2(){try{const k='pb_upd_'+nb,n=+(sessionStorage.getItem(k)||0);sessionStorage.setItem(k,n+1)}catch(e){}location.replace(location.pathname+'?v='+encodeURIComponent(nb))}
 function bar(){let d=document.getElementById('pbupd');if(!d){d=document.createElement('div');d.id='pbupd';d.setAttribute('role','button');d.style.cssText='position:fixed;left:50%;transform:translateX(-50%);top:10px;z-index:100000;background:#0b3d33;color:#fff;padding:11px 18px;border-radius:12px;font:700 13px Inter,system-ui,sans-serif;box-shadow:0 6px 20px rgba(0,0,0,.3);cursor:pointer;text-align:center;max-width:92vw';d.onclick=()=>{d.textContent='Updating…';go2()};document.body.appendChild(d)}d.textContent='A new version of PrimeBook is ready. Tap here to update.'}
@@ -16987,7 +16987,7 @@ const taxL=()=>S.tax||[];
 const rate=c=>c==S.base?1:(+ratex(c,'')||1);
 function calc(){const s=ST.inv,tx={};let sub=0;const L=s.lines.map(l=>{const n=R2((+l.q||0)*(+l.p||0)),t=l.t&&taxL().find(x=>x.id==l.t),tt=t?R2(n*t.r/100):0;sub+=n;if(t){const k=t.n+' ('+t.r+'%)';tx[k]=(tx[k]||0)+tt}return{n,tt,t}});const tax=Object.values(tx).reduce((a,b)=>a+b,0);return{L,sub:R2(sub),tx,tax:R2(tax),tot:R2(sub+tax)}}
 function sumry(){const al=S.j.filter(x=>br=='all'||x.br==br),code=c=>al.reduce((s,x)=>s+x.lines.filter(y=>String(y[0])==String(c)).reduce((a,y)=>a+(+y[1]||0)-(+y[2]||0),0),0),ap=-code(2000),m0=today().slice(0,8)+'01',pm=(S.docs||[]).filter(d=>d.k=='bill'&&d.date>=m0&&(br=='all'||d.br==br)).reduce((a,d)=>a+(+d.amt||0),0);
- let dep=0;custs().forEach(c=>{const b=cbalance(c.id,al);if(b<-.004)dep+=-b});return{ap:R2(ap),pm:R2(pm),dep:R2(dep),cash:R2(code(1000)+code(1010))}}
+ const dep=-code(2400);return{ap:R2(ap),pm:R2(pm),dep:R2(dep),cash:R2(code(1000)+code(1010))}}
 const flash=(t,b)=>{ST.msg=t;ST.bad=b?1:0;go()};
 const sel=(id,opts,val,on,extra)=>`<select id="${id}" ${extra||''} onchange="${on}">${opts.map(o=>`<option value="${E(o[0])}" ${String(o[0])==String(val)?'selected':''}>${E(o[1])}</option>`).join('')}</select>`;
 function invForm(){const s=ST.inv,c=calc(),B=E(S.base),cc=ccO(),multi=S.br.length>1;
@@ -17015,7 +17015,7 @@ function invForm(){const s=ST.inv,c=calc(),B=E(S.base),cc=ccO(),multi=S.br.lengt
  <div class="pcd-ac"><button type="button" class="pcd-b pri" onclick="pcd.saveInv()">Save invoice</button><button type="button" class="pcd-b" onclick="pcd.cancel('inv')">Cancel</button></div></div>`}
 function depForm(){const s=ST.dep,cu=custs(),B=E(S.base);const cO=[['','Select customer'],...cu.map(c=>[c.id,c.name])],aO=[['','Select account'],...payAc().map(a=>[a.id,a.label])];
  const ref=s.ref||('DEP-'+String(S.j.filter(x=>String(x.ref||'').startsWith('DEP-')).length+1).padStart(4,'0'));
- return`<div class="pcd-card"><h3>Customer Deposit</h3><p class="pcd-mu">Record money a customer pays in advance. It stays on their account as a credit and is applied to future invoices.</p>
+ return`<div class="pcd-card"><h3>Customer Deposit</h3><p class="pcd-mu">Record money a customer pays in advance. It is held as a liability (Customer Deposits) until the service is provided or the sale is completed.</p>
  <div class="pcd-g">
   <label>Customer${sel('pcd_cust',cO,s.cust,"pcd.set('dep','cust',this.value)")}</label>
   <label>Deposit reference<input value="${E(s.ref)}" placeholder="${E(ref)}" oninput="pcd.set('dep','ref',this.value)"></label>
@@ -17028,7 +17028,7 @@ function depForm(){const s=ST.dep,cu=custs(),B=E(S.base);const cO=[['','Select c
  </div>
  ${s.ccy!=S.base?`<p class="pcd-mu">${E(s.ccy)} at board rate ${rate(s.ccy)}.</p>`:''}
  ${cu.length?'':'<p class="pcd-mu">No customers yet. <button type="button" class="pcd-lk" onclick="view=\'cadd\';go()">Add a customer</button> first.</p>'}
- <div class="pcd-info">ⓘ Applied to future invoices. It shows as a credit on the customer's statement.</div>
+ <div class="pcd-info">ⓘ Not income yet. Booked as a liability and applied to the customer's future invoice.</div>
  <div class="pcd-ac"><button type="button" class="pcd-b pri" onclick="pcd.saveDep()">Save deposit</button><button type="button" class="pcd-b" onclick="pcd.cancel('dep')">Cancel</button></div></div>`}
 function recent(){if(ST.tab=='inv'){const L=(S.docs||[]).filter(d=>d.k=='bill'&&(br=='all'||d.br==br)).slice(-5).reverse();return`<div class="pcd-card pcd-side"><h4>Recent purchase invoices</h4>${L.length?'<ul class="pcd-rl">'+L.map(d=>{const p=S.cust.find(c=>c.id==d.party)||{};return`<li><span><b>${E(d.no)}</b> ${E(p.name||'')}<small>${E(d.date)}${d.ref?' · '+E(d.ref):''}</small></span><em>${E(S.base)} ${M(d.amt)}<small>${E(d.status||'')}</small></em></li>`}).join('')+'</ul>':'<p class="pcd-mu">No invoices yet.</p>'}</div>`}
  const L=S.j.filter(x=>x.tt=='Deposit'&&x.cust&&(br=='all'||x.br==br)).slice(-5).reverse();return`<div class="pcd-card pcd-side"><h4>Recent customer receipts</h4>${L.length?'<ul class="pcd-rl">'+L.map(x=>{const c=S.cust.find(q=>q.id==x.cust)||{},a=x.lines.reduce((s,y)=>s+(+y[2]||0),0);return`<li><span><b>${E(x.ref||x.vno||'#'+x.id)}</b> ${E(c.name||'')}<small>${E(x.date)}</small></span><em>${E(S.base)} ${M(a)}</em></li>`}).join('')+'</ul>':'<p class="pcd-mu">No receipts yet.</p>'}</div>`}
@@ -17063,10 +17063,10 @@ window.pcd={
  saveDep(){if(!canW('cash'))return deny('cash');const s=ST.dep,cu=S.cust.find(x=>x.id==s.cust),F=accts().find(a=>a.id==s.acct),a=+s.amt;
   if(!cu)return flash('Choose the customer.',1);if(!F)return flash('Choose the account that receives the deposit.',1);if(!(a>0))return flash('Enter a deposit amount greater than zero.',1);if(!/^\d{4}-\d{2}-\d{2}$/.test(s.date)||s.date>today())return flash('Choose a valid deposit date that is not in the future.',1);
   if(blockedDay(F.br,s.date))return flash('The cash day '+s.date+' is closed or not open for entries at '+bn(F.br)+'. Open or reopen it in Daily Closing first.',1);
-  const rt=rate(s.ccy),v=R2(a*rt),n=S.j.filter(x=>x.vno&&String(x.vno).startsWith('RV-')).length+1,VN='RV-'+String(n).padStart(4,'0'),ref=s.ref.trim()||('DEP-'+String(S.j.filter(x=>String(x.ref||'').startsWith('DEP-')).length+1).padStart(4,'0'));
+  addAcct('2400','Customer Deposits (Unearned Revenue)');const rt=rate(s.ccy),v=R2(a*rt),n=S.j.filter(x=>x.vno&&String(x.vno).startsWith('RV-')).length+1,VN='RV-'+String(n).padStart(4,'0'),ref=s.ref.trim()||('DEP-'+String(S.j.filter(x=>String(x.ref||'').startsWith('DEP-')).length+1).padStart(4,'0'));
   if(s.ref.trim()&&S.j.some(x=>x.cust==cu.id&&String(x.ref||'').toLowerCase()==ref.toLowerCase()))return flash('Deposit reference '+ref+' is already used for this customer.',1);
-  try{post({date:s.date,br:F.br,acc:F.id,vno:VN,...(F.bank?{bank:F.bank}:{}),...fxm(s.ccy,rt,a),ref,note:s.note,cust:cu.id,tt:'Deposit',pm:F.kind=='Bank'?'Bank Transfer':'Cash',alloc:[],memo:'Customer deposit from '+cu.name+' ('+ref+')'+(s.note?' · '+s.note:''),lines:[[F.gl,v,0],['1200',0,v]]})}catch(e){return flash(e&&e.message?e.message:'The deposit could not be saved.',1)}
-  save();try{alog('Customer deposit',cu.name+' '+a+' '+s.ccy+' '+VN)}catch(e){}ST.dep=depNew();flash('Deposit '+ref+' of '+s.ccy+' '+M(a)+' received from '+cu.name+'. It is held as a credit for future invoices.',0)}
+  try{post({date:s.date,br:F.br,acc:F.id,vno:VN,...(F.bank?{bank:F.bank}:{}),...fxm(s.ccy,rt,a),ref,note:s.note,cust:cu.id,tt:'Deposit',pm:F.kind=='Bank'?'Bank Transfer':'Cash',alloc:[],memo:'Customer deposit from '+cu.name+' ('+ref+')'+(s.note?' · '+s.note:''),lines:[[F.gl,v,0],['2400',0,v]]})}catch(e){return flash(e&&e.message?e.message:'The deposit could not be saved.',1)}
+  save();try{alog('Customer deposit',cu.name+' '+a+' '+s.ccy+' '+VN)}catch(e){}ST.dep=depNew();flash('Deposit '+ref+' of '+s.ccy+' '+M(a)+' received from '+cu.name+'. It is held as a liability until the sale is completed.',0)}
 };
 const st=document.createElement('style');st.textContent=`
 html body .pcd{font-family:Inter,system-ui,sans-serif;color:#0F172A;max-width:1280px}html body .pcd *{box-sizing:border-box}

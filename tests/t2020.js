@@ -24,8 +24,8 @@ ok('paid invoice credits cash',await p.evaluate(()=>{const e=S.j[S.j.length-1];r
 // deposit
 await p.evaluate(()=>{pcd.tab('dep')});await p.waitForTimeout(200);
 await p.evaluate(()=>{const a=accts().find(x=>x.kind=='Cash');const d=window.__pcd.dep;d.cust='cu1';d.acct=a.id;d.amt='250';pcd.saveDep()});await p.waitForTimeout(300);
-ok('deposit posted',await p.evaluate(()=>{const e=S.j[S.j.length-1];return e.tt=='Deposit'&&e.cust=='cu1'&&e.lines.some(l=>l[0]=='1200'&&l[2]==250)}));
-ok('customer holds credit',await p.evaluate(()=>cbalance('cu1',S.j)<-249));
+ok('deposit posted',await p.evaluate(()=>{const e=S.j[S.j.length-1];return e.tt=='Deposit'&&e.cust=='cu1'&&e.lines.some(l=>l[0]=='2400'&&l[2]==250)}));
+ok('deposit held as liability',await p.evaluate(()=>-S.j.reduce((a,e)=>a+e.lines.filter(l=>l[0]=='2400').reduce((s,l)=>s+l[1]-l[2],0),0)==250));
 ok('summary shows deposit',/250\.00/.test(await p.textContent('.pcd-sum')));
 await p.setViewportSize({width:390,height:800});await p.evaluate(()=>{pcd.tab('inv')});await p.waitForTimeout(300);
 ok('mobile no horizontal scroll',await p.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth+1));
