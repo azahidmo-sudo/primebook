@@ -5838,7 +5838,7 @@ const oc=V.ctx;V.ctx=function(){let h=oc.apply(this,arguments);
  h=h.replace('<button class="plf" onclick="ctOpen()">+ New transaction</button>','<span style="display:flex;gap:8px;flex-wrap:wrap"><button class="plf" onclick="sdOpen()">+ Currency sale deal</button><button class="plo" onclick="ctOpen()">+ Multi-currency entry</button></span>');
  return h};
 /*UPDCHK*/
-(function(){const B='2026-10-31-hc';window.PB_BUILD=B;if(location.protocol=='file:')return;let nb=null,tm=0;
+(function(){const B='2026-10-31-hd';window.PB_BUILD=B;if(location.protocol=='file:')return;let nb=null,tm=0;
 const busy=()=>{const a=document.activeElement;return !!(document.querySelector('.ov')||(a&&/^(INPUT|TEXTAREA)$/.test(a.tagName)&&String(a.value||'').length>0))};
 function go2(){try{const k='pb_upd_'+nb,n=+(sessionStorage.getItem(k)||0);sessionStorage.setItem(k,n+1)}catch(e){}location.replace(location.pathname+'?v='+encodeURIComponent(nb))}
 function bar(){let d=document.getElementById('pbupd');if(!d){d=document.createElement('div');d.id='pbupd';d.setAttribute('role','button');d.style.cssText='position:fixed;left:50%;transform:translateX(-50%);top:10px;z-index:100000;background:#0b3d33;color:#fff;padding:11px 18px;border-radius:12px;font:700 13px Inter,system-ui,sans-serif;box-shadow:0 6px 20px rgba(0,0,0,.3);cursor:pointer;text-align:center;max-width:92vw';d.onclick=()=>{d.textContent='Updating…';go2()};document.body.appendChild(d)}d.textContent='A new version of PrimeBook is ready. Tap here to update.'}
@@ -16889,10 +16889,11 @@ html body .crc-hd.crc-keep{display:flex!important}
 html body .crc-bar .crc-top{height:42px;padding:0 20px;border-radius:10px;border:0;background:#1D4ED8;color:#fff;font:600 14px Inter,sans-serif;cursor:pointer}html body .crc-bar .crc-top:disabled{opacity:.5;cursor:not-allowed}
 html body #m .fi-qa:not(.qg):not(.qw)>button.on:not(.add):not(.bk){background:#1D4ED8!important;box-shadow:0 8px 18px -10px #1D4ED8!important;color:#fff!important}html body #m .fi-qa:not(.qg):not(.qw)>button.on .crc-ts{color:#DBEAFE!important}html body .crc-stw .crc-pill{display:inline-flex;align-items:center;background:#ECFDF5!important;color:#15803D!important;border:1px solid #BBF7D0;border-radius:999px;padding:5px 14px;font:600 13px Inter}
 html body .fi-qa>button .crc-ts{display:block;font:400 11px Inter;color:#64748B;margin-top:1px}html body .fi-qa>button.on .crc-ts{color:#DBEAFE}
+html body.crx-on .top>h2{display:none}html body .crc-bar .crc-tools select{min-width:210px}html body .crc-bar .crc-stw{margin-left:8px}
 @media print{html body .crc-top,html body .crc-foot .hint,html body .crc-bar{display:none!important}}
 `;document.head.appendChild(st);
 const flag=c=>({CAD:'🇨🇦',USD:'🇺🇸',EUR:'🇪🇺',GBP:'🇬🇧',KES:'🇰🇪',ETB:'🇪🇹',AED:'🇦🇪'})[c]||'';
-function run(){try{if(view!='dcl')return;const c=document.querySelector('.crc');if(!c||c.dataset.crx)return;const cards=[...c.querySelectorAll(':scope>.crc-card')],T=x=>(x.querySelector('h4')||{}).textContent||'';
+function run(){try{document.body.classList.toggle('crx-on',view=='dcl');if(view!='dcl')return;const c=document.querySelector('.crc');if(!c||c.dataset.crx)return;const cards=[...c.querySelectorAll(':scope>.crc-card')],T=x=>(x.querySelector('h4')||{}).textContent||'';
  const pf=cards.find(x=>/Preflight/.test(T(x))),bk=cards.find(x=>/Books position/.test(T(x))),cu=cards.find(x=>/Currencies in this closing/.test(T(x))),pv=cards.find(x=>/Previous closing/.test(T(x))),ds=c.querySelector(':scope>.crc-ds'),nv=c.querySelector(':scope>.crc-nv'),hd=c.querySelector(':scope>.crc-hd'),sp=c.querySelector(':scope>.crc-sp');
  if(!pf||!bk||!cu||!ds||!nv)return;c.dataset.crx=1;
  const x=dcx(),rows=dayRows(x.a.id,x.d),B=E(S.base),bn=(S.br.find(q=>q.id==x.a.br)||{}).name||'';
