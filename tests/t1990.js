@@ -30,7 +30,7 @@ ok('step3 lists transactions',/RV-2/.test(await T())&&/PV-1/.test(await T()));
 ok('8 categories',(await p.$$('.dcw-cat')).length==8);
 // reconcile
 await p.evaluate(()=>dcw.step(4));await p.waitForTimeout(300);
-let rows=await p.$$('#m .dcw-t tbody tr');ok('rows per account/currency (CAD+USD)',rows.length==2);
+let rows=await p.$$('#m .dcw-t:not(.dcw-t2) tbody tr');ok('rows per account/currency (CAD+USD)',rows.length==2);
 // expected CAD 1000-200=800 ; USD 100
 ok('expected shows 800.00',/800\.00/.test(await T()));
 // try submitting early
