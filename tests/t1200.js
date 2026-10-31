@@ -14,7 +14,7 @@ S.rates.EUR={b:1.07,s:1.1};S.pos['b1|EUR']={q:5000,c:1.05};S.pos['b2|EUR']={q:10
 view='dash';go()});await p.waitForTimeout(700);
 const ev=(f,a)=>p.evaluate(f,a);
 ok(await p.locator('.dbx-kg .dbx-k').count()==6,'six KPI cards');
-const labels=await p.locator('.dbx-kh>span:nth-child(2)').allTextContents();console.log(labels);
+const labels=await p.locator('.dbx-kt').allTextContents();console.log(labels);
 ok(['Total Cash Balance','Total Bank Balance',"Today's Receipts","Today's Payments",'Net Cash Movement','Pending Transactions'].every((l,i)=>labels[i]==l),'KPI labels in spec order');
 const k0=await p.locator('.dbx-k').nth(0).innerText();console.log(k0.replace(/\n/g,' | '));
 ok(/USD/.test(k0)&&/EUR/.test(k0),'cash KPI lists USD and EUR separately');
