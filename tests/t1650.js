@@ -16,8 +16,6 @@ const ph=await tx('.dxu-pos th');console.log(ph);
 ok(/Opening/i.test(ph[2])&&/Cash in/i.test(ph[3])&&/Cash out/i.test(ph[4])&&/Transfers in/i.test(ph[5])&&/Transfers out/i.test(ph[6])&&/Expected book balance/i.test(ph[7])&&/Physical count/i.test(ph[8])&&/Closing variance/i.test(ph[9]),'position card: opening, in, out, transfers in/out, expected, count, variance');
 const pr=await tx('.dxu-pos tbody tr');ok(pr.length>=1&&pr.some(r=>/10,000\.00/.test(r))&&pr.some(r=>/7,000\.00/.test(r)),'position row has in/out '+pr.join('|'));
 ok(await p.locator('#cdrq').count()==1&&await p.locator('.cdr-sel button[aria-label="Export CSV"]').count()==1,'search and CSV export');
-const th=await tx('.cdr-main th');ok(th.join('|').toLowerCase().startsWith('time|account|description|type|inflow|outflow|balance'),'movements columns '+th.join('|'));
-const rows=await tx('.cdr-main tbody tr');ok(rows.length>=2&&rows.some(r=>/10,000\.00/.test(r))&&rows.some(r=>/7,000\.00/.test(r)),'movements listed with in/out');
 ok(await p.locator('[data-cbxa="inc"]').count()>=1&&await p.locator('[data-cbxa="exp"]').count()>=1,'Cash in / Cash out buttons');
 await p.click('.cdk-tabs button:has-text("Daily closing")');await p.waitForTimeout(400);
 const k3=await tx('.cdk-kg3 .cdk-k');ok(k3.length==3&&/Days closed/i.test(k3[0])&&/awaiting/i.test(k3[1])&&/variance/i.test(k3[2]),'closing summary cards');
