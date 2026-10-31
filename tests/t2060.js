@@ -1,0 +1,25 @@
+const {chromium}=require('playwright');let f=0;const ok=(n,c)=>{console.log(c?'ok':'FAIL',n);if(!c)f++};(async()=>{const b=await chromium.launch();const p=await b.newPage({viewport:{width:1400,height:1000}});const errs=[];p.on('pageerror',e=>errs.push(e.message));p.on('dialog',d=>d.accept());
+await p.goto('file:///home/claude/primebook/public/index.html');await p.waitForTimeout(600);
+await p.evaluate(()=>{document.getElementById('auth')?.remove();document.body.classList.remove('auon');SESS={id:'t',exp:Date.now()+1e6};S.users=[{name:'Zahid',role:'Owner',br:'All'}];S.me=0;S.base='CAD';S.j=[];S.apr=[];const B=S.br[0].id;
+post({date:today(),br:B,acc:'cash|'+B,tt:'Receipt',memo:'open',vno:'RV-0',by:'Z',lines:[['1000',5000,0],['3000',0,5000]]});view='cbd';go()});await p.waitForTimeout(300);
+await p.evaluate(()=>cbxAct('inc'));await p.waitForTimeout(300);
+ok('title New Transaction',/New Transaction/.test(await p.innerText('#cbxov')));
+ok('six method chips',(await p.$$('.cbx2-pm')).length==6);
+ok('Money In active',await p.evaluate(()=>document.querySelector('.cbx2-tg .in').classList.contains('on')));
+await p.click('.cbx2-tg .out');await p.waitForTimeout(200);ok('toggle to Money Out',/Expense category/.test(await p.innerText('#cbxov')));
+await p.click('.cbx2-pm[data-cbxpm=Cash]');await p.waitForTimeout(200);
+ok('Cash method lists only cash accounts',await p.evaluate(()=>![...document.querySelectorAll('#cbxf_acct option')].some(o=>/bank/i.test(o.parentElement.label||''))));
+await p.fill('#cbxf_amt','100');await p.fill('#cbxf_fee','2.5');await p.waitForTimeout(200);
+ok('total consideration 102.50',/102\.50/.test(await p.textContent('#cbx2tot')));
+ok('journal preview shows fee line',/6700/.test(await p.textContent('#cbxpv')));
+await p.click('[data-cbxs=post]');await p.waitForTimeout(500);
+const r=await p.evaluate(()=>{const e=S.j.find(x=>x.tt=='Expense');return{tt:e.tt,pm:e.pm,fee:e.fee,dr:e.lines.reduce((a,l)=>a+l[1],0),cr:e.lines.reduce((a,l)=>a+l[2],0),fl:e.lines.some(l=>l[0]=='6700'&&l[1]==2.5),cash:e.lines.some(l=>l[0]=='1000'&&l[2]==102.5)}});
+ok('posted balanced with separate fee line',Math.abs(r.dr-r.cr)<.005&&r.fl&&r.cash&&r.pm=='Cash'&&r.fee==2.5);console.log(r);
+// foreign: rate calc + submit as cashier locks rate
+await p.evaluate(()=>{S.users=[{name:'Cara',role:'Cashier',br:'All'}];S.me=0;S.rates=S.rates||{};S.rates.USD=S.rates.USD||{mid:1.37,name:'US Dollar'};cbxAct('inc')});await p.waitForTimeout(300);
+await p.selectOption('#cbxf_ccy','USD');await p.waitForTimeout(200);await p.fill('#cbxf_amt','1000');await p.fill('#cbxf_rate','1.37');await p.waitForTimeout(200);
+ok('calculated CAD amount 1,370.00',(await p.inputValue('#cbxf_base')).includes('1,370.00'));
+ok('cashier sees Submit for manager approval',/Submit for manager approval/.test(await p.innerText('#cbxov')));
+await p.click('[data-cbxd]');await p.waitForTimeout(400);
+ok('draft saved, nothing posted',await p.evaluate(()=>S.apr.some(r=>r.st=='Draft')&&!S.j.some(j=>j.apw)));
+ok('no errors',errs.length==0);if(errs.length)console.log(errs);await b.close();process.exit(f?1:0)})();
