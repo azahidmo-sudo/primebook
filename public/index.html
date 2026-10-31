@@ -2756,7 +2756,7 @@ document.addEventListener('click',e=>{const t=e.target.closest('[data-pyt]');if(
 
 /* ---------- Clear data (typed confirmation) ---------- */
 H.clr=function(o){if(!/^clear$/i.test((o.confirm||'').trim()))return alert('Type the word CLEAR to confirm. Nothing was deleted.'),false;
-const tx=()=>{S.j=[];S.fx=[];S.inv=[];S.docs=[];S.pos={};S.ist={};S.lots=[];S.imv=[];S.closings=[];S.bst=[];S.bclose={};S.pbq=[];S.tme=[];S.pay=[];S.leave=[];S.dord=[];S.mdeals=[]};
+const tx=()=>{S.j=[];S.fx=[];S.inv=[];S.docs=[];S.pos={};S.ist={};S.lots=[];S.imv=[];S.closings=[];S.bst=[];S.bclose={};S.pbq=[];S.tme=[];S.pay=[];S.leave=[];S.dord=[];S.mdeals=[];['bdays','apr','apl','cvr','fxap','fxdr','cxd','rdq'].forEach(k=>{if(Array.isArray(S[k]))S[k]=[]})};
 tx();if(o.what=='all'){S.cust=S.cust.filter(c=>c.id=='c1');S.items=[];S.banks=[];S.prj=[];S.ctr=[];S.emp=[];S.tax=[];S.br=[{id:'b1',name:S.br[0]?S.br[0].name:'Main Branch'}];S.users.forEach(u=>{u.br='All'});br='all'}
 view='clr';bmsg2=o.what=='all'?'All business data was cleared. Your company profile, branches, users and currencies were kept.':'All transactions were cleared. Customers, items, bank accounts and settings were kept.'};
 let bmsg2='';
@@ -4223,7 +4223,7 @@ function rstExec(o){const coa0=JSON.stringify([S.coa,S.par,S.acx]);const sel=RS.
 const dep=sel.filter(k=>k!='tx'&&k!='log').length;if(dep&&!sel.includes('tx'))sel.push('tx');
 if(!snap('Before data reset'))if(!confirm('A safety copy could not be saved (storage is full), so this cannot be undone. Continue?'))return false;
 const names=sel.map(k=>RS.find(r=>r[0]==k)[1]);
-if(sel.includes('tx')){S.j=[];S.fx=[];S.inv=[];S.docs=[];S.pos={};S.ist={};S.lots=[];S.imv=[];S.closings=[];S.bst=[];S.bclose={};S.pbq=[];S.tme=[];S.pay=[];S.leave=[]}
+if(sel.includes('tx')){S.j=[];S.fx=[];S.inv=[];S.docs=[];S.pos={};S.ist={};S.lots=[];S.imv=[];S.closings=[];S.bst=[];S.bclose={};S.pbq=[];S.tme=[];S.pay=[];S.leave=[];['bdays','apr','apl','cvr','fxap','fxdr','cxd','rdq'].forEach(k=>{if(Array.isArray(S[k]))S[k]=[]})}
 if(sel.includes('stock'))S.items=[];if(sel.includes('cust'))S.cust=S.cust.filter(c=>c.id=='c1');if(sel.includes('bank'))S.banks=[];if(sel.includes('hr'))S.emp=[];if(sel.includes('prj')){S.prj=[];S.ctr=[]}if(sel.includes('cfg')){S.tax=[]}
 if(sel.includes('br')){S.br=[{id:S.br[0].id,name:S.br[0].name}];S.users.forEach(u=>{u.br='All'});br='all'}
 if(sel.includes('log')){S.alog=[];S.bkl=[]}
@@ -5838,7 +5838,7 @@ const oc=V.ctx;V.ctx=function(){let h=oc.apply(this,arguments);
  h=h.replace('<button class="plf" onclick="ctOpen()">+ New transaction</button>','<span style="display:flex;gap:8px;flex-wrap:wrap"><button class="plf" onclick="sdOpen()">+ Currency sale deal</button><button class="plo" onclick="ctOpen()">+ Multi-currency entry</button></span>');
  return h};
 /*UPDCHK*/
-(function(){const B='2026-10-31-ig';window.PB_BUILD=B;if(location.protocol=='file:')return;let nb=null,tm=0;
+(function(){const B='2026-10-31-ih';window.PB_BUILD=B;if(location.protocol=='file:')return;let nb=null,tm=0;
 const busy=()=>{const a=document.activeElement;return !!(document.querySelector('.ov')||(a&&/^(INPUT|TEXTAREA)$/.test(a.tagName)&&String(a.value||'').length>0))};
 function go2(){try{const k='pb_upd_'+nb,n=+(sessionStorage.getItem(k)||0);sessionStorage.setItem(k,n+1)}catch(e){}location.replace(location.pathname+'?v='+encodeURIComponent(nb))}
 function bar(){let d=document.getElementById('pbupd');if(!d){d=document.createElement('div');d.id='pbupd';d.setAttribute('role','button');d.style.cssText='position:fixed;left:50%;transform:translateX(-50%);top:10px;z-index:100000;background:#0b3d33;color:#fff;padding:11px 18px;border-radius:12px;font:700 13px Inter,system-ui,sans-serif;box-shadow:0 6px 20px rgba(0,0,0,.3);cursor:pointer;text-align:center;max-width:92vw';d.onclick=()=>{d.textContent='Updating…';go2()};document.body.appendChild(d)}d.textContent='A new version of PrimeBook is ready. Tap here to update.'}
@@ -16696,7 +16696,7 @@ html body .cpc .cpc-card,html body .cpc .dcs-box{min-width:0;max-width:100%}html
 (()=>{
 const E=x=>aesc(String(x==null?'':x)),M=n=>fmt(n),R2=n=>Math.round((+n||0)*100)/100;
 const NOW=()=>{const d=new Date(),p=n=>String(n).padStart(2,'0');return d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate())+'T'+p(d.getHours())+':'+p(d.getMinutes())+':'+p(d.getSeconds())};
-const LIST=()=>{S.bdays=S.bdays||[];return S.bdays};
+const LIST=()=>{S.bdays=S.bdays||[];if(!S.j.length&&S.bdays.length){S.bdays=[];try{if(Array.isArray(S.apr))S.apr=[];if(Array.isArray(S.apl))S.apl=[];if(Array.isArray(S.cvr))S.cvr=[]}catch(e){}try{save()}catch(e){}}return S.bdays};
 const get=(b,d)=>LIST().find(r=>r.br==b&&r.date==d);
 const isMgr=()=>{try{return['Owner','Manager'].includes(me().role)}catch(e){return false}};
 const isOwn=()=>{try{return me().role=='Owner'}catch(e){return false}};
@@ -16744,6 +16744,8 @@ const reach=(b,d)=>{const s=status(b,d);return s=='Not Open'?2:(s=='Submitted'||
 /* ---- actions ---- */
 const msg=(t,b)=>{ST.msg=t;ST.bad=b?1:0;go()};
 window.dcw={
+ reopen_open(){const[b,d]=sel(),rec=get(b,d);if(!rec||!EDIT.includes(rec.status))return;if(!isOwn())return msg('Only an owner can re-read opening balances.',1);if(rec.exception||/Approved close/.test(Object.values(rec.opening||{}).map(o=>o.src).join(' ')))return msg('This day opens from an approved close. Reopen the earlier day instead.',1);
+  const o=rec.opening;delete rec.opening;let rows;try{rows=calc(b,d)}finally{rec.opening=o}const snap={};rows.forEach(r=>{snap[r.k]={amt:R2(r.open),base:R2(r.openB),src:r.src}});rec.opening=snap;A$(rec,'Opening balances re-read from the ledger','Owner action');sav();msg('Opening balances were re-read from the current ledger.')},
  note(v){const[b,d]=sel(),rec=get(b,d);if(!rec||!EDIT.includes(rec.status))return;rec.notes=String(v).slice(0,500);sav()},
  jrn(){view='jr';go()},
  menu(e){if(e)e.stopPropagation();const m=document.getElementById('dcw_mn');if(m)m.hidden=!m.hidden},
@@ -16830,7 +16832,7 @@ function s1(b,d){const s=status(b,d),n=accs(b).length;
 function s2(b,d){const rec=get(b,d),rows=calc(b,d),pv=prevRec(b,d),B=E(S.base);
  const tb=rows.map(r=>`<tr><td>${E(r.label)}</td><td>${E(r.ccy)}</td><td class="n">${M(r.open)}</td><td class="n">${B} ${M(r.openB)}</td><td class="mu">${E(r.src)}</td></tr>`).join('');
  const tbl=`<div class="dcw-w"><table class="dcw-t"><thead><tr><th>Account</th><th>Currency</th><th class="n">Opening balance</th><th class="n">${B} equivalent</th><th>Source</th></tr></thead><tbody>${tb||'<tr><td colspan="5" class="mu">No controlled accounts for this branch.</td></tr>'}</tbody></table></div>`;
- if(rec)return`<section class="dcw-p"><h3>Opening balances</h3><p class="dcw-mu">The day was opened by ${E(rec.openedBy)}. Opening balances are fixed. Corrections need an authorized adjustment entry.${rec.exception?` Exception authorized: ${E(rec.exception)}.`:''}</p>${tbl}</section>`;
+ if(rec)return`<section class="dcw-p"><h3>Opening balances</h3>${isOwn()&&EDIT.includes(rec.status)&&!rec.exception&&rows.every(x=>x.src=='Ledger')?'<div class="dcw-ac"><button type="button" class="dcw-b" onclick="dcw.reopen_open()">Re-read opening balances from the ledger</button><span class="dcw-mu">Use after a data reset or a correction. Recorded in the audit trail.</span></div>':''}<p class="dcw-mu">The day was opened by ${E(rec.openedBy)}. Opening balances are fixed. Corrections need an authorized adjustment entry.${rec.exception?` Exception authorized: ${E(rec.exception)}.`:''}</p>${tbl}</section>`;
  let gate='';const blocked=pv&&pv.status!='Locked';
  if(blocked)gate=`<div class="dcw-al bad" role="alert"><b>Previous day not locked.</b> ${E(pv.date)} is ${E(pv.status)}. Approve and lock it first.${isMgr()?`<label class="dcw-f">Exception reason (required)<input value="${E(ST.exc)}" oninput="dcw.exc(this.value)" placeholder="Why is this day being opened early?"></label><button type="button" class="dcw-b" onclick="dcw.open(1)">Authorize exception and open</button>`:' An owner or manager can authorize an exception.'}</div>`;
  const can=canEntry()&&!blocked;
