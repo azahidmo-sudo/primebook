@@ -5838,7 +5838,7 @@ const oc=V.ctx;V.ctx=function(){let h=oc.apply(this,arguments);
  h=h.replace('<button class="plf" onclick="ctOpen()">+ New transaction</button>','<span style="display:flex;gap:8px;flex-wrap:wrap"><button class="plf" onclick="sdOpen()">+ Currency sale deal</button><button class="plo" onclick="ctOpen()">+ Multi-currency entry</button></span>');
  return h};
 /*UPDCHK*/
-(function(){const B='2026-11-01-a';window.PB_BUILD=B;if(location.protocol=='file:')return;let nb=null,tm=0;
+(function(){const B='2026-11-01-b';window.PB_BUILD=B;if(location.protocol=='file:')return;let nb=null,tm=0;
 const busy=()=>{const a=document.activeElement;return !!(document.querySelector('.ov')||(a&&/^(INPUT|TEXTAREA)$/.test(a.tagName)&&String(a.value||'').length>0))};
 function go2(){try{const k='pb_upd_'+nb,n=+(sessionStorage.getItem(k)||0);sessionStorage.setItem(k,n+1)}catch(e){}location.replace(location.pathname+'?v='+encodeURIComponent(nb))}
 function bar(){let d=document.getElementById('pbupd');if(!d){d=document.createElement('div');d.id='pbupd';d.setAttribute('role','button');d.style.cssText='position:fixed;left:50%;transform:translateX(-50%);top:10px;z-index:100000;background:#0b3d33;color:#fff;padding:11px 18px;border-radius:12px;font:700 13px Inter,system-ui,sans-serif;box-shadow:0 6px 20px rgba(0,0,0,.3);cursor:pointer;text-align:center;max-width:92vw';d.onclick=()=>{d.textContent='Updating…';go2()};document.body.appendChild(d)}d.textContent='A new version of PrimeBook is ready. Tap here to update.'}
@@ -11773,7 +11773,7 @@ function access(){const users=S.users||[],roles=(typeof ROLES=='function'?ROLES(
  return`${msg?`<div class="stg-msg ${msg[1]?'bad':''}">${A(msg[0])}</div>`:''}<div class="stg-2"><div class="stg-pn"><div class="stg-ph"><h3>${svg(IC.shield)} Access review</h3><span>${rv?'Last reviewed '+A(rv.at.slice(0,10))+' by '+A(rv.by):'Not reviewed yet'}</span></div><div class="stg-sst"><span class="stg-bd ${!rv?'info':chg?'bad':'good'}">${!rv?'No review on record':chg?'Changed since last review':'Up to date'}</span></div>${chg?`<div class="stg-warn"><b>People or roles changed after the last review.</b><ul>${diff.map(d=>`<li>${A(d)}</li>`).join('')}</ul></div>`:''}${rv&&rv.note?`<p class="stg-hint">Note: ${A(rv.note)}</p>`:''}<div class="stg-sact">${act}</div></div>
  <div class="stg-pn"><div class="stg-ph"><h3>Signals</h3></div><div class="stg-sg"><div><small>Owners</small><b class="${owners>2?'neg':''}">${owners}</b></div><div><small>Managers</small><b>${users.filter(u=>u.role=='Manager').length}</b></div><div><small>Inactive 60d+</small><b class="${users.filter(stale).length?'neg':''}">${users.filter(stale).length}</b></div><div><small>Branch-limited</small><b>${users.filter(u=>u.br&&u.br!='All').length}</b></div></div><div class="stg-btns"><button type="button" class="b s" data-go="usr">Users & Permissions</button><button type="button" class="b s" data-go="rpa">Report access</button></div></div></div>
  <div class="stg-pn"><div class="stg-ph"><h3>People</h3><span>${users.length} account${users.length==1?'':'s'}</span></div><div class="w"><table class="stg-mt"><tr><th>Name</th><th>Role</th><th>Branch</th><th class="n">Can edit</th><th>Last entry</th></tr>${trows||'<tr><td colspan="5">No users.</td></tr>'}</table></div></div>
- <div class="stg-pn"><div class="stg-ph"><h3>What each role can do</h3><span>Change these in Users & Permissions</span></div>${mat}</div>`}
+ <div class="stg-pn"><div class="stg-ph"><h3>What each role can do</h3><span>Change these in Users & Permissions</span></div>${mat}</div>${window.secPanels?window.secPanels():''}`}
 function activity(){const own=isAp(),m=me()||{},all=LOG().filter(x=>own||x.by==m.name).slice().reverse(),q=aq_().toLowerCase();
  const L=all.filter(x=>(!au||x.by==au)&&(!aa||x.act==aa)&&(!q||(x.item+' '+x.meta+' '+x.by+' '+x.act).toLowerCase().includes(q))),users=[...new Set(all.map(x=>x.by))],acts=[...new Set(all.map(x=>x.act))];
  const d30=Date.now()-30*864e5,rec=all.filter(x=>new Date(x.at)>d30),tile=(t,v)=>`<div class="stg-k"><span>${t}</span><b>${v}</b></div>`;
@@ -17294,6 +17294,85 @@ html body .dbx-mo{border:0;background:transparent!important;color:#334155!import
 .dbx-pg{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-top:12px;font:400 13px Inter;color:#64748b}.dbx-pn{display:inline-flex;gap:6px;align-items:center}.dbx-pn b{min-width:34px;height:34px;display:grid;place-items:center;border-radius:8px;background:#1d4ed8;color:#fff;font:700 13px Inter}.dbx-pn button{width:34px;height:34px;border:0;border-radius:8px;background:#eef2ff!important;color:#1d4ed8!important;font:700 16px Inter;cursor:pointer;min-height:0;box-shadow:none!important}.dbx-pn button:disabled{opacity:.45;cursor:not-allowed}
 @media(max-width:700px){html body .dbr-g h1{font-size:24px}html body .dbr-nt{width:100%}}
 `;document.head.appendChild(st);
+})();
+/*SEC2*/
+(function(){
+const E=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const DK='fd_dev',NOW=()=>new Date().toISOString();
+const sec=()=>{S.sec=S.sec||{};const s=S.sec;s.ip=s.ip||{mode:'off',list:[],owners:false};s.tb=s.tb||{required:false,days:30,list:[],pend:[]};return s};
+const own=()=>{try{return me().role=='Owner'}catch(e){return false}};
+const log=m=>{try{alog('Security',m)}catch(e){}};
+const SV=()=>{try{save()}catch(e){}};
+/* ---- this browser ---- */
+function devId(){try{let d=localStorage.getItem(DK);if(!d){d=(crypto.randomUUID?crypto.randomUUID():String(Date.now())+Math.random().toString(36).slice(2));localStorage.setItem(DK,d)}return d}catch(e){return 'nostore'}}
+function devName(){const u=navigator.userAgent||'',b=/Edg\//.test(u)?'Edge':/OPR\//.test(u)?'Opera':/Firefox\//.test(u)?'Firefox':/Chrome\//.test(u)?'Chrome':/Safari\//.test(u)?'Safari':'Browser',o=/Windows/.test(u)?'Windows':/Android/.test(u)?'Android':/iPhone|iPad/.test(u)?'iOS':/Mac OS/.test(u)?'macOS':/Linux/.test(u)?'Linux':'device';return b+' on '+o}
+/* ---- IP matching (IPv4 exact or CIDR, IPv6 exact) ---- */
+const v4=s=>{const m=/^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/.exec(s);if(!m)return null;const p=m.slice(1).map(Number);if(p.some(x=>x>255))return null;return((p[0]*16777216)+(p[1]<<16)+(p[2]<<8)+p[3])>>>0};
+function okEntry(x){x=String(x||'').trim();if(!x)return false;const [a,m]=x.split('/');if(v4(a)!=null)return m==null||(/^\d{1,2}$/.test(m)&&+m<=32);return m==null&&/^[0-9a-f:]+$/i.test(a)&&a.includes(':')&&a.length>=3}
+function inList(ip,list){if(!ip)return false;ip=ip.trim().toLowerCase();return list.some(e=>{const x=String(e.v||'').trim().toLowerCase(),[a,m]=x.split('/');if(m==null)return a==ip;const n=v4(ip),b=v4(a);if(n==null||b==null)return false;const bits=+m,mask=bits==0?0:(~0<<(32-bits))>>>0;return((n&mask)>>>0)==((b&mask)>>>0)})}
+window.secIp=null;
+window.secIpFetch=window.secIpFetch||(async()=>{const r=await fetch('/api/whoami',{cache:'no-store'});if(!r.ok)throw 0;return (await r.json()).ip});
+async function getIp(){if(window.secIp)return window.secIp;try{window.secIp=await Promise.race([window.secIpFetch(),new Promise((_,j)=>setTimeout(j,4000))])}catch(e){window.secIp=''}return window.secIp}
+/* ---- trusted browsers ---- */
+const trusted=(d)=>{const t=sec().tb,x=t.list.find(q=>q.id==d);if(!x||x.status!='trusted')return false;if(t.days&&x.at&&Date.now()-new Date(x.at).getTime()>t.days*864e5)return false;return true};
+function trustHere(name,by){const t=sec().tb,d=devId();let x=t.list.find(q=>q.id==d);const nm=(name||'').trim()||devName();if(!x){x={id:d,name:nm,ua:devName(),first:NOW(),by};t.list.push(x)}x.name=nm;x.status='trusted';x.at=NOW();x.last=NOW();x.by=by;t.pend=t.pend.filter(q=>q.id!=d);log('Trusted browser added: '+nm);SV()}
+/* ---- guard: runs once after sign-in ---- */
+function block(title,msg,btns){const o=document.createElement('div');o.id='secblk';o.setAttribute('role','alertdialog');o.setAttribute('aria-modal','true');o.style.cssText='position:fixed;inset:0;z-index:99999;background:#0b1220ee;display:grid;place-items:center;padding:20px;font-family:Inter,system-ui,sans-serif';o.innerHTML=`<div style="background:#fff;color:#0f172a;max-width:460px;width:100%;border-radius:16px;padding:26px;box-shadow:0 20px 60px #0008"><h2 style="margin:0 0 8px;font-size:20px">${E(title)}</h2><p style="margin:0 0 16px;color:#475569;line-height:1.5">${msg}</p><div style="display:flex;gap:10px;flex-wrap:wrap">${btns}</div></div>`;document.body.appendChild(o);return o}
+const B1='style="padding:10px 16px;border-radius:10px;border:0;background:#1d4ed8;color:#fff;font:600 14px Inter;cursor:pointer"',B2='style="padding:10px 16px;border-radius:10px;border:1px solid #cbd5e1;background:#fff;color:#0f172a;font:600 14px Inter;cursor:pointer"';
+async function guard(){
+ const s=sec(),m=me()||{},isO=m.role=='Owner';
+ /* IP */
+ if(s.ip.mode!='off'){const ip=await getIp(),ok=!!ip&&inList(ip,s.ip.list),exempt=isO&&!s.ip.owners;
+  if(!ok){log('Sign-in from address not on the allowlist: '+(ip||'unknown')+' ('+(s.ip.mode=='enforce'&&!exempt?'blocked':'logged')+')');SV();
+   if(s.ip.mode=='enforce'&&!exempt){const o=block('Access from this network is not allowed','Your company restricts sign-in to approved IP addresses. '+(ip?'Your address is <b>'+E(ip)+'</b>.':'Your address could not be checked.')+' Ask an owner to add it in Settings → Access &amp; security.','<button type="button" id="secso" '+B1+'>Sign out</button>');o.querySelector('#secso').onclick=()=>{try{signOut()}catch(e){location.reload()}};return false}}}
+ /* browser */
+ const t=s.tb,d=devId();
+ if(t.required){if(trusted(d)){const x=t.list.find(q=>q.id==d);x.last=NOW();SV()}else{
+   const pend=t.pend.some(q=>q.id==d);
+   const msg='This browser has not been approved for your company. '+(isO?'As an owner you can trust it now.':'Ask an owner to approve it, or send a request.');
+   const o=block('Browser not trusted',msg,(isO?'<button type="button" id="sectr" '+B1+'>Trust this browser</button>':'<button type="button" id="secrq" '+B1+(pend?' disabled':'')+'>'+(pend?'Request sent':'Request approval')+'</button>')+'<button type="button" id="secso" '+B2+'>Sign out</button>');
+   o.querySelector('#secso').onclick=()=>{try{signOut()}catch(e){location.reload()}};
+   const tr=o.querySelector('#sectr');if(tr)tr.onclick=()=>{trustHere('',m.name);o.remove()};
+   const rq=o.querySelector('#secrq');if(rq)rq.onclick=()=>{t.pend.push({id:d,name:devName(),by:m.name,at:NOW()});log('Browser approval requested by '+m.name);SV();rq.disabled=true;rq.textContent='Request sent'};
+   return false}}
+ return true}
+const g0=go;let ran=0;go=function(){const r=g0.apply(this,arguments);if(!ran&&typeof SESS!='undefined'&&SESS&&typeof S!='undefined'&&S&&S.br){ran=1;guard().then(()=>{try{if(document.getElementById('secpn'))go()}catch(e){}})}return r};
+/* ---- settings panels ---- */
+window.secPanels=function(){const s=sec(),o=own(),dis=o?'':'disabled',cur=window.secIp||'',d=devId(),me_=s.tb.list.find(q=>q.id==d);
+ if(window.secIp==null||(window.secIp===null))getIp().then(()=>{try{if(document.getElementById('secpn'))go()}catch(e){}});
+ const ipRows=s.ip.list.map((e,i)=>`<tr><td><b>${E(e.v)}</b></td><td>${E(e.label||'')}</td><td>${E((e.at||'').slice(0,10))} · ${E(e.by||'')}</td><td class="n">${o?`<button type="button" class="b s" data-sec="ipdel" data-i="${i}">Remove</button>`:''}</td></tr>`).join('')||'<tr><td colspan="4" class="mu">No addresses yet. Add the office or VPN address first.</td></tr>';
+ const tbRows=s.tb.list.map((x,i)=>{const st=trusted(x.id)?'Trusted':(x.status=='trusted'?'Expired':'Revoked');return`<tr><td><b>${E(x.name)}</b>${x.id==d?' <span class="stg-bd info">This browser</span>':''}<small style="display:block;color:#64748b">${E(x.ua||'')}</small></td><td>${E((x.first||'').slice(0,10))}</td><td>${E((x.last||'').slice(0,16).replace('T',' '))}</td><td>${st}</td><td class="n">${o?(st=='Trusted'?`<button type="button" class="b s" data-sec="tbrev" data-i="${i}">Revoke</button>`:`<button type="button" class="b s" data-sec="tbdel" data-i="${i}">Remove</button>`):''}</td></tr>`}).join('')||'<tr><td colspan="5" class="mu">No trusted browsers yet.</td></tr>';
+ const pend=s.tb.pend.map((q,i)=>`<tr><td><b>${E(q.name)}</b><small style="display:block;color:#64748b">requested by ${E(q.by)} · ${E((q.at||'').slice(0,16).replace('T',' '))}</small></td><td class="n">${o?`<button type="button" class="b" data-sec="tbok" data-i="${i}">Approve</button> <button type="button" class="b s" data-sec="tbno" data-i="${i}">Deny</button>`:''}</td></tr>`).join('');
+ return`<div id="secpn"><div class="stg-pn"><div class="stg-ph"><h3>IP restrictions</h3><span>${s.ip.mode=='off'?'Off':s.ip.mode=='warn'?'Monitor only':'Enforced'}</span></div>
+ <p class="stg-hint">Limit sign-in to approved office or VPN addresses. Your address now: <b id="secmyip">${cur?E(cur):'could not be detected (needs the hosted site)'}</b>.</p>
+ <div class="sec-row"><label>Mode <select id="secmode" ${dis}><option value="off" ${s.ip.mode=='off'?'selected':''}>Off</option><option value="warn" ${s.ip.mode=='warn'?'selected':''}>Monitor only (log unknown addresses)</option><option value="enforce" ${s.ip.mode=='enforce'?'selected':''}>Enforce (block unknown addresses)</option></select></label>
+ <label class="sec-ck"><input type="checkbox" id="secown" ${s.ip.owners?'checked':''} ${dis}> Also restrict Owners (otherwise Owners are logged, not blocked)</label></div>
+ <div class="w"><table class="stg-mt"><tr><th>Address or range</th><th>Label</th><th>Added</th><th></th></tr>${ipRows}</table></div>
+ ${o?`<div class="sec-row"><input id="secip" placeholder="203.0.113.5 or 203.0.113.0/24"><input id="seclb" placeholder="Label, for example Head office"><button type="button" class="b" data-sec="ipadd">Add</button>${cur?`<button type="button" class="b s" data-sec="ipme">Add my address</button>`:''}</div>`:'<p class="stg-hint">Only an Owner can change these settings.</p>'}
+ <p class="stg-hint">Enforcement is checked when you sign in. For a hard network block that cannot be bypassed from a browser, also set the <code>ALLOWED_IPS</code> variable on the Cloudflare Worker.</p><div id="secmsg" class="stg-msg" style="display:none"></div></div>
+ <div class="stg-pn"><div class="stg-ph"><h3>Trusted browsers</h3><span>${s.tb.required?'Required':'Optional'}</span></div>
+ <p class="stg-hint">When required, people can sign in only from browsers an Owner has approved. This browser: <b>${E(devName())}</b> — ${trusted(d)?'trusted':'not trusted'}.</p>
+ <div class="sec-row"><label class="sec-ck"><input type="checkbox" id="sectb" ${s.tb.required?'checked':''} ${dis}> Require a trusted browser to sign in</label><label>Trust lasts <select id="secdays" ${dis}>${[[7,'7 days'],[30,'30 days'],[90,'90 days'],[0,'Until revoked']].map(([v,l])=>`<option value="${v}" ${s.tb.days==v?'selected':''}>${l}</option>`).join('')}</select></label></div>
+ ${pend?`<h4 style="margin:12px 0 6px">Waiting for approval</h4><div class="w"><table class="stg-mt">${pend}</table></div>`:''}
+ <div class="w"><table class="stg-mt"><tr><th>Browser</th><th>First seen</th><th>Last used</th><th>Status</th><th></th></tr>${tbRows}</table></div>
+ ${o&&!trusted(d)?`<div class="sec-row"><input id="sectn" placeholder="Name this browser, for example Front desk PC" value="${E(devName())}"><button type="button" class="b" data-sec="tbme">Trust this browser</button></div>`:''}</div></div>
+ <style>.sec-row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:10px 0}.sec-row input:not([type=checkbox]),.sec-row select{padding:8px 10px;border:1px solid #cbd5e1;border-radius:8px;font:14px Inter;min-width:0}.sec-ck{display:flex;gap:6px;align-items:center}html body .sec-row label{display:flex;flex-direction:row;align-items:center;gap:8px;text-transform:none;letter-spacing:0;font:14px Inter,sans-serif;color:inherit}html body .sec-row input[type=checkbox]{width:auto;margin:0}</style>`};
+const msg=(t,bad)=>{const e=document.getElementById('secmsg');if(e){e.textContent=t;e.className='stg-msg'+(bad?' bad':'');e.style.display='block'}};
+function rerender(){SV();go()}
+document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('[data-sec]');if(!b||!own())return;const s=sec(),k=b.dataset.sec,i=+b.dataset.i,m=me().name;
+ if(k=='ipadd'||k=='ipme'){const v=k=='ipme'?window.secIp:(document.getElementById('secip').value||'').trim();if(!okEntry(v))return msg('Enter a valid IPv4 address, IPv4 range like 203.0.113.0/24, or IPv6 address.',1);if(s.ip.list.some(x=>x.v==v))return msg('That address is already listed.',1);s.ip.list.push({v,label:k=='ipme'?'My address':(document.getElementById('seclb').value||'').trim(),at:NOW(),by:m});log('IP allowlist added: '+v);return rerender()}
+ if(k=='ipdel'){const x=s.ip.list[i];if(!x)return;if(s.ip.mode=='enforce'&&window.secIp&&inList(window.secIp,[x])&&s.ip.list.filter(q=>inList(window.secIp,[q])).length==1)return msg('That is the only entry covering your own address. Add another or switch off enforcement first.',1);s.ip.list.splice(i,1);log('IP allowlist removed: '+x.v);return rerender()}
+ if(k=='tbme'){trustHere((document.getElementById('sectn')||{}).value,m);return rerender()}
+ if(k=='tbrev'){const x=s.tb.list[i];if(!x)return;if(x.id==devId()&&s.tb.required&&!confirm('This is the browser you are using. You will be asked to approve it again at next sign-in. Revoke?'))return;x.status='revoked';log('Trusted browser revoked: '+x.name);return rerender()}
+ if(k=='tbdel'){const x=s.tb.list[i];if(!x)return;s.tb.list.splice(i,1);log('Trusted browser removed: '+x.name);return rerender()}
+ if(k=='tbok'){const q=s.tb.pend[i];if(!q)return;s.tb.list=s.tb.list.filter(x=>x.id!=q.id);s.tb.list.push({id:q.id,name:q.name,ua:q.name,first:NOW(),at:NOW(),last:'',status:'trusted',by:m});s.tb.pend.splice(i,1);log('Browser approved for '+q.by);return rerender()}
+ if(k=='tbno'){const q=s.tb.pend[i];s.tb.pend.splice(i,1);log('Browser request denied for '+(q&&q.by));return rerender()}});
+document.addEventListener('change',e=>{const t=e.target;if(!t||!own())return;const s=sec();
+ if(t.id=='secmode'){const v=t.value;if(v=='enforce'){const ip=window.secIp;if(!ip){t.value=s.ip.mode;return msg('Your address could not be detected, so enforcement is not safe to turn on from here.',1)}if(!inList(ip,s.ip.list)){t.value=s.ip.mode;return msg('Add your own address ('+ip+') to the list first, or you would be locked out.',1)}}s.ip.mode=v;log('IP restriction mode: '+v);return rerender()}
+ if(t.id=='secown'){s.ip.owners=t.checked;log('IP restriction applies to owners: '+t.checked);return rerender()}
+ if(t.id=='sectb'){if(t.checked&&!trusted(devId()))trustHere('',me().name);s.tb.required=t.checked;log('Trusted browser required: '+t.checked);return rerender()}
+ if(t.id=='secdays'){s.tb.days=+t.value;log('Trusted browser lifetime: '+t.value+' days');return rerender()}});
+window.__sec={okEntry,inList,trusted,guard,sec};
 })();
 </script>
 </body></html>
