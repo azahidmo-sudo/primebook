@@ -1,0 +1,15 @@
+const {chromium}=require('playwright');let f=0;const ok=(n,c)=>{console.log(c?'ok':'FAIL',n);if(!c)f++};(async()=>{const b=await chromium.launch();const p=await b.newPage({viewport:{width:1400,height:1000}});const errs=[];p.on('pageerror',e=>errs.push(e.message));p.on('dialog',d=>d.accept());
+await p.goto('file:///home/claude/primebook/public/index.html');await p.waitForTimeout(600);
+await p.evaluate(()=>{document.getElementById('auth')?.remove();document.body.classList.remove('auon');SESS={id:'t',exp:Date.now()+1e6};S.users=[{name:'Zahid',role:'Owner',br:'All'}];S.me=0;S.base='CAD';S.bdays=[];S.apr=[];const B=S.br[0].id;
+S.banks=[{id:'u1',name:'USD Bank',ccy:'USD',br:B}];
+S.j=[{id:1,date:today(),br:B,acc:'cash|'+B,vno:'R1',tt:'Receipt',memo:'Cash sale',by:'Zahid',lines:[[1000,100,0],[3000,0,100]]},{id:2,date:today(),br:B,acc:'cash|'+B,vno:'P1',tt:'Payment',memo:'Supplies',by:'Zahid',lines:[[1000,0,30],[6000,30,0]]}];
+S.bdays.push({id:'x',br:B,date:today(),status:'In Progress',openedBy:'Z',openedAt:'2026-10-30T08:00:00',opening:{},recon:{},vapp:{},audit:[]});
+view='dcw';ST_dcw();go()});await p.waitForTimeout(400);
+await p.evaluate(()=>dcw.step(5));await p.waitForTimeout(300);
+ok('report shown',await p.locator('.dcr').count()==1&&/Daily Closing Report/.test(await p.textContent('#m')));
+ok('grouped by currency with subtotal and balanced chip',await p.locator('.dcr-st').count()>=1&&await p.locator('.dcr-ch.ok').count()>=1);
+ok('debit and credit columns',/Debit/.test(await p.textContent('.dcr-t'))&&/Credit/.test(await p.textContent('.dcr-t')));
+ok('no duplicate action buttons',await p.locator('.dcr-ac').count()==0);
+await p.selectOption('.dcr-fb select','Zahid');await p.waitForTimeout(200);ok('user filter works',/Filtered by user/.test(await p.textContent('.dcr-ft')));
+await p.screenshot({path:'/tmp/rpt.png'});
+ok('no errors',errs.length==0);if(errs.length)console.log(errs);await b.close();process.exit(f?1:0)})();
